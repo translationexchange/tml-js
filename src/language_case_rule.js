@@ -32,3 +32,52 @@
 Tr8n.LanguageCaseRule = function(attrs) {
   this.attrs = attrs;
 };
+
+Tr8n.LanguageCaseRule.conditionsExpression = function() {
+  if (!this.attrs.conditions_expression)
+    this.attrs.conditions_expression = (new Tr8n.RulesEngine.Parser(this.attrs.conditions)).parse();
+  return this.attrs.conditions_expression;
+};
+
+Tr8n.LanguageCaseRule.operationsExpression = function() {
+  if (!this.attrs.operations_expression)
+    this.attrs.operations_expression = (new Tr8n.RulesEngine.Parser(this.attrs.operations)).parse();
+  return this.attrs.operations_expression;
+};
+
+Tr8n.LanguageCaseRule.genderVariables = function(object) {
+  if (object == null)
+    return {gender: 'unknown'};
+
+  if (this.attrs.conditions.indexOf("@gender") == -1)
+    return {};
+
+  var context = this.languageCase.language.contextByKeyword("gender");
+
+  if (context == null)
+    return {gender: 'unknown'};
+
+  return context.vars(object);
+};
+
+Tr8n.LanguageCaseRule.evaluate = function(value, object) {
+  if (this.attrs.conditions == null)
+    return false;
+
+  var evaluator = new Tr8n.RulesEngine.Evaluator();
+  evaluator.setVars(Tr8n.Utils.extend({value: value}, this.genderVariables(object)));
+
+  return evaluator.evaluate(this.conditionsExpression());
+};
+
+Tr8n.LanguageCaseRule.apply = function(value) {
+  if (this.attrs.operations == null)
+    return value;
+
+  var evaluator = new Tr8n.RulesEngine.Evaluator();
+  evaluator.setVars({value: value});
+
+  return evaluator.evaluate(this.operationsExpression());
+};
+
+

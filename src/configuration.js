@@ -32,7 +32,8 @@
 Tr8n.Configuration = function() {
   this.initDefaultTokens();
   this.initTranslatorOptions();
-  this.currentLanguage = new Tr8n.Language();
+  this.initContextRules();
+  this.currentLanguage = new Tr8n.Language({});
 };
 
 Tr8n.Configuration.prototype.initDefaultTokens = function() {
@@ -160,4 +161,32 @@ Tr8n.Configuration.prototype.initTranslatorOptions = function() {
   }
 };
 
-
+Tr8n.Configuration.prototype.initContextRules = function() {
+  this.contextRules = {
+    number: {
+      variables: {}
+    },
+    gender: {
+      variables: {
+        "@gender": "gender"
+      }
+    },
+    genders: {
+      variables: {
+        "@genders": function(list) {
+          var genders = [];
+          list.forEach(function(obj) {
+            genders.push(obj.gender);
+          });
+          return genders;
+        }
+      }
+    },
+    date: {
+      variables: {}
+    },
+    time: {
+      variables: {}
+    }
+  };
+};

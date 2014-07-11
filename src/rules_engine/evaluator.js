@@ -72,6 +72,10 @@ Tr8n.RulesEngine.Evaluator = function(ctx) {
 }
 
 Tr8n.RulesEngine.Evaluator.prototype = {
+  setVars: function(vars) {
+    this.vars = vars;
+  },
+
   apply: function(fn, args) {
     if (typeof this.ctx[fn] == 'function') {
       return this.ctx[fn](args);

@@ -31,6 +31,20 @@
 
 Tr8n.Language = function(attrs) {
   this.attrs = attrs;
+
+  this.contexts = [];
+  if (attrs.contexts) {
+    Object.keys(attrs.contexts).forEach(function(key) {
+      this.contexts.push(new Tr8n.LanguageContext(Tr8n.Utils.extend(attrs.contexts[key], {language: this})));
+    }.bind(this));
+  }
+
+  this.cases = [];
+  if (attrs.cases) {
+    Object.keys(attrs.cases).forEach(function(key) {
+      this.cases.push(new Tr8n.LanguageCase(Tr8n.Utils.extend(attrs.cases[key], {language: this})));
+    }.bind(this));
+  }
 };
 
 Tr8n.Language.prototype.translate = function(label, description, tokens, options) {

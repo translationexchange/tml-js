@@ -30,6 +30,7 @@
  */
 
 var program = require('commander');
+var fs = require("fs");
 
 program.version('0.1.1')
   .option('-l, --label', 'Label to be translated')
@@ -45,6 +46,10 @@ program.version('0.1.1')
 //}
 
 Tr8n.config = new Tr8n.Configuration();
+fs.readFile("./../config/languages/en-US.json", function (err, data) {
+  if (err) throw err;
+  Tr8n.config.currentLanguage = new Tr8n.Language(data);
+});
 
 // Cache adapters
 //Tr8n.cache = new Tr8n.Cache();

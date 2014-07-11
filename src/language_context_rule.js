@@ -32,3 +32,23 @@
 Tr8n.LanguageContextRule = function(attrs) {
   this.attrs = attrs;
 };
+
+Tr8n.LanguageContextRule.isFallback = function() {
+  return (this.attrs.keyword == "other");
+};
+
+Tr8n.LanguageContextRule.conditionsExpression = function() {
+  if (!this.attrs.conditions_expression)
+    this.attrs.conditions_expression = (new Tr8n.RulesEngine.Parser(this.attrs.conditions)).parse();
+  return this.attrs.conditions_expression;
+};
+
+Tr8n.LanguageContextRule.evaluate = function(vars) {
+  if (this.isFallback()) return true;
+
+  var evaluator = new Tr8n.RulesEngine.Evaluator();
+  evaluator.setVars(vars || {});
+
+  return evaluator.evaluate(this.conditionsExpression())
+};
+

@@ -69,3 +69,14 @@ Tr8n.Utils.extend = function(destination, source) {
     destination[property] = source[property];
   return destination;
 };
+
+Tr8n.Utils.clone = function(obj) {
+  if(obj == null || typeof(obj) != 'object')
+    return obj;
+
+  var temp = obj.constructor(); // changed
+
+  for(var key in obj)
+    temp[key] = Tr8n.Utils.clone(obj[key]);
+  return temp;
+};
