@@ -29,6 +29,7 @@ module.exports = function(grunt) {
           'vendor/*.js',
           'src/namespace.js', 'src/utils.js', 'src/configuration.js',
           'src/rules_engine/*.js', 'src/tokenizers/**/*.js', 'src/decorators/*.js',
+          'src/tokens/data.js', 'src/tokens/method.js', 'src/tokens/piped.js',
           'src/application.js', 'src/source.js',
           'src/translation_key.js', 'src/translation.js', 'src/translator.js',
           'src/language.js', 'src/language_case.js', 'src/language_case_rule.js',
@@ -107,7 +108,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-blanket');
 
 //  grunt.registerTask('test', ['jshint', 'mocha']);
-  grunt.registerTask('mocha', ['concat', 'comments', 'clean', 'blanket', 'copy', 'mochaTest']);
+  grunt.registerTask('test', ['concat', 'comments', 'clean', 'blanket', 'copy', 'mochaTest']);
 
   // Default task(s).
   grunt.registerTask('default', ['concat', 'uglify']);

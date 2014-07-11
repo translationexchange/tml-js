@@ -35,12 +35,6 @@ Tr8n.Tokens.Data = function(label, name) {
   this.parseElements();
 };
 
-Tr8n.Tokens.Data.prototype = {
-  parseElements: function() {
-
-  }
-};
-
 Tr8n.Tokens.Data.prototype.parseElements = function() {
   var nameWithoutParens = this.fullName.substring(1, this.fullName.length-2);
   var nameWithoutCaseKeys = nameWithoutParens.split('::')[0].trim();

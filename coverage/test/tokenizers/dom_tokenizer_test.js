@@ -133,20 +133,17 @@ describe('DomTokenizer', function() {
 
       var doc = jsdom.jsdom(original, jsdom.level(3, "core"));
       var tokenizer = new Tr8n.Tokenizers.DomTokenizer(doc, {});
+//      console.log("");
+//      console.log(original);
+//
+//      console.log("");
+//      tokenizer.debug(doc);
+//
+//      console.log("");
+//      console.log(tokenizer.translate());
+//      console.log("");
 
-      console.log("");
-      console.log(original);
-
-      console.log("");
-      tokenizer.debug(doc);
-
-      console.log("");
-      console.log(tokenizer.translate());
-      console.log("");
-
-
-
-
+      assert.deepEqual("<body>{{{ [link: Hello]       [link1: World]      [link2: World1]      }}}</body>", tokenizer.translate());
 
     });
   });

@@ -15,11 +15,11 @@ program.version('0.1.1')
 
 Tr8n.config = new Tr8n.Configuration();
 
-//
-Tr8n.cache = new Tr8n.Cache();
+// Cache adapters
+//Tr8n.cache = new Tr8n.Cache();
 
-//
-Tr8n.api = new Tr8n.ApiClient();
+// Api Client
+//Tr8n.api = new Tr8n.ApiClient();
 
 // Exporting classes
 exports.RulesEngine = Tr8n.RulesEngine;
@@ -28,26 +28,10 @@ exports.Decorators = Tr8n.Decorators;
 exports.Utils = Tr8n.Utils;
 
 
-// Exporting methods
 exports.configure = function(callback) {
   callback(Tr8n.config);
 };
 
-
-exports.tr = function(label,....) {
-  callback(Tr8n.config);
+exports.tr = function(label, description, tokens, options) {
+  return label;
 };
-
-exports.tr = function(label,....) {
-  callback(Tr8n.config);
-};
-
-tr8n = require("tr8n");
-
-tr8n.configure(function(config) {
-  config.key = "";
-  config.secret = ""; // only for dev/translation
-  config.bla = bla;
-});
-
-require('tr8n')

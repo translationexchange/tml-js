@@ -30,10 +30,9 @@
  */
 
 var Tr8n = {
-  "Tokenizers": {
-    "Tokens": {}
-  },
-  "Utils": {},
+  "Tokenizers": {},
+  "Tokens": {},
   "RulesEngine": {},
-  "Decorators": {}
+  "Decorators": {},
+  "Utils": {}
 }
