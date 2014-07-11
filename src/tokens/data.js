@@ -29,20 +29,25 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Tr8n.Tokens.Data = function(label, name) {
-  this.label = label;
+Tr8n.Tokens.Data = function(name, label) {
   this.fullName = name;
+  this.label = label;
   this.parseElements();
 };
 
 Tr8n.Tokens.Data.prototype.parseElements = function() {
-  var nameWithoutParens = this.fullName.substring(1, this.fullName.length-2);
+  var nameWithoutParens = this.fullName.substring(1, this.fullName.length-1);
   var nameWithoutCaseKeys = nameWithoutParens.split('::')[0].trim();
 
   this.shortName = nameWithoutParens.split(':')[0].trim();
-  // TODO: remove prefixes
-  this.caseKeys = nameWithoutParens.match(/(::\w+)/g);
-  this.contextKeys = nameWithoutCaseKeys.match(/(:\w+)/g);
+  this.caseKeys = [];
+  (nameWithoutParens.match(/(::\s*\w+)/g) || []).forEach(function(key) {
+    this.caseKeys.push(key.replace(/[:]/g, "").trim());
+  }.bind(this));
+  this.contextKeys = [];
+  (nameWithoutCaseKeys.match(/(:\s*\w+)/g) || []).forEach(function(key) {
+    this.contextKeys.push(key.replace(/[:]/g, "").trim());
+  }.bind(this));
 };
 
 Tr8n.Tokens.Data.prototype.contextForLanguage = function(language, opts) {
@@ -54,7 +59,7 @@ Tr8n.Tokens.Data.prototype.contextForLanguage = function(language, opts) {
 
 Tr8n.Tokens.Data.prototype.tokenObject = function(tokenValues, tokenName) {
   if (tokenValues == null) return null;
-  
+
   var tokenObject = tokenValues[tokenName];
   if (typeof tokeObject === 'array')
     return tokenObject[0];

@@ -28,8 +28,8 @@ module.exports = function(grunt) {
         src: [
           'vendor/*.js',
           'src/namespace.js', 'src/utils.js', 'src/configuration.js',
-          'src/rules_engine/*.js', 'src/tokenizers/**/*.js', 'src/decorators/*.js',
           'src/tokens/data.js', 'src/tokens/method.js', 'src/tokens/piped.js',
+          'src/rules_engine/*.js', 'src/tokenizers/**/*.js', 'src/decorators/*.js',
           'src/application.js', 'src/source.js',
           'src/translation_key.js', 'src/translation.js', 'src/translator.js',
           'src/language.js', 'src/language_case.js', 'src/language_case_rule.js',
