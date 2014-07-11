@@ -30,12 +30,10 @@
  */
 
 Tr8n.LanguageCase = function(attrs) {
-  this.attrs = attrs;
+  Tr8n.Utils.extend(this, attrs);
 
   this.rules = [];
-  if (attrs.rules) {
-    attrs.rules.forEach(function(rule) {
-      this.rules.push(new Tr8n.LanguageCaseRule(Tr8n.Utils.extend(rule, {languageCase: this})));
-    }.bind(this));
+  for(var rule in (attrs.rules || [])) {
+    this.rules.push(new Tr8n.LanguageCaseRule(Tr8n.Utils.extend(rule, {language_case: this})));
   }
 };

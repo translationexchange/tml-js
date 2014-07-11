@@ -33,18 +33,18 @@ var HTML_SPECIAL_CHAR_REGEX = '/(&[^;]*;)/';
 var INDEPENDENT_NUMBER_REGEX = '/^(\\d+)$|^(\\d+[,;\\s])|(\\s\\d+)$|(\\s\\d+[,;\\s])/';
 var VERBOSE_DATE_REGEX = '/(((Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)|(January|February|March|April|May|June|July|August|September|October|November|December))\\s\\d+(,\\s\\d+)*(,*\\sat\\s\\d+:\\d+(\\sUTC))*)/';
 
-Tr8n.Tokenizers.DomTokenizer = function(doc, context, options) {
+Tr8n.Tokenizers.Dom = function(doc, context, options) {
   this.doc = doc;
   this.context = context || {};
   this.tokens = [];
   this.options = options || {};
 };
 
-Tr8n.Tokenizers.DomTokenizer.prototype.translate = function() {
+Tr8n.Tokenizers.Dom.prototype.translate = function() {
   return this.translateTree(this.doc);
 };
 
-Tr8n.Tokenizers.DomTokenizer.prototype.translateTree = function(node) {
+Tr8n.Tokenizers.Dom.prototype.translateTree = function(node) {
   if (this.isNonTranslatableNode(node)) {
     if (node.childNodes.length == 1)
       return node.childNodes[0].nodeValue;
@@ -93,7 +93,7 @@ Tr8n.Tokenizers.DomTokenizer.prototype.translateTree = function(node) {
   return html;
 };
 
-Tr8n.Tokenizers.DomTokenizer.prototype.isNonTranslatableNode = function(node) {
+Tr8n.Tokenizers.Dom.prototype.isNonTranslatableNode = function(node) {
   if (node.nodeType == 1 && this.getOption("nodes.scripts").indexOf(node.nodeName.toLowerCase()) != -1)
     return true;
   if (node.nodeType == 1 && node.childNodes.length == 0 && node.nodeValue == "")
@@ -101,7 +101,7 @@ Tr8n.Tokenizers.DomTokenizer.prototype.isNonTranslatableNode = function(node) {
   return false;
 };
 
-Tr8n.Tokenizers.DomTokenizer.prototype.translateTml = function(tml) {
+Tr8n.Tokenizers.Dom.prototype.translateTml = function(tml) {
   if (this.isEmptyString(tml)) return tml;
 
 //  tml = this.generateDataTokens(tml);
@@ -123,12 +123,12 @@ Tr8n.Tokenizers.DomTokenizer.prototype.translateTml = function(tml) {
   return translation;
 };
 
-Tr8n.Tokenizers.DomTokenizer.prototype.hasChildNodes = function(node) {
+Tr8n.Tokenizers.Dom.prototype.hasChildNodes = function(node) {
   if (!node.childNodes) return false;
   return (node.childNodes.length > 0);
 };
 
-Tr8n.Tokenizers.DomTokenizer.prototype.isBetweenSeparators = function(node) {
+Tr8n.Tokenizers.Dom.prototype.isBetweenSeparators = function(node) {
   if (this.isSeparatorNode(node.previousSibling) && !this.isValidTextNode(node.nextSibling))
     return true;
 
@@ -138,7 +138,7 @@ Tr8n.Tokenizers.DomTokenizer.prototype.isBetweenSeparators = function(node) {
   return false;
 };
 
-Tr8n.Tokenizers.DomTokenizer.prototype.generateTmlTags = function(node) {
+Tr8n.Tokenizers.Dom.prototype.generateTmlTags = function(node) {
   var buffer = "";
   var self = this;
   for(var i=0; i<node.childNodes.length; i++) {
@@ -162,38 +162,38 @@ Tr8n.Tokenizers.DomTokenizer.prototype.generateTmlTags = function(node) {
   return '[' + token + ']' + value + '[/' + token + ']';
 };
 
-Tr8n.Tokenizers.DomTokenizer.prototype.getOption = function(name) {
+Tr8n.Tokenizers.Dom.prototype.getOption = function(name) {
   if (this.options[name]) {
     return this.options[name];
   }
-  return Tr8n.Utils.hashValue(Tr8n.config.translatorOptions, name);
+  return Tr8n.Utils.hashValue(Tr8n.config.translator_options, name);
 };
 
-Tr8n.Tokenizers.DomTokenizer.prototype.debugTranslation = function(translation) {
+Tr8n.Tokenizers.Dom.prototype.debugTranslation = function(translation) {
   return this.getOption("debug_format").replace('{$0}', translation);
 };
 
-Tr8n.Tokenizers.DomTokenizer.prototype.isEmptyString = function(tml) {
+Tr8n.Tokenizers.Dom.prototype.isEmptyString = function(tml) {
 //  console.log("TML Before: [" + tml + "]");
   tml = tml.replace(/[\s\n\r\t\0\x0b\xa0\xc2]/g, '');
 //  console.log("TML After: [" + tml + "]");
   return (tml == '');
 };
 
-Tr8n.Tokenizers.DomTokenizer.prototype.resetContext = function() {
+Tr8n.Tokenizers.Dom.prototype.resetContext = function() {
   this.tokens = [].concat(this.context);
 };
 
-Tr8n.Tokenizers.DomTokenizer.prototype.isShortToken = function(token, value) {
+Tr8n.Tokenizers.Dom.prototype.isShortToken = function(token, value) {
   return (this.getOption("nodes.short").indexOf(token.toLowerCase()) != -1 || value.length < 20);
 };
 
-Tr8n.Tokenizers.DomTokenizer.prototype.isOnlyChild = function(node) {
+Tr8n.Tokenizers.Dom.prototype.isOnlyChild = function(node) {
   if (node.parentNode == null) return false;
   return (node.parentNode.childNodes.length == 1);
 };
 
-Tr8n.Tokenizers.DomTokenizer.prototype.hasInlineOrTextSiblings = function(node) {
+Tr8n.Tokenizers.Dom.prototype.hasInlineOrTextSiblings = function(node) {
   if (node.parentNode == null) return false;
 
   for (var i=0; i < node.parentNode.childNodes.length; i++) {
@@ -207,7 +207,7 @@ Tr8n.Tokenizers.DomTokenizer.prototype.hasInlineOrTextSiblings = function(node) 
   return false;
 };
 
-Tr8n.Tokenizers.DomTokenizer.prototype.isInlineNode = function(node) {
+Tr8n.Tokenizers.Dom.prototype.isInlineNode = function(node) {
   return (
     node.nodeType == 1
     && this.getOption("nodes.inline").indexOf(node.tagName.toLowerCase()) != -1
@@ -215,34 +215,34 @@ Tr8n.Tokenizers.DomTokenizer.prototype.isInlineNode = function(node) {
   );
 };
 
-Tr8n.Tokenizers.DomTokenizer.prototype.isContainerNode = function(node) {
+Tr8n.Tokenizers.Dom.prototype.isContainerNode = function(node) {
   return (node.nodeType == 1 && !this.isInlineNode(node));
 };
 
-Tr8n.Tokenizers.DomTokenizer.prototype.isSelfClosingNode = function(node) {
+Tr8n.Tokenizers.Dom.prototype.isSelfClosingNode = function(node) {
   return (node.firstChild == null);
 };
 
-Tr8n.Tokenizers.DomTokenizer.prototype.isIgnoredNode = function(node) {
+Tr8n.Tokenizers.Dom.prototype.isIgnoredNode = function(node) {
   if (node.nodeType != 1) return true;
   return (this.getOption("nodes.ignored").indexOf(node.tagName.toLowerCase()) != -1);
 };
 
-Tr8n.Tokenizers.DomTokenizer.prototype.isValidTextNode = function(node) {
+Tr8n.Tokenizers.Dom.prototype.isValidTextNode = function(node) {
   if (node == null) return false;
   return (node.nodeType == 3 && !this.isEmptyString(node.nodeValue));
 };
 
-Tr8n.Tokenizers.DomTokenizer.prototype.isSeparatorNode = function(node) {
+Tr8n.Tokenizers.Dom.prototype.isSeparatorNode = function(node) {
   if (node == null) return false;
   return (node.nodeType == 1 && this.getOption("nodes.splitters").indexOf(node.tagName.toLowerCase()) != -1);
 };
 
-Tr8n.Tokenizers.DomTokenizer.prototype.sanitizeValue = function(value) {
+Tr8n.Tokenizers.Dom.prototype.sanitizeValue = function(value) {
   return value.replace(/^\s+/,'');
 };
 
-Tr8n.Tokenizers.DomTokenizer.prototype.replaceSpecialCharacters = function(text) {
+Tr8n.Tokenizers.Dom.prototype.replaceSpecialCharacters = function(text) {
   if (!this.getOption("data_tokens.special")) return text;
 
   var matches = text.match(HTML_SPECIAL_CHAR_REGEX);
@@ -256,7 +256,7 @@ Tr8n.Tokenizers.DomTokenizer.prototype.replaceSpecialCharacters = function(text)
   return text;
 };
 
-Tr8n.Tokenizers.DomTokenizer.prototype.generateDataTokens = function(text) {
+Tr8n.Tokenizers.Dom.prototype.generateDataTokens = function(text) {
   if (!this.getOption("data_tokens.numeric")) return text;
 
   var matches = text.match(INDEPENDENT_NUMBER_REGEX);
@@ -272,7 +272,7 @@ Tr8n.Tokenizers.DomTokenizer.prototype.generateDataTokens = function(text) {
   return text;
 };
 
-Tr8n.Tokenizers.DomTokenizer.prototype.generateHtmlToken = function(node, value) {
+Tr8n.Tokenizers.Dom.prototype.generateHtmlToken = function(node, value) {
   var name = node.tagName.toLowerCase();
   var attributes = node.attributes;
   var attributesHash = {};
@@ -288,7 +288,7 @@ Tr8n.Tokenizers.DomTokenizer.prototype.generateHtmlToken = function(node, value)
     attributesHash[attributes[i].name] = attributes[i].value;
   }
 
-  var keys = Object.keys(attributesHash);
+  var keys = Tr8n.Utils.keys(attributesHash);
   keys.sort();
 
   var attr = [];
@@ -304,14 +304,14 @@ Tr8n.Tokenizers.DomTokenizer.prototype.generateHtmlToken = function(node, value)
   return '<' + name + ' ' + attr + '>' + value + '</' + name + '>';
 };
 
-Tr8n.Tokenizers.DomTokenizer.prototype.adjustName = function(node) {
+Tr8n.Tokenizers.Dom.prototype.adjustName = function(node) {
   var name = node.tagName.toLowerCase();
   var map = this.getOption("name_mapping");
   name = (map[name] != null) ? map[name] : name;
   return name;
 };
 
-Tr8n.Tokenizers.DomTokenizer.prototype.contextualize = function(name, context) {
+Tr8n.Tokenizers.Dom.prototype.contextualize = function(name, context) {
   if (this.tokens[name] && this.tokens[name] != context) {
     var index = 0;
     var matches = name.match(/\d+$/);
@@ -327,12 +327,12 @@ Tr8n.Tokenizers.DomTokenizer.prototype.contextualize = function(name, context) {
   return name;
 };
 
-Tr8n.Tokenizers.DomTokenizer.prototype.debug = function(doc) {
+Tr8n.Tokenizers.Dom.prototype.debug = function(doc) {
   this.doc = doc;
   this.debugTree(doc, 0);
 };
 
-Tr8n.Tokenizers.DomTokenizer.prototype.debugTree = function(node, depth) {
+Tr8n.Tokenizers.Dom.prototype.debugTree = function(node, depth) {
   var padding = new Array(depth+1).join('=');
 
   console.log(padding + "=> " + (typeof node) + ": " + this.nodeInfo(node));
@@ -346,7 +346,7 @@ Tr8n.Tokenizers.DomTokenizer.prototype.debugTree = function(node, depth) {
   }
 };
 
-Tr8n.Tokenizers.DomTokenizer.prototype.nodeInfo = function(node) {
+Tr8n.Tokenizers.Dom.prototype.nodeInfo = function(node) {
   var info = [];
   info.push(node.nodeType);
 

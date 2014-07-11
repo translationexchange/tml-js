@@ -1,7 +1,7 @@
 var Tr8n = require("../../lib/tr8n");
 var assert = require("assert");
 
-describe('DomTokenizer', function() {
+describe('Dom', function() {
   describe('parsing', function() {
     it('should properly parse the document', function(){
       var jsdom = require("jsdom");
@@ -11,7 +11,7 @@ describe('DomTokenizer', function() {
 //      var window = doc.parentWindow;
 //      console.log(doc);
 
-//      var tokenizer = new Tr8n.Tokenizers.DomTokenizer(doc);
+//      var tokenizer = new Tr8n.Tokenizers.Dom(doc);
 //      console.log(original);
 //      console.log(tokenizer.translate());
 
@@ -24,14 +24,14 @@ describe('DomTokenizer', function() {
 
 //      var original = '<div>Hello <strong>World</strong></div>';
 //      var doc = jsdom.jsdom(original, jsdom.level(3, "core"));
-//      var tokenizer = new Tr8n.Tokenizers.DomTokenizer(doc);
+//      var tokenizer = new Tr8n.Tokenizers.Dom(doc);
 //      console.log(original);
 //      console.log(tokenizer.translate());
 //      tokenizer.debug(doc);
 
 //      var original = '<p><strong>Apollo 11</strong> was the spaceflight that landed the first humans, Americans <a href="http://en.wikipedia.org/wiki/Neil_Armstrong" title="Neil Armstrong">Neil Armstrong</a> and <a href="http://en.wikipedia.org/wiki/Buzz_Aldrin" title="Buzz Aldrin">Buzz Aldrin</a>, on the Moon on July 20, 1969, at 20:18 UTC. Armstrong became the first to step onto the lunar surface 6 hours later on July 21 at 02:56 UTC.</p>';
 //      var doc = jsdom.jsdom(original, jsdom.level(3, "core"));
-//      var tokenizer = new Tr8n.Tokenizers.DomTokenizer(doc, {}, {debug_format: "{$0}"});
+//      var tokenizer = new Tr8n.Tokenizers.Dom(doc, {}, {debug_format: "{$0}"});
 //
 //      console.log("");
 //      console.log(original);
@@ -70,7 +70,7 @@ describe('DomTokenizer', function() {
 //      ';
 //
 //      var doc = jsdom.jsdom(original, jsdom.level(3, "core"));
-//      var tokenizer = new Tr8n.Tokenizers.DomTokenizer(doc, {});
+//      var tokenizer = new Tr8n.Tokenizers.Dom(doc, {});
 //
 //      console.log("");
 //      console.log(original);
@@ -93,7 +93,7 @@ describe('DomTokenizer', function() {
 //      ';
 //
 //      var doc = jsdom.jsdom(original, jsdom.level(3, "core"));
-//      var tokenizer = new Tr8n.Tokenizers.DomTokenizer(doc, {});
+//      var tokenizer = new Tr8n.Tokenizers.Dom(doc, {});
 //
 //      console.log("");
 //      console.log(original);
@@ -113,7 +113,7 @@ describe('DomTokenizer', function() {
 //      ';
 //
 //      var doc = jsdom.jsdom(original, jsdom.level(3, "core"));
-//      var tokenizer = new Tr8n.Tokenizers.DomTokenizer(doc, {});
+//      var tokenizer = new Tr8n.Tokenizers.Dom(doc, {});
 //
 //      console.log("");
 //      console.log(original);
@@ -132,7 +132,7 @@ describe('DomTokenizer', function() {
       </body>';
 
       var doc = jsdom.jsdom(original, jsdom.level(3, "core"));
-      var tokenizer = new Tr8n.Tokenizers.DomTokenizer(doc, {});
+      var tokenizer = new Tr8n.Tokenizers.Dom(doc, {});
 //      console.log("");
 //      console.log(original);
 //

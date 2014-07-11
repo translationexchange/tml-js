@@ -6,58 +6,58 @@ describe('Tr8n.Tokens.Data', function(){
     it('should correctly create a token', function() {
       var token = new Tr8n.Tokens.Data("{user}");
 
-      assert.deepEqual("{user}", token.fullName);
-      assert.deepEqual("user", token.shortName);
-      assert.deepEqual([], token.contextKeys);
-      assert.deepEqual([], token.caseKeys);
+      assert.deepEqual("{user}", token.full_name);
+      assert.deepEqual("user", token.short_name);
+      assert.deepEqual([], token.context_keys);
+      assert.deepEqual([], token.case_keys);
 
       token = new Tr8n.Tokens.Data("{ user }");
-      assert.deepEqual("{ user }", token.fullName);
-      assert.deepEqual("user", token.shortName);
-      assert.deepEqual([], token.contextKeys);
-      assert.deepEqual([], token.caseKeys);
+      assert.deepEqual("{ user }", token.full_name);
+      assert.deepEqual("user", token.short_name);
+      assert.deepEqual([], token.context_keys);
+      assert.deepEqual([], token.case_keys);
 
       token = new Tr8n.Tokens.Data("{user:gender}");
-      assert.deepEqual("{user:gender}", token.fullName);
-      assert.deepEqual("user", token.shortName);
-      assert.deepEqual(["gender"], token.contextKeys);
-      assert.deepEqual([], token.caseKeys);
+      assert.deepEqual("{user:gender}", token.full_name);
+      assert.deepEqual("user", token.short_name);
+      assert.deepEqual(["gender"], token.context_keys);
+      assert.deepEqual([], token.case_keys);
 
       token = new Tr8n.Tokens.Data("{user : gender}");
-      assert.deepEqual("{user : gender}", token.fullName);
-      assert.deepEqual("user", token.shortName);
-      assert.deepEqual(["gender"], token.contextKeys);
-      assert.deepEqual([], token.caseKeys);
+      assert.deepEqual("{user : gender}", token.full_name);
+      assert.deepEqual("user", token.short_name);
+      assert.deepEqual(["gender"], token.context_keys);
+      assert.deepEqual([], token.case_keys);
 
       token = new Tr8n.Tokens.Data("{user :: gen}");
-      assert.deepEqual("{user :: gen}", token.fullName);
-      assert.deepEqual("user", token.shortName);
-      assert.deepEqual([], token.contextKeys);
-      assert.deepEqual(["gen"], token.caseKeys);
+      assert.deepEqual("{user :: gen}", token.full_name);
+      assert.deepEqual("user", token.short_name);
+      assert.deepEqual([], token.context_keys);
+      assert.deepEqual(["gen"], token.case_keys);
 
       token = new Tr8n.Tokens.Data("{user::gen}");
-      assert.deepEqual("{user::gen}", token.fullName);
-      assert.deepEqual("user", token.shortName);
-      assert.deepEqual([], token.contextKeys);
-      assert.deepEqual(["gen"], token.caseKeys);
+      assert.deepEqual("{user::gen}", token.full_name);
+      assert.deepEqual("user", token.short_name);
+      assert.deepEqual([], token.context_keys);
+      assert.deepEqual(["gen"], token.case_keys);
 
       token = new Tr8n.Tokens.Data("{user:gender::gen}");
-      assert.deepEqual("{user:gender::gen}", token.fullName);
-      assert.deepEqual("user", token.shortName);
-      assert.deepEqual(["gender"], token.contextKeys);
-      assert.deepEqual(["gen"], token.caseKeys);
+      assert.deepEqual("{user:gender::gen}", token.full_name);
+      assert.deepEqual("user", token.short_name);
+      assert.deepEqual(["gender"], token.context_keys);
+      assert.deepEqual(["gen"], token.case_keys);
 
       token = new Tr8n.Tokens.Data("{count:number::ordinal::ord}");
-      assert.deepEqual("{count:number::ordinal::ord}", token.fullName);
-      assert.deepEqual("count", token.shortName);
-      assert.deepEqual(["number"], token.contextKeys);
-      assert.deepEqual(["ordinal", "ord"], token.caseKeys);
+      assert.deepEqual("{count:number::ordinal::ord}", token.full_name);
+      assert.deepEqual("count", token.short_name);
+      assert.deepEqual(["number"], token.context_keys);
+      assert.deepEqual(["ordinal", "ord"], token.case_keys);
 
       token = new Tr8n.Tokens.Data("{count : number ::ordinal :: ord}");
-      assert.deepEqual("{count : number ::ordinal :: ord}", token.fullName);
-      assert.deepEqual("count", token.shortName);
-      assert.deepEqual(["number"], token.contextKeys);
-      assert.deepEqual(["ordinal", "ord"], token.caseKeys);
+      assert.deepEqual("{count : number ::ordinal :: ord}", token.full_name);
+      assert.deepEqual("count", token.short_name);
+      assert.deepEqual(["number"], token.context_keys);
+      assert.deepEqual(["ordinal", "ord"], token.case_keys);
 
     });
   });
@@ -114,9 +114,9 @@ describe('Tr8n.Tokens.Data', function(){
 //
 //  $this->assertEquals("{user}", $token->tokenValue(array("user" => array($user, "@name1")), $language));
 //
-//  $this->assertEquals("Michael", $token->tokenValue(array("user" => array($user, "@@fullName")), $language));
+//  $this->assertEquals("Michael", $token->tokenValue(array("user" => array($user, "@@full_name")), $language));
 //
-//  $this->assertEquals("{user}", $token->tokenValue(array("user" => array($user, "@@fullName1")), $language));
+//  $this->assertEquals("{user}", $token->tokenValue(array("user" => array($user, "@@full_name1")), $language));
 //
 //  $this->assertEquals("{user}", $token->tokenValue(array("user" => array()), $language));
 //
@@ -126,9 +126,9 @@ describe('Tr8n.Tokens.Data', function(){
 //
 //  $this->assertEquals("{user}", $token->tokenValue(array("user" => array("object" => $user, "attribute" => "name1")), $language));
 //
-//  $this->assertEquals("Michael", $token->tokenValue(array("user" => array("object" => $user, "method" => "fullName")), $language));
+//  $this->assertEquals("Michael", $token->tokenValue(array("user" => array("object" => $user, "method" => "full_name")), $language));
 //
-//  $this->assertEquals("{user}", $token->tokenValue(array("user" => array("object" => $user, "method" => "fullName1")), $language));
+//  $this->assertEquals("{user}", $token->tokenValue(array("user" => array("object" => $user, "method" => "full_name1")), $language));
 //
 //  $this->assertEquals("Peter", $token->tokenValue(array("user" => array("object" => array("name" => "Peter"), "attribute" => "name")), $language));
 //
@@ -150,13 +150,13 @@ describe('Tr8n.Tokens.Data', function(){
 //
 //  $this->assertEquals("&lt;b&gt;Michael&lt;/b&gt;", $token->tokenValue(array("user" => array($user, "@name")), $language));
 //
-//  $this->assertEquals("&lt;b&gt;Michael&lt;/b&gt;", $token->tokenValue(array("user" => array($user, "@@fullName")), $language));
+//  $this->assertEquals("&lt;b&gt;Michael&lt;/b&gt;", $token->tokenValue(array("user" => array($user, "@@full_name")), $language));
 //
 //  $this->assertEquals("<b>Tom</b>", $token->tokenValue(array("user" => array("object" => $user, "value" => "<b>Tom</b>")), $language));
 //
 //  $this->assertEquals("&lt;b&gt;Michael&lt;/b&gt;", $token->tokenValue(array("user" => array("object" => $user, "attribute" => "name")), $language));
 //
-//  $this->assertEquals("&lt;b&gt;Michael&lt;/b&gt;", $token->tokenValue(array("user" => array("object" => $user, "method" => "fullName")), $language));
+//  $this->assertEquals("&lt;b&gt;Michael&lt;/b&gt;", $token->tokenValue(array("user" => array("object" => $user, "method" => "full_name")), $language));
 //
 //  $this->assertEquals("&lt;b&gt;Michael&lt;/b&gt;", $token->tokenValue(array("user" => array("object" => array("name" => "<b>Michael</b>"), "attribute" => "name")), $language));
 //}
@@ -181,9 +181,9 @@ describe('Tr8n.Tokens.Data', function(){
 //
 //  $this->assertEquals($user, DataToken::tokenObject(array("user" => array($user, "@name1")), "user"));
 //
-//  $this->assertEquals($user, DataToken::tokenObject(array("user" => array($user, "@@fullName")), "user"));
+//  $this->assertEquals($user, DataToken::tokenObject(array("user" => array($user, "@@full_name")), "user"));
 //
-//  $this->assertEquals($user, DataToken::tokenObject(array("user" => array($user, "@@fullName1")), "user"));
+//  $this->assertEquals($user, DataToken::tokenObject(array("user" => array($user, "@@full_name1")), "user"));
 //
 //  $this->assertEquals($user, DataToken::tokenObject(array("user" => array($user, function($obj) { return $obj->name; } )), "user"));
 //
@@ -197,9 +197,9 @@ describe('Tr8n.Tokens.Data', function(){
 //
 //  $this->assertEquals($user, DataToken::tokenObject(array("user" => array("object" => $user, "attribute" => "name1")), "user"));
 //
-//  $this->assertEquals($user, DataToken::tokenObject(array("user" => array("object" => $user, "method" => "fullName")), "user"));
+//  $this->assertEquals($user, DataToken::tokenObject(array("user" => array("object" => $user, "method" => "full_name")), "user"));
 //
-//  $this->assertEquals($user, DataToken::tokenObject(array("user" => array("object" => $user, "method" => "fullName1")), "user"));
+//  $this->assertEquals($user, DataToken::tokenObject(array("user" => array("object" => $user, "method" => "full_name1")), "user"));
 //
 //  $this->assertEquals(array("name" => "Peter"), DataToken::tokenObject(array("user" => array("object" => array("name" => "Peter"), "attribute" => "name")), "user"));
 //
@@ -229,9 +229,9 @@ describe('Tr8n.Tokens.Data', function(){
 //
 //  $this->assertEquals("Hello {user}", $token->substitute("Hello {user}", array("user" => array($user, "@name1")), $language));
 //
-//  $this->assertEquals("Hello Michael", $token->substitute("Hello {user}", array("user" => array($user, "@@fullName")), $language));
+//  $this->assertEquals("Hello Michael", $token->substitute("Hello {user}", array("user" => array($user, "@@full_name")), $language));
 //
-//  $this->assertEquals("Hello {user}", $token->substitute("Hello {user}", array("user" => array($user, "@@fullName1")), $language));
+//  $this->assertEquals("Hello {user}", $token->substitute("Hello {user}", array("user" => array($user, "@@full_name1")), $language));
 //
 //  $this->assertEquals("Hello {user}", $token->substitute("Hello {user}", array("user" => array()), $language));
 //
@@ -241,9 +241,9 @@ describe('Tr8n.Tokens.Data', function(){
 //
 //  $this->assertEquals("Hello {user}", $token->substitute("Hello {user}", array("user" => array("object" => $user, "attribute" => "name1")), $language));
 //
-//  $this->assertEquals("Hello Michael", $token->substitute("Hello {user}", array("user" => array("object" => $user, "method" => "fullName")), $language));
+//  $this->assertEquals("Hello Michael", $token->substitute("Hello {user}", array("user" => array("object" => $user, "method" => "full_name")), $language));
 //
-//  $this->assertEquals("Hello {user}", $token->substitute("Hello {user}", array("user" => array("object" => $user, "method" => "fullName1")), $language));
+//  $this->assertEquals("Hello {user}", $token->substitute("Hello {user}", array("user" => array("object" => $user, "method" => "full_name1")), $language));
 //
 //  $this->assertEquals("Hello Peter", $token->substitute("Hello {user}", array("user" => array("object" => array("name" => "Peter"), "attribute" => "name")), $language));
 //
@@ -263,9 +263,9 @@ describe('Tr8n.Tokens.Data', function(){
 //  $this->assertEquals("{user}", $token->tokenValueFromArrayParam(array(), $language));
 //  $this->assertEquals("Michael", $token->tokenValueFromArrayParam(array($user), $language));
 //
-//  $this->assertEquals("{user}", $token->tokenValueFromArrayParam(array(array("name" => "Mike"), "@@fullName"), $language));
-//  $this->assertEquals("{user}", $token->tokenValueFromArrayParam(array($user, "@@fullName1"), $language));
-//  $this->assertEquals("Michael", $token->tokenValueFromArrayParam(array($user, "@@fullName"), $language));
+//  $this->assertEquals("{user}", $token->tokenValueFromArrayParam(array(array("name" => "Mike"), "@@full_name"), $language));
+//  $this->assertEquals("{user}", $token->tokenValueFromArrayParam(array($user, "@@full_name1"), $language));
+//  $this->assertEquals("Michael", $token->tokenValueFromArrayParam(array($user, "@@full_name"), $language));
 //
 //  $this->assertEquals("{user}", $token->tokenValueFromArrayParam(array(array("name" => "Mike"), "@name1"), $language));
 //  $this->assertEquals("Mike", $token->tokenValueFromArrayParam(array(array("name" => "Mike"), "@name"), $language));
@@ -300,9 +300,9 @@ describe('Tr8n.Tokens.Data', function(){
 //  $this->assertEquals("Michael", $token->tokenValueFromHashParam(array("object" => $user, "property" => "name"), $language));
 //  $this->assertEquals("Michael", $token->tokenValueFromHashParam(array("object" => $user, "attribute" => "name"), $language));
 //
-//  $this->assertEquals("Michael", $token->tokenValueFromHashParam(array("object" => $user, "method" => "fullName"), $language));
-//  $this->assertEquals("{user}", $token->tokenValueFromHashParam(array("object" => $user, "method" => "fullName1"), $language));
-//  $this->assertEquals("{user}", $token->tokenValueFromHashParam(array("object" => $user, "method1" => "fullName"), $language));
+//  $this->assertEquals("Michael", $token->tokenValueFromHashParam(array("object" => $user, "method" => "full_name"), $language));
+//  $this->assertEquals("{user}", $token->tokenValueFromHashParam(array("object" => $user, "method" => "full_name1"), $language));
+//  $this->assertEquals("{user}", $token->tokenValueFromHashParam(array("object" => $user, "method1" => "full_name"), $language));
 //}
 //
 //
@@ -327,7 +327,7 @@ describe('Tr8n.Tokens.Data', function(){
 //  $this->assertEquals("Michael", $token->tokenValuesFromArray(array(array($michael), "@name"), $language, $options));
 //  $this->assertEquals("Michael and Anna", $token->tokenValuesFromArray(array(array($michael, $anna), "@name"), $language, $options));
 //  $this->assertEquals("Michael, Anna and Tom", $token->tokenValuesFromArray(array(array($michael, $anna, $tom), "@name"), $language, $options));
-//  $this->assertEquals("Michael and Anna", $token->tokenValuesFromArray(array(array($michael, $anna), "@@fullName"), $language, $options));
+//  $this->assertEquals("Michael and Anna", $token->tokenValuesFromArray(array(array($michael, $anna), "@@full_name"), $language, $options));
 //
 //  $this->assertEquals("Michael and Anna", $token->tokenValuesFromArray(array(array($michael, $anna), function($object) {
 //    return $object->name;

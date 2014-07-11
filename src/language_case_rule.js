@@ -30,29 +30,29 @@
  */
 
 Tr8n.LanguageCaseRule = function(attrs) {
-  this.attrs = attrs;
+  Tr8n.Utils.extend(this, attrs);
 };
 
-Tr8n.LanguageCaseRule.conditionsExpression = function() {
-  if (!this.attrs.conditions_expression)
-    this.attrs.conditions_expression = (new Tr8n.RulesEngine.Parser(this.attrs.conditions)).parse();
-  return this.attrs.conditions_expression;
+Tr8n.LanguageCaseRule.getConditionsExpression = function() {
+  if (!this.conditions_expression)
+    this.conditions_expression = (new Tr8n.RulesEngine.Parser(this.conditions)).parse();
+  return this.conditions_expression;
 };
 
-Tr8n.LanguageCaseRule.operationsExpression = function() {
-  if (!this.attrs.operations_expression)
-    this.attrs.operations_expression = (new Tr8n.RulesEngine.Parser(this.attrs.operations)).parse();
-  return this.attrs.operations_expression;
+Tr8n.LanguageCaseRule.getOperationsExpression = function() {
+  if (!this.operations_expression)
+    this.operations_expression = (new Tr8n.RulesEngine.Parser(this.operations)).parse();
+  return this.operations_expression;
 };
 
-Tr8n.LanguageCaseRule.genderVariables = function(object) {
+Tr8n.LanguageCaseRule.getGenderVariables = function(object) {
   if (object == null)
     return {gender: 'unknown'};
 
-  if (this.attrs.conditions.indexOf("@gender") == -1)
+  if (this.conditions.indexOf("@gender") == -1)
     return {};
 
-  var context = this.languageCase.language.contextByKeyword("gender");
+  var context = this.language_case.language.getContextByKeyword("gender");
 
   if (context == null)
     return {gender: 'unknown'};
@@ -65,9 +65,9 @@ Tr8n.LanguageCaseRule.evaluate = function(value, object) {
     return false;
 
   var evaluator = new Tr8n.RulesEngine.Evaluator();
-  evaluator.setVars(Tr8n.Utils.extend({value: value}, this.genderVariables(object)));
+  evaluator.setVars(Tr8n.Utils.extend({value: value}, this.getGenderVariables(object)));
 
-  return evaluator.evaluate(this.conditionsExpression());
+  return evaluator.evaluate(this.getConditionsExpression());
 };
 
 Tr8n.LanguageCaseRule.apply = function(value) {
@@ -77,7 +77,7 @@ Tr8n.LanguageCaseRule.apply = function(value) {
   var evaluator = new Tr8n.RulesEngine.Evaluator();
   evaluator.setVars({value: value});
 
-  return evaluator.evaluate(this.operationsExpression());
+  return evaluator.evaluate(this.getOperationsExpression());
 };
 
 

@@ -39,7 +39,7 @@ var TOKEN_TYPE_SHORT     = "short";
 var TOKEN_TYPE_LONG      = "long";
 var PLACEHOLDER          = "{$0}";
 
-Tr8n.Tokenizers.DecorationTokenizer = function(label, context, opts) {
+Tr8n.Tokenizers.Decoration = function(label, context, opts) {
   this.label =  "[" + RESERVED_TOKEN + "]" + label + "[/" + RESERVED_TOKEN + "]";
   this.context = context || {};
   this.opts = opts || {};
@@ -48,7 +48,7 @@ Tr8n.Tokenizers.DecorationTokenizer = function(label, context, opts) {
   this.tokenize();
 };
 
-Tr8n.Tokenizers.DecorationTokenizer.prototype.tokenize = function() {
+Tr8n.Tokenizers.Decoration.prototype.tokenize = function() {
   var expression = new RegExp([
     RE_SHORT_TOKEN_START,
     RE_SHORT_TOKEN_END,
@@ -61,18 +61,18 @@ Tr8n.Tokenizers.DecorationTokenizer.prototype.tokenize = function() {
   return this.fragments;
 };
 
-Tr8n.Tokenizers.DecorationTokenizer.prototype.peek = function() {
+Tr8n.Tokenizers.Decoration.prototype.peek = function() {
   if (this.fragments.length == 0) return null;
   return this.fragments[0];
 };
 
-Tr8n.Tokenizers.DecorationTokenizer.prototype.nextFragment = function() {
+Tr8n.Tokenizers.Decoration.prototype.getNextFragment = function() {
   if (this.fragments.length == 0) return null;
   return this.fragments.shift();
 };
 
-Tr8n.Tokenizers.DecorationTokenizer.prototype.parse = function() {
-  var token = this.nextFragment();
+Tr8n.Tokenizers.Decoration.prototype.parse = function() {
+  var token = this.getNextFragment();
   if (token.match(new RegExp(RE_SHORT_TOKEN_START)))
     return this.parseTree(token.replace(/[\[:]/g, ''), TOKEN_TYPE_SHORT);
   if (token.match(new RegExp(RE_LONG_TOKEN_START)))
@@ -80,7 +80,7 @@ Tr8n.Tokenizers.DecorationTokenizer.prototype.parse = function() {
   return token;
 };
 
-Tr8n.Tokenizers.DecorationTokenizer.prototype.parseTree = function(name, type) {
+Tr8n.Tokenizers.Decoration.prototype.parseTree = function(name, type) {
   var tree = [name];
   if (this.tokens.indexOf(name) == -1 && name != RESERVED_TOKEN)
     this.tokens.push(name);
@@ -101,31 +101,32 @@ Tr8n.Tokenizers.DecorationTokenizer.prototype.parseTree = function(name, type) {
     }
   }
 
-  this.nextFragment();
+  this.getNextFragment();
   return tree;
 };
 
-Tr8n.Tokenizers.DecorationTokenizer.prototype.isTokenAllowed = function(token) {
+Tr8n.Tokenizers.Decoration.prototype.isTokenAllowed = function(token) {
   return (this.opts["allowed_tokens"] == null || this.opts["allowed_tokens"].indexOf(token) != -1);
 };
 
-Tr8n.Tokenizers.DecorationTokenizer.prototype.defaultDecoration = function(token, value) {
-  var defaultDecoration = Tr8n.config.defaultToken(token, "decoration");
-  if (defaultDecoration == null) return value;
+Tr8n.Tokenizers.Decoration.prototype.getDefaultDecoration = function(token, value) {
+  var default_decoration = Tr8n.config.getDefaultToken(token, "decoration");
+  if (default_decoration == null) return value;
 
-  var decorationTokenValues = this.context[token];
-  defaultDecoration = defaultDecoration.replace(PLACEHOLDER, value);
+  var decoration_token_values = this.context[token];
+  default_decoration = default_decoration.replace(PLACEHOLDER, value);
 
-  if (decorationTokenValues instanceof Object) {
-    Object.keys(decorationTokenValues).forEach(function (key) {
-      defaultDecoration = defaultDecoration.replace("{$" + key + "}", decorationTokenValues[key]);
-    });
+  if (decoration_token_values instanceof Object) {
+    var keys = Tr8n.Utils.keys(decoration_token_values);
+    for (var i = 0; i < keys.length; i++) {
+      default_decoration = default_decoration.replace("{$" + keys[i] + "}", decoration_token_values[keys[i]]);
+    }
   }
 
-  return defaultDecoration;
+  return default_decoration;
 };
 
-Tr8n.Tokenizers.DecorationTokenizer.prototype.apply = function(token, value) {
+Tr8n.Tokenizers.Decoration.prototype.apply = function(token, value) {
   if (token == RESERVED_TOKEN) return value;
   if (!this.isTokenAllowed(token)) return value;
 
@@ -139,15 +140,15 @@ Tr8n.Tokenizers.DecorationTokenizer.prototype.apply = function(token, value) {
       return method(value);
 
     if (typeof method === 'object')
-      return this.defaultDecoration(token, value);
+      return this.getDefaultDecoration(token, value);
 
     return value;
   }
 
-  return this.defaultDecoration(token, value);
+  return this.getDefaultDecoration(token, value);
 };
 
-Tr8n.Tokenizers.DecorationTokenizer.prototype.evaluate = function(expr) {
+Tr8n.Tokenizers.Decoration.prototype.evaluate = function(expr) {
   if (!(expr instanceof Array)) return expr;
 
   var token = expr[0];
@@ -160,6 +161,6 @@ Tr8n.Tokenizers.DecorationTokenizer.prototype.evaluate = function(expr) {
   return this.apply(token, value.join(''));
 };
 
-Tr8n.Tokenizers.DecorationTokenizer.prototype.substitute = function() {
+Tr8n.Tokenizers.Decoration.prototype.substitute = function(language, options) {
   return this.evaluate(this.parse());
 };

@@ -33,11 +33,13 @@ Tr8n.Configuration = function() {
   this.initDefaultTokens();
   this.initTranslatorOptions();
   this.initContextRules();
-  this.currentLanguage = new Tr8n.Language({});
+  this.enabled = true;
+  this.default_locale = "en-US";
+//  this.api_client_class = Tr8n.Api.Request;
 };
 
 Tr8n.Configuration.prototype.initDefaultTokens = function() {
-  this.defaultTokens = {
+  this.default_tokens = {
       html : {
         data : {
           ndash  :  "&ndash;",       // –
@@ -118,21 +120,21 @@ Tr8n.Configuration.prototype.initDefaultTokens = function() {
 
 };
 
-Tr8n.Configuration.prototype.defaultToken = function(token, type, format) {
+Tr8n.Configuration.prototype.getDefaultToken = function(token, type, format) {
   type = type || "data"; format = format || "html";
-  if (typeof this.defaultTokens[format][type][token] === 'undefined') return null;
-  return new String(this.defaultTokens[format][type][token]);
+  if (typeof this.default_tokens[format][type][token] === 'undefined') return null;
+  return new String(this.default_tokens[format][type][token]);
 };
 
 Tr8n.Configuration.prototype.setDefaultToken = function(token, value, type, format) {
   type = type || "data"; format = format || "html";
-  this.defaultTokens[format] = this.defaultTokens[format] || {};
-  this.defaultTokens[format][type] = this.defaultTokens[format][type] || {};
-  this.defaultTokens[format][type][token] = value;
+  this.default_tokens[format] = this.default_tokens[format] || {};
+  this.default_tokens[format][type] = this.default_tokens[format][type] || {};
+  this.default_tokens[format][type][token] = value;
 };
 
 Tr8n.Configuration.prototype.initTranslatorOptions = function() {
-  this.translatorOptions = {
+  this.translator_options = {
     "debug": true,
     "debug_format_html": "<span style='font-size:20px;color:red;'>{<\/span> {$0} <span style='font-size:20px;color:red;'>}<\/span>",
     "debug_format": "{{{{$0}}}}",
@@ -162,7 +164,7 @@ Tr8n.Configuration.prototype.initTranslatorOptions = function() {
 };
 
 Tr8n.Configuration.prototype.initContextRules = function() {
-  this.contextRules = {
+  this.context_rules = {
     number: {
       variables: {}
     },
@@ -189,4 +191,16 @@ Tr8n.Configuration.prototype.initContextRules = function() {
       variables: {}
     }
   };
+};
+
+Tr8n.Configuration.prototype.getContextRules = function(key) {
+  return this.context_rules[key] || {};
+};
+
+Tr8n.Configuration.prototype.isDisabled = function() {
+  return !enabled;
+};
+
+Tr8n.Configuration.prototype.isEnabled = function() {
+  return enabled;
 };

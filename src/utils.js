@@ -80,3 +80,13 @@ Tr8n.Utils.clone = function(obj) {
     temp[key] = Tr8n.Utils.clone(obj[key]);
   return temp;
 };
+
+Tr8n.Utils.keys = function(obj) {
+//  var keys = []; for (k in obj) {keys.push(k)}
+//  return keys;
+  return Object.keys(obj);
+};
+
+Tr8n.Utils.generateKey = function(label, description) {
+  return MD5(label + ";;;" + description);
+};

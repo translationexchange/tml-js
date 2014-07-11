@@ -30,42 +30,41 @@
  */
 
 Tr8n.LanguageContext = function(attrs) {
-  this.attrs = attrs;
+  Tr8n.Utils.extend(this, attrs);
 
-  this.rules = [];
-  if (attrs.rules) {
-    Object.keys(attrs.cases).forEach(function(key) {
-      this.cases.push(new Tr8n.LanguageContextRule(Tr8n.Utils.extend(attrs.rules[key], {languageContext: this})));
-    }.bind(this));
+  this.rules = {};
+  for(var key in Tr8n.Utils.keys(attrs.rules || {})) {
+    rules[key] = new Tr8n.LanguageContext(Tr8n.Utils.extend(attrs.rules[key], {language: this}));
   }
+
 };
 
 Tr8n.LanguageContext.isAppliedToToken = function(token) {
-  return token.match(new RegExp(this.attrs.token_expression)) != null;
+  return token.match(new RegExp(this.token_expression)) != null;
 };
 
-Tr8n.LanguageContext.fallbackRule = function() {
-  if (!this.fallbackRule) {
+Tr8n.LanguageContext.getFallbackRule = function() {
+  if (!this.fallback_rule) {
     Object.keys(this.rules).forEach(function(key) {
       if (this.rules[key].isFallback()) {
-        this.fallbackRule = rule;
+        this.fallback_rule = rule;
       }
     }.bind(this));
   }
-  return this.fallbackRule;
+  return this.fallback_rule;
 };
 
-Tr8n.LanguageContext.vars = function(obj) {
+Tr8n.LanguageContext.getVars = function(obj) {
   var vars = {};
-  var config = Tr8n.config.contextRules[this.attrs.keyword] || {};
+  var config = Tr8n.config.getContextRules(this.keyword);
 
-  this.attrs.variables.forEach(function(key) {
-    if (!config["variables"] || !config["variables"][key]) {
+  this.variables.forEach(function(key) {
+    if (!config.variables || !config.variables[key]) {
       vars[key] = obj;
     } else {
-      var method = config["variables"][key];
+      var method = config.variables[key];
       if (typeof method === "string") {
-        if (obj["object"]) obj = obj["object"];
+        if (obj.object) obj = obj.object;
         vars[key] = obj[method];
       } else if (typeof method === "function") {
         vars[key] = method(obj);
@@ -79,13 +78,13 @@ Tr8n.LanguageContext.vars = function(obj) {
 };
 
 Tr8n.LanguageContext.findMatchingRule = function(obj) {
-  var tokenVars = this.vars(obj);
+  var token_vars = this.getVars(obj);
 
-  for (var key in Object.keys(this.rules)) {
+  for (var key in Tr8n.Utils.keys(this.rules)) {
     var rule = this.rules[key];
-    if (!rule.isFallback() && rule.evaluate(tokenVars))
+    if (!rule.isFallback() && rule.evaluate(token_vars))
         return rule;
   }
 
-  return this.fallbackRule();
+  return this.getFallbackRule();
 };

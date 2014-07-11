@@ -30,46 +30,50 @@
  */
 
 Tr8n.Tokens.Data = function(name, label) {
-  this.fullName = name;
+  this.full_name = name;
   this.label = label;
   this.parseElements();
 };
 
 Tr8n.Tokens.Data.prototype.parseElements = function() {
-  var nameWithoutParens = this.fullName.substring(1, this.fullName.length-1);
-  var nameWithoutCaseKeys = nameWithoutParens.split('::')[0].trim();
+  var name_without_parens = this.full_name.substring(1, this.full_name.length-1);
+  var name_without_case_keys = name_without_parens.split('::')[0].trim();
 
-  this.shortName = nameWithoutParens.split(':')[0].trim();
-  this.caseKeys = [];
-  (nameWithoutParens.match(/(::\s*\w+)/g) || []).forEach(function(key) {
-    this.caseKeys.push(key.replace(/[:]/g, "").trim());
-  }.bind(this));
-  this.contextKeys = [];
-  (nameWithoutCaseKeys.match(/(:\s*\w+)/g) || []).forEach(function(key) {
-    this.contextKeys.push(key.replace(/[:]/g, "").trim());
-  }.bind(this));
+  this.short_name = name_without_parens.split(':')[0].trim();
+  this.case_keys = [];
+
+  var keys = name_without_parens.match(/(::\s*\w+)/g) || [];
+  for (var i=0; i<keys.length; i++) {
+    this.case_keys.push(keys[i].replace(/[:]/g, "").trim());
+  }
+
+  this.context_keys = [];
+  keys = name_without_case_keys.match(/(:\s*\w+)/g) || [];
+  for (i=0; i<keys.length; i++) {
+    this.context_keys.push(keys[i].replace(/[:]/g, "").trim());
+  }
 };
 
-Tr8n.Tokens.Data.prototype.contextForLanguage = function(language, opts) {
-  if (this.contextKeys.length > 0)
-    return language.contextByKeyword(this.contextKeys[0]);
+Tr8n.Tokens.Data.prototype.getContextForLanguage = function(language) {
+  if (this.context_keys.length > 0)
+    return language.getContextByKeyword(this.context_keys[0]);
 
-  return language.contextByTokenName(this.shortName);
+  return language.getContextByTokenName(this.short_name);
 };
 
-Tr8n.Tokens.Data.prototype.tokenObject = function(tokenValues, tokenName) {
-  if (tokenValues == null) return null;
+Tr8n.Tokens.Data.prototype.tokenObject = function(tokens, name) {
+  if (tokens == null) return null;
 
-  var tokenObject = tokenValues[tokenName];
-  if (typeof tokeObject === 'array')
-    return tokenObject[0];
+  var object = tokens[name];
+  if (typeof object === 'array')
+    return object[0];
 
-  return tokenObject.object || tokenObject;
+  return object.object || object;
 };
 
 Tr8n.Tokens.Data.prototype.error = function(msg) {
-  console.log(this.fullName + " in \"" + this.label + "\" : " + msg);
-  return this.fullName;
+  console.log(this.full_name + " in \"" + this.label + "\" : " + msg);
+  return this.full_name;
 };
 
 /**
@@ -84,7 +88,7 @@ Tr8n.Tokens.Data.prototype.error = function(msg) {
  *
  */
 
-Tr8n.Tokens.Data.prototype.tokenValueFromArrayParam = function(arr, language, options) {
+Tr8n.Tokens.Data.prototype.getTokenValueFromArrayParam = function(arr, language, options) {
   options = options || {};
   if (arr.lenght == 0)
     return this.error("Invalid number of params of an array");
@@ -93,7 +97,7 @@ Tr8n.Tokens.Data.prototype.tokenValueFromArrayParam = function(arr, language, op
   var method = arr.lenght > 1 ? arr[1] : null;
 
   if (typeof object === "array")
-    return this.tokenValueFromArray(tokenValues, language, options);
+    return this.getTokenValueFromArray(arr, language, options);
 
   if (method == null)
     return this.sanitize("" + object, object, language, Tr8n.Utils.extend(options, {safe: false}));
@@ -104,7 +108,6 @@ Tr8n.Tokens.Data.prototype.tokenValueFromArrayParam = function(arr, language, op
   if (method.match(/^@/))
     return this.sanitize(object[method], object, language, Tr8n.Utils.extend(options, {safe: false}));
 
-  // TODO: add other methods if needed
   return this.sanitize(method, object, language, Tr8n.Utils.extend(options, {safe: true}));
 };
 
@@ -120,20 +123,17 @@ Tr8n.Tokens.Data.prototype.tokenValueFromArrayParam = function(arr, language, op
  *
  */
 
-Tr8n.Tokens.Data.prototype.tokenValueFromHashParam = function(hash, language, options) {
+Tr8n.Tokens.Data.prototype.getTokenValueFromHashParam = function(hash, language, options) {
   options = options || {};
   var value = hash.value;
   var object = hash.object;
 
   if (value) return this.sanitize(value, object || hash, language, Tr8n.Utils.extend(options, {safe: true}));
-
-  if (object == null || typeof object === "undefined")
-    return this.error("No object or value are provided in the hash");
+  if (!object) return this.error("No object or value are provided in the hash");
 
   var attr = hash.attribute;
 
-  if (attr == null || typeof attr === "undefined")
-    return this.error("Missing value for hash token");
+  if (!attr) return this.error("Missing value for hash token");
 
   return this.sanitize(object[attr], object, language, Tr8n.Utils.extend(options, {safe: false}));
 };
@@ -169,8 +169,8 @@ Tr8n.Tokens.Data.prototype.tokenValueFromHashParam = function(hash, language, op
  *
  */
 
-Tr8n.Tokens.Data.prototype.tokenValueFromArray = function(params, language, options) {
-  var listOptions = {
+Tr8n.Tokens.Data.prototype.getTokenValueFromArray = function(params, language, options) {
+  var list_options = {
     description: "List joiner",
     limit: 4,
     separator: ", ",
@@ -184,10 +184,10 @@ Tr8n.Tokens.Data.prototype.tokenValueFromArray = function(params, language, opti
   var method = (params.length > 1 ? params[1] : null);
 
   if (params.length > 2)
-    listOptions = Tr8n.Utils.merge(listOptions, params[2]);
+    list_options = Tr8n.Utils.merge(list_options, params[2]);
 
   if (options["skip_decorations"])
-    listOptions.expandable = false;
+    list_options.expandable = false;
 
   var values = [];
   for (var obj in objects) {
@@ -224,49 +224,49 @@ Tr8n.Tokens.Data.prototype.tokenValueFromArray = function(params, language, opti
   if (values.lenght == 1)
     return values[0];
 
-  if (!listOptions.joiner || listOptions.joiner == "")
-    return values.join(listOptions.separator);
+  if (!list_options.joiner || list_options.joiner == "")
+    return values.join(list_options.separator);
 
-  var joiner = language.translate(listOptions.joiner, listOptions.description, {}, options);
+  var joiner = language.translate(list_options.joiner, list_options.description, {}, options);
 
-  if (values.length <= listOptions.limit) {
+  if (values.length <= list_options.limit) {
     var last = values.pop();
-    return values.join(listOptions.separator) + " " + joiner + " " + last;
+    return values.join(list_options.separator) + " " + joiner + " " + last;
   }
 
-  var displayedValues = values.slice(0, listOptions.limit);
-  var remainingValues = values.slice(listOptions.limit);
+  var displayed_values = values.slice(0, list_options.limit);
+  var remaining_values = values.slice(list_options.limit);
 
-  var result = displayedValues.join(listOptions.separator);
-  var otherValues = language.translate("{count||other}", listOptions.description, {count: remainingValues.length}, options);
+  var result = displayed_values.join(list_options.separator);
+  var other_values = language.translate("{count||other}", list_options.description, {count: remaining_values.length}, options);
 
-  if (listOptions.expandable) {
+  if (list_options.expandable) {
     result = result + " " + joiner + " ";
-    if (listOptions.remainder && typeof listOptions.remainder === "function")
-      return result + listOptions.remainder(remainingValues);
-    return result + otherValues;
+    if (list_options.remainder && typeof list_options.remainder === "function")
+      return result + list_options.remainder(remaining_values);
+    return result + other_values;
   }
 
-  var key = listOptions.key ? listOptions.key : Tr8n.Utils.generateKey(this.label, values.join(","));
+  var key = list_options.key ? list_options.key : Tr8n.Utils.generateKey(this.label, values.join(","));
 
   result = result + '<span id="tr8n_other_link_' + key + '"> ' + joiner + ' ';
   result = result + '<a href="#" class="tr8n_other_list_link" onClick="' + "document.getElementById('tr8n_other_link_key').style.display='none'; document.getElementById('tr8n_other_elements_key').style.display='inline'; return false;" + '">';
 
-  if (listOptions.remainder && typeof listOptions.remainder === "function")
-    result = result + listOptions.remainder(remainingValues);
+  if (list_options.remainder && typeof list_options.remainder === "function")
+    result = result + list_options.remainder(remaining_values);
   else
-    result = result + otherValues;
+    result = result + other_values;
 
   result = result + "</a></span>";
 
-  result = result + '<span id="tr8n_other_elements_' + key + '" style="display:none">' + listOptions.separator;
-  var lastRemaining = remainingValues.pop();
-  result = result + remainingValues.join(listOptions.separator);
-  result = result + " " + joiner + " " + lastRemaining;
+  result = result + '<span id="tr8n_other_elements_' + key + '" style="display:none">' + list_options.separator;
+  var last_remaining = remaining_values.pop();
+  result = result + remaining_values.join(list_options.separator);
+  result = result + " " + joiner + " " + last_remaining;
 
-  if (listOptions.collapsable) {
+  if (list_options.collapsable) {
     result = result + ' <a href="#" class="tr8n_other_less_link" style="font-size:smaller;white-space:nowrap" onClick="' + "document.getElementById('tr8n_other_link_key').style.display='inline'; document.getElementById('tr8n_other_elements_key').style.display='none'; return false;" + '">';
-    result = result + language.translate(listOptions.less, listOptions["description"], {}, options);
+    result = result + language.translate(list_options.less, list_options["description"], {}, options);
     result = result + "</a>";
   }
 
@@ -274,55 +274,53 @@ Tr8n.Tokens.Data.prototype.tokenValueFromArray = function(params, language, opti
   return result;
 };
 
-Tr8n.Tokens.Data.prototype.tokenValue = function(tokenValues, language, options) {
+Tr8n.Tokens.Data.prototype.getTokenValue = function(tokens, language, options) {
   options = options || {};
   var object = null;
 
-  if (tokenValues[this.shortName])
-    object = tokenValues[this.shortName];
+  if (tokens[this.short_name])
+    object = tokens[this.short_name];
   else
-    object = Tr8n.config.defaultToken(this.shortName);
+    object = Tr8n.config.getDefaultToken(this.short_name);
 
   if (!object)
     return this.error("Missing token value");
 
   if (typeof object === "array") {
-    return this.tokenValueFromArrayParam(object, language, options);
+    return this.getTokenValueFromArrayParam(object, language, options);
   }
 
   if (typeof object === "object") {
-    return this.tokenValueFromHashParam(object, language, options);
+    return this.getTokenValueFromHashParam(object, language, options);
   }
 
   return this.sanitize("" + object, object, language, Tr8n.Utils.extend(options, {safe: false}));
 };
 
 Tr8n.Tokens.Data.prototype.applyCase = function(key, value, object, language, options) {
-  var lcase = language.languageCase(key);
+  var lcase = language.getLanguageCaseByKeyword(key);
   if (!lcase) return value;
   return lcase.apply(value, object, options);
 };
 
 Tr8n.Tokens.Data.prototype.sanitize = function(value, object, language, options) {
-  value = "" . value;
+  value = "" + value;
 
   if (!options.safe) {
     // TODO: escape special chars
-    value = htmlspecialchars(value);
+    value = escape(value);
   }
 
-  if (this.caseKeys.length > 0) {
-    var self = this;
-    this.caseKeys.forEach(function(lcase) {
-      value = self.applyCase(lcase, value, object, language, options);
-    });
+  if (this.case_keys.length > 0) {
+    for (var key in this.case_keys) {
+      value = this.applyCase(key, value, object, language, options);
+    }
   }
 
   return value;
 };
 
-Tr8n.Tokens.Data.prototype.substitute = function(label, tokenValues, language, options) {
-  var tokenValue = this.tokenValue(tokenValues, language, options);
-  return label.replace(this.fullName, tokenValue);
+Tr8n.Tokens.Data.prototype.substitute = function(label, tokens, language, options) {
+  return label.replace(this.full_name, this.getTokenValue(tokens, language, options));
 };
 

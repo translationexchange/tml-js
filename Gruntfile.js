@@ -26,7 +26,7 @@ module.exports = function(grunt) {
       },
       dist: {
         src: [
-          'vendor/*.js',
+          'vendor/*.js', 'src/api/*.js',
           'src/namespace.js', 'src/utils.js', 'src/configuration.js',
           'src/tokens/data.js', 'src/tokens/method.js', 'src/tokens/piped.js',
           'src/rules_engine/*.js', 'src/tokenizers/**/*.js', 'src/decorators/*.js',

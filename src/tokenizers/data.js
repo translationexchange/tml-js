@@ -29,14 +29,14 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Tr8n.Tokenizers.DataTokenizer = function(label, context, options) {
+Tr8n.Tokenizers.Data = function(label, context, options) {
   this.label = label;
   this.context = context || {};
   this.options = options || {};
-  this.tokens = [];
+  this.tokenize();
 };
 
-Tr8n.Tokenizers.DataTokenizer.prototype.supportedTokens = function() {
+Tr8n.Tokenizers.Data.prototype.supportedTokens = function() {
   return [
     [/(\{[^_:][\w]*(:[\w]+)*(::[\w]+)*\})/, Tr8n.Tokens.Data],
     [/(\{[^_:.][\w]*(\.[\w]+)(:[\w]+)*(::[\w]+)*\})/, Tr8n.Tokens.Method],
@@ -44,31 +44,28 @@ Tr8n.Tokenizers.DataTokenizer.prototype.supportedTokens = function() {
   ];
 };
 
-Tr8n.Tokenizers.DataTokenizer.prototype.tokenize = function() {
-  var self = this;
-  self.tokens = [];
-  self.supportedTokens().forEach(function(tokenInfo) {
-    var matches = self.label.match(tokensInfo[0]);
-    if (matches) {
-      Tr8n.Utils.unique(matches).forEach(function(match) {
-        self.tokens.push(new tokenInfo[1](self.label, match));
-      });
+Tr8n.Tokenizers.Data.prototype.tokenize = function() {
+  this.tokens = [];
+  for (var tokenInfo in this.supportedTokens()) {
+    var matches = this.label.match(tokenInfo[0]) || [];
+    for (var i=0; i<matches.length; i++) {
+        this.tokens.push(new tokenInfo[1](matches[i], this.label));
     }
-  });
+  }
 };
 
-Tr8n.Tokenizers.DataTokenizer.prototype.isTokenAllowed = function(token) {
-  if (this.options["allowed_tokens"] == null) return true;
-  return (this.options["allowed_tokens"].indexOf(token.name) != -1);
+Tr8n.Tokenizers.Data.prototype.isTokenAllowed = function(token) {
+  if (this.options.allowed_tokens) return true;
+  return (this.options.allowed_tokens.indexOf(token.name) != -1);
 };
 
-Tr8n.Tokenizers.DataTokenizer.prototype.substitute = function(language, options) {
+Tr8n.Tokenizers.Data.prototype.substitute = function(language, options) {
   var label = this.label;
-  var self = this;
-  self.tokens.forEach(function(token) {
-    if (self.isTokenAllowed(token)) {
-      label = token.substitute(label, self.context, language, options);
+  for (var i=0; i<this.tokens.length; i++) {
+    var token = this.tokens[i];
+    if (this.isTokenAllowed(token)) {
+      label = token.substitute(label, this.context, language, options);
     }
-  });
+  }
   return label;
 };

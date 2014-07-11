@@ -46,9 +46,10 @@ program.version('0.1.1')
 //}
 
 Tr8n.config = new Tr8n.Configuration();
+
 fs.readFile("./../config/languages/en-US.json", function (err, data) {
   if (err) throw err;
-  Tr8n.config.currentLanguage = new Tr8n.Language(data);
+  Tr8n.config.currentLanguage = new Tr8n.Language(JSON.parse(data));
 });
 
 // Cache adapters

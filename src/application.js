@@ -30,9 +30,28 @@
  */
 
 Tr8n.Application = function(attrs) {
-  this.attrs = attrs;
+  Tr8n.Utils.extend(this, attrs);
+
+  this.languages = [];
+  for(var lang in (attrs.languages || [])) {
+    this.languages.push(new Tr8n.Language(Tr8n.Utils.extend(lang, {application: this})));
+  }
+
+  this.languages_by_locale = {};
 };
 
-Tr8n.Application.prototype.language = function(locale) {
-  return null;
+Tr8n.Application.prototype.getApiClient = function() {
+  if (!this.api_client)
+    this.api_client = new Tr8n.config.api_client_class(this);
+  return this.api_client;
 };
+
+Tr8n.Application.prototype.addLanguage = function(language) {
+  language.application = this;
+  this.languages_by_locale[language.attrs.locale] = language;
+};
+
+Tr8n.Application.prototype.getLanguage = function(locale) {
+  return this.languages_by_locale[locale || Tr8n.config.default_locale];
+};
+

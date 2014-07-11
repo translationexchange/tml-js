@@ -30,23 +30,42 @@
  */
 
 Tr8n.Language = function(attrs) {
-  this.attrs = attrs;
+  Tr8n.Utils.extend(this, attrs);
 
-  this.contexts = [];
-  if (attrs.contexts) {
-    Object.keys(attrs.contexts).forEach(function(key) {
-      this.contexts.push(new Tr8n.LanguageContext(Tr8n.Utils.extend(attrs.contexts[key], {language: this})));
-    }.bind(this));
+  this.contexts = {};
+  for(var key in Tr8n.Utils.keys(attrs.contexts || {})) {
+    this.contexts[key] = new Tr8n.LanguageContext(Tr8n.Utils.extend(attrs.contexts[key], {language: this}));
   }
 
-  this.cases = [];
-  if (attrs.cases) {
-    Object.keys(attrs.cases).forEach(function(key) {
-      this.cases.push(new Tr8n.LanguageCase(Tr8n.Utils.extend(attrs.cases[key], {language: this})));
-    }.bind(this));
+  this.cases = {};
+  for(key in Tr8n.Utils.keys(attrs.cases || {})) {
+    this.cases[key] = new Tr8n.LanguageContext(Tr8n.Utils.extend(attrs.cases[key], {language: this}));
   }
+};
+
+Tr8n.Language.prototype.getContextByKeyword = function(key) {
+  return this.contexts[key];
+};
+
+Tr8n.Language.prototype.getContextByTokenName = function(token_name) {
+  for(var key in this.contexts) {
+    if (this.contexts[key].isAppliedToToken(token_name))
+      return this.contexts[key];
+  }
+
+  return null;
+};
+
+Tr8n.Language.prototype.getLanguageCaseByKeyword = function(key) {
+  return this.cases[key];
 };
 
 Tr8n.Language.prototype.translate = function(label, description, tokens, options) {
+
+
+
+
   return label;
 };
+
+
