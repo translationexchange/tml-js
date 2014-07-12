@@ -30,5 +30,47 @@
  */
 
 Tr8n.Translation = function(attrs) {
-  this.attrs = attrs;
+  Tr8n.Utils.extend(this, attrs);
+
+  if (this.locale && this.translation_key) {
+    this.language = this.translation_key.application.getLanguage(this.locale);
+  }
+
 };
+
+Tr8n.Translation.prototype = {
+
+  hasContextRules: function() {
+    return (this.context && Tr8n.Utils.keys(this.context).length > 0);
+  },
+
+  isValidTranslation: function(tokens) {
+    if (this.hasContextRules())
+      return true;
+
+    var token_names = Tr8n.Utils.keys(this.context);
+    for(var i=0; i<token_names.length; i++) {
+      var object = Tr8n.Configuration.prototype.tokenObject(tokens, token_names[i]);
+      if (!object) return false;
+
+      var rule_keys = Tr8n.Utils.keys(this.context[token_names[i]]);
+
+      for(var j=0; j<rule_keys.length; j++) {
+        if (rule_keys[j] != "other") {
+          var context = this.language.getContextByKeyword(rule_keys[j]);
+          if (context == null) return false; // unsupported context type
+
+          var rule = context.findMatchingRule(object);
+          if (!rule || rule.keyword != rule_keys[j])
+            return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
+};
+
+
+

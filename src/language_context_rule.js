@@ -33,22 +33,25 @@ Tr8n.LanguageContextRule = function(attrs) {
   Tr8n.Utils.extend(this, attrs);
 };
 
-Tr8n.LanguageContextRule.isFallback = function() {
-  return (this.keyword == "other");
+Tr8n.LanguageContextRule.prototype = {
+
+  isFallback: function() {
+    return (this.keyword == "other");
+  },
+  
+  getConditionsExpression: function() {
+    if (!this.conditions_expression)
+      this.conditions_expression = (new Tr8n.RulesEngine.Parser(this.conditions)).parse();
+    return this.conditions_expression;
+  },
+  
+  evaluate: function(vars) {
+    if (this.isFallback()) return true;
+  
+    var evaluator = new Tr8n.RulesEngine.Evaluator();
+    evaluator.setVars(vars || {});
+  
+    return evaluator.evaluate(this.getConditionsExpression())
+  }
+
 };
-
-Tr8n.LanguageContextRule.getConditionsExpression = function() {
-  if (!this.conditions_expression)
-    this.conditions_expression = (new Tr8n.RulesEngine.Parser(this.conditions)).parse();
-  return this.conditions_expression;
-};
-
-Tr8n.LanguageContextRule.evaluate = function(vars) {
-  if (this.isFallback()) return true;
-
-  var evaluator = new Tr8n.RulesEngine.Evaluator();
-  evaluator.setVars(vars || {});
-
-  return evaluator.evaluate(this.getConditionsExpression())
-};
-

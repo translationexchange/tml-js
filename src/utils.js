@@ -29,64 +29,68 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Tr8n.Utils.hashValue = function(hash, key, defaultValue) {
-  defaultValue = defaultValue || null;
-  var parts = key.split(".");
-  for(var i=0; i<parts.length; i++) {
-    var part = parts[i];
-    if (typeof hash[part] === "undefined") return defaultValue;
-    hash = hash[part];
+Tr8n.Utils = {
+
+  hashValue: function(hash, key, defaultValue) {
+    defaultValue = defaultValue || null;
+    var parts = key.split(".");
+    for(var i=0; i<parts.length; i++) {
+      var part = parts[i];
+      if (typeof hash[part] === "undefined") return defaultValue;
+      hash = hash[part];
+    }
+    return hash;
+  },
+  
+  stripTags: function(input, allowed) {
+    allowed = (((allowed || '') + '')
+      .toLowerCase()
+      .match(/<[a-z][a-z0-9]*>/g) || [])
+      .join(''); // making sure the allowed arg is a string containing only tags in lowercase (<a><b><c>)
+    var tags = /<\/?([a-z][a-z0-9]*)\b[^>]*>/gi,
+      commentsAndPhpTags = /<!--[\s\S]*?-->|<\?(?:php)?[\s\S]*?\?>/gi;
+    return input.replace(commentsAndPhpTags, '')
+      .replace(tags, function($0, $1) {
+        return allowed.indexOf('<' + $1.toLowerCase() + '>') > -1 ? $0 : '';
+      });
+  },
+  
+  splitSentences: function(text) {
+    var sentenceRegex = /[^.!?\s][^.!?]*(?:[.!?](?![\'"]?\s|$)[^.!?]*)*[.!?]?[\'"]?(?=\s|$)/g;
+    return Tr8n.Utils.stripTags(text).match(sentenceRegex);
+  },
+  
+  unique: function(elements) {
+    return elements.reverse().filter(function (e, i, arr) {
+      return arr.indexOf(e, i+1) === -1;
+    }).reverse();
+  },
+  
+  extend: function(destination, source) {
+    for (var property in source)
+      destination[property] = source[property];
+    return destination;
+  },
+  
+  clone: function(obj) {
+    if(obj == null || typeof(obj) != 'object')
+      return obj;
+  
+    var temp = obj.constructor(); // changed
+  
+    for(var key in obj)
+      temp[key] = clone(obj[key]);
+    return temp;
+  },
+  
+  keys: function(obj) {
+  //  var keys = []; for (k in obj) {keys.push(k)}
+  //  return keys;
+    return Object.keys(obj);
+  },
+  
+  generateKey: function(label, description) {
+    return MD5(label + ";;;" + description);
   }
-  return hash;
-};
 
-Tr8n.Utils.stripTags = function(input, allowed) {
-  allowed = (((allowed || '') + '')
-    .toLowerCase()
-    .match(/<[a-z][a-z0-9]*>/g) || [])
-    .join(''); // making sure the allowed arg is a string containing only tags in lowercase (<a><b><c>)
-  var tags = /<\/?([a-z][a-z0-9]*)\b[^>]*>/gi,
-    commentsAndPhpTags = /<!--[\s\S]*?-->|<\?(?:php)?[\s\S]*?\?>/gi;
-  return input.replace(commentsAndPhpTags, '')
-    .replace(tags, function($0, $1) {
-      return allowed.indexOf('<' + $1.toLowerCase() + '>') > -1 ? $0 : '';
-    });
-};
-
-Tr8n.Utils.splitSentences = function(text) {
-  var sentenceRegex = /[^.!?\s][^.!?]*(?:[.!?](?![\'"]?\s|$)[^.!?]*)*[.!?]?[\'"]?(?=\s|$)/g;
-  return Tr8n.Utils.stripTags(text).match(sentenceRegex);
-};
-
-Tr8n.Utils.unique = function(elements) {
-  return elements.reverse().filter(function (e, i, arr) {
-    return arr.indexOf(e, i+1) === -1;
-  }).reverse();
-};
-
-Tr8n.Utils.extend = function(destination, source) {
-  for (var property in source)
-    destination[property] = source[property];
-  return destination;
-};
-
-Tr8n.Utils.clone = function(obj) {
-  if(obj == null || typeof(obj) != 'object')
-    return obj;
-
-  var temp = obj.constructor(); // changed
-
-  for(var key in obj)
-    temp[key] = Tr8n.Utils.clone(obj[key]);
-  return temp;
-};
-
-Tr8n.Utils.keys = function(obj) {
-//  var keys = []; for (k in obj) {keys.push(k)}
-//  return keys;
-  return Object.keys(obj);
-};
-
-Tr8n.Utils.generateKey = function(label, description) {
-  return MD5(label + ";;;" + description);
 };

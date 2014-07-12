@@ -40,18 +40,22 @@ Tr8n.Application = function(attrs) {
   this.languages_by_locale = {};
 };
 
-Tr8n.Application.prototype.getApiClient = function() {
-  if (!this.api_client)
-    this.api_client = new Tr8n.config.api_client_class(this);
-  return this.api_client;
-};
+Tr8n.Application.prototype = {
 
-Tr8n.Application.prototype.addLanguage = function(language) {
-  language.application = this;
-  this.languages_by_locale[language.attrs.locale] = language;
-};
+  getApiClient: function() {
+//    if (!this.api_client)
+//      this.api_client = new Tr8n.config.api_client_class(this);
+    return this.api_client;
+  },
 
-Tr8n.Application.prototype.getLanguage = function(locale) {
-  return this.languages_by_locale[locale || Tr8n.config.default_locale];
+  addLanguage: function(language) {
+    language.application = this;
+    this.languages_by_locale[language.attrs.locale] = language;
+  },
+
+  getLanguage: function(locale) {
+    return this.languages_by_locale[locale || Tr8n.config.default_locale];
+  }
+
 };
 

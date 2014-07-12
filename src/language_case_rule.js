@@ -33,51 +33,54 @@ Tr8n.LanguageCaseRule = function(attrs) {
   Tr8n.Utils.extend(this, attrs);
 };
 
-Tr8n.LanguageCaseRule.getConditionsExpression = function() {
-  if (!this.conditions_expression)
-    this.conditions_expression = (new Tr8n.RulesEngine.Parser(this.conditions)).parse();
-  return this.conditions_expression;
+Tr8n.LanguageCaseRule.prototype = {
+
+  getConditionsExpression: function() {
+    if (!this.conditions_expression)
+      this.conditions_expression = (new Tr8n.RulesEngine.Parser(this.conditions)).parse();
+    return this.conditions_expression;
+  },
+  
+  getOperationsExpression: function() {
+    if (!this.operations_expression)
+      this.operations_expression = (new Tr8n.RulesEngine.Parser(this.operations)).parse();
+    return this.operations_expression;
+  },
+  
+  getGenderVariables: function(object) {
+    if (this.conditions.indexOf("@gender") == -1)
+      return {};
+  
+    if (object == null)
+      return {gender: 'unknown'};
+  
+    var context = this.language_case.language.getContextByKeyword("gender");
+  
+    if (context == null)
+      return {gender: 'unknown'};
+  
+    return context.getVars(object);
+  },
+  
+  evaluate: function(value, object) {
+    if (this.attrs.conditions == null)
+      return false;
+  
+    var evaluator = new Tr8n.RulesEngine.Evaluator();
+    evaluator.setVars(Tr8n.Utils.extend({value: value}, this.getGenderVariables(object)));
+  
+    return evaluator.evaluate(this.getConditionsExpression());
+  },
+  
+  apply: function(value) {
+    if (this.attrs.operations == null)
+      return value;
+  
+    var evaluator = new Tr8n.RulesEngine.Evaluator();
+    evaluator.setVars({value: value});
+  
+    return evaluator.evaluate(this.getOperationsExpression());
+  }
+
 };
-
-Tr8n.LanguageCaseRule.getOperationsExpression = function() {
-  if (!this.operations_expression)
-    this.operations_expression = (new Tr8n.RulesEngine.Parser(this.operations)).parse();
-  return this.operations_expression;
-};
-
-Tr8n.LanguageCaseRule.getGenderVariables = function(object) {
-  if (object == null)
-    return {gender: 'unknown'};
-
-  if (this.conditions.indexOf("@gender") == -1)
-    return {};
-
-  var context = this.language_case.language.getContextByKeyword("gender");
-
-  if (context == null)
-    return {gender: 'unknown'};
-
-  return context.vars(object);
-};
-
-Tr8n.LanguageCaseRule.evaluate = function(value, object) {
-  if (this.attrs.conditions == null)
-    return false;
-
-  var evaluator = new Tr8n.RulesEngine.Evaluator();
-  evaluator.setVars(Tr8n.Utils.extend({value: value}, this.getGenderVariables(object)));
-
-  return evaluator.evaluate(this.getConditionsExpression());
-};
-
-Tr8n.LanguageCaseRule.apply = function(value) {
-  if (this.attrs.operations == null)
-    return value;
-
-  var evaluator = new Tr8n.RulesEngine.Evaluator();
-  evaluator.setVars({value: value});
-
-  return evaluator.evaluate(this.getOperationsExpression());
-};
-
 

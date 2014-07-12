@@ -36,36 +36,33 @@ Tr8n.Tokenizers.Data = function(label, context, options) {
   this.tokenize();
 };
 
-Tr8n.Tokenizers.Data.prototype.supportedTokens = function() {
-  return [
-    [/(\{[^_:][\w]*(:[\w]+)*(::[\w]+)*\})/, Tr8n.Tokens.Data],
-    [/(\{[^_:.][\w]*(\.[\w]+)(:[\w]+)*(::[\w]+)*\})/, Tr8n.Tokens.Method],
-    [/(\{[^_:|][\w]*(:[\w]+)*(::[\w]+)*\s*\|\|?[^{^}]+\})/, Tr8n.Tokens.Piped]
-  ];
-};
+Tr8n.Tokenizers.Data.prototype = {
 
-Tr8n.Tokenizers.Data.prototype.tokenize = function() {
-  this.tokens = [];
-  for (var tokenInfo in this.supportedTokens()) {
-    var matches = this.label.match(tokenInfo[0]) || [];
-    for (var i=0; i<matches.length; i++) {
-        this.tokens.push(new tokenInfo[1](matches[i], this.label));
+  tokenize: function() {
+    this.tokens = [];
+    var tokens = Tr8n.config.getSupportedTokens();
+    for (var i=0; i<tokens.length; i++) {
+      var matches = this.label.match(tokens[i][0]) || [];
+      for (var i=0; i<matches.length; i++) {
+          this.tokens.push(new tokens[i][1](matches[i], this.label));
+      }
     }
-  }
-};
+  },
 
-Tr8n.Tokenizers.Data.prototype.isTokenAllowed = function(token) {
-  if (this.options.allowed_tokens) return true;
-  return (this.options.allowed_tokens.indexOf(token.name) != -1);
-};
+  isTokenAllowed: function(token) {
+    if (this.options.allowed_tokens) return true;
+    return (this.options.allowed_tokens.indexOf(token.name) != -1);
+  },
 
-Tr8n.Tokenizers.Data.prototype.substitute = function(language, options) {
-  var label = this.label;
-  for (var i=0; i<this.tokens.length; i++) {
-    var token = this.tokens[i];
-    if (this.isTokenAllowed(token)) {
-      label = token.substitute(label, this.context, language, options);
+  substitute: function(language, options) {
+    var label = this.label;
+    for (var i=0; i<this.tokens.length; i++) {
+      var token = this.tokens[i];
+      if (this.isTokenAllowed(token)) {
+        label = token.substitute(label, this.context, language, options);
+      }
     }
+    return label;
   }
-  return label;
+
 };

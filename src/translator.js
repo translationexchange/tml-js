@@ -30,5 +30,5 @@
  */
 
 Tr8n.Translator = function(attrs) {
-  this.attrs = attrs;
+  Tr8n.Utils.extend(this, attrs);
 };

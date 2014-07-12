@@ -30,6 +30,7 @@
  */
 
 Tr8n.Decorators.Html = {
+
   decorate: function(translated_label, translation_language, target_language, translation_key, options) {
     if (options.skip_decorations) return translated_label;
 
@@ -61,6 +62,7 @@ Tr8n.Decorators.Html = {
     html.push("</" + element + ">");
     return html.join("");
   }
+
 };
 
 

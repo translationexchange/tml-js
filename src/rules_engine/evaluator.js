@@ -69,7 +69,7 @@ Tr8n.RulesEngine.Evaluator = function(ctx) {
     'or':      function(args){ return this.ctx['||'](args); }.bind(this)
   };
   return this;
-}
+},
 
 Tr8n.RulesEngine.Evaluator.prototype = {
   setVars: function(vars) {

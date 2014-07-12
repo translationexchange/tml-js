@@ -48,119 +48,123 @@ Tr8n.Tokenizers.Decoration = function(label, context, opts) {
   this.tokenize();
 };
 
-Tr8n.Tokenizers.Decoration.prototype.tokenize = function() {
-  var expression = new RegExp([
-    RE_SHORT_TOKEN_START,
-    RE_SHORT_TOKEN_END,
-    RE_LONG_TOKEN_START,
-    RE_LONG_TOKEN_END,
-    RE_TEXT
-  ].join("|"), "g");
+Tr8n.Tokenizers.Decoration.prototype = {
 
-  this.fragments = this.label.match(expression);
-  return this.fragments;
-};
+  tokenize: function() {
+    var expression = new RegExp([
+      RE_SHORT_TOKEN_START,
+      RE_SHORT_TOKEN_END,
+      RE_LONG_TOKEN_START,
+      RE_LONG_TOKEN_END,
+      RE_TEXT
+    ].join("|"), "g");
 
-Tr8n.Tokenizers.Decoration.prototype.peek = function() {
-  if (this.fragments.length == 0) return null;
-  return this.fragments[0];
-};
+    this.fragments = this.label.match(expression);
+    return this.fragments;
+  },
 
-Tr8n.Tokenizers.Decoration.prototype.getNextFragment = function() {
-  if (this.fragments.length == 0) return null;
-  return this.fragments.shift();
-};
+  peek: function() {
+    if (this.fragments.length == 0) return null;
+    return this.fragments[0];
+  },
 
-Tr8n.Tokenizers.Decoration.prototype.parse = function() {
-  var token = this.getNextFragment();
-  if (token.match(new RegExp(RE_SHORT_TOKEN_START)))
-    return this.parseTree(token.replace(/[\[:]/g, ''), TOKEN_TYPE_SHORT);
-  if (token.match(new RegExp(RE_LONG_TOKEN_START)))
-    return this.parseTree(token.replace(/[\[\]]/g, ''), TOKEN_TYPE_LONG);
-  return token;
-};
+  getNextFragment: function() {
+    if (this.fragments.length == 0) return null;
+    return this.fragments.shift();
+  },
 
-Tr8n.Tokenizers.Decoration.prototype.parseTree = function(name, type) {
-  var tree = [name];
-  if (this.tokens.indexOf(name) == -1 && name != RESERVED_TOKEN)
-    this.tokens.push(name);
+  parse: function() {
+    var token = this.getNextFragment();
+    if (token.match(new RegExp(RE_SHORT_TOKEN_START)))
+      return this.parseTree(token.replace(/[\[:]/g, ''), TOKEN_TYPE_SHORT);
+    if (token.match(new RegExp(RE_LONG_TOKEN_START)))
+      return this.parseTree(token.replace(/[\[\]]/g, ''), TOKEN_TYPE_LONG);
+    return token;
+  },
 
-  if (type == TOKEN_TYPE_SHORT) {
-    var first = true;
-    while (this.peek()!=null && !this.peek().match(new RegExp(RE_SHORT_TOKEN_END))) {
-      var value = this.parse();
-      if (first && typeof value == "string") {
-        value = value.replace(/^\s+/,'');
-        first = false;
+  parseTree: function(name, type) {
+    var tree = [name];
+    if (this.tokens.indexOf(name) == -1 && name != RESERVED_TOKEN)
+      this.tokens.push(name);
+
+    if (type == TOKEN_TYPE_SHORT) {
+      var first = true;
+      while (this.peek()!=null && !this.peek().match(new RegExp(RE_SHORT_TOKEN_END))) {
+        var value = this.parse();
+        if (first && typeof value == "string") {
+          value = value.replace(/^\s+/,'');
+          first = false;
+        }
+        tree.push(value);
       }
-      tree.push(value);
+    } else if (type == TOKEN_TYPE_LONG) {
+      while (this.peek()!=null && !this.peek().match(new RegExp(RE_LONG_TOKEN_END))) {
+        tree.push(this.parse());
+      }
     }
-  } else if (type == TOKEN_TYPE_LONG) {
-    while (this.peek()!=null && !this.peek().match(new RegExp(RE_LONG_TOKEN_END))) {
-      tree.push(this.parse());
+
+    this.getNextFragment();
+    return tree;
+  },
+
+  isTokenAllowed: function(token) {
+    return (this.opts["allowed_tokens"] == null || this.opts["allowed_tokens"].indexOf(token) != -1);
+  },
+
+  getDefaultDecoration: function(token, value) {
+    var default_decoration = Tr8n.config.getDefaultToken(token, "decoration");
+    if (default_decoration == null) return value;
+
+    var decoration_token_values = this.context[token];
+    default_decoration = default_decoration.replace(PLACEHOLDER, value);
+
+    if (decoration_token_values instanceof Object) {
+      var keys = Tr8n.Utils.keys(decoration_token_values);
+      for (var i = 0; i < keys.length; i++) {
+        default_decoration = default_decoration.replace("{$" + keys[i] + "}", decoration_token_values[keys[i]]);
+      }
     }
+
+    return default_decoration;
+  },
+
+  apply: function(token, value) {
+    if (token == RESERVED_TOKEN) return value;
+    if (!this.isTokenAllowed(token)) return value;
+
+    var method = this.context[token];
+
+    if (method != null) {
+      if (typeof method === 'string')
+        return method.replace(PLACEHOLDER, value);
+
+      if (typeof method === 'function')
+        return method(value);
+
+      if (typeof method === 'object')
+        return this.getDefaultDecoration(token, value);
+
+      return value;
+    }
+
+    return this.getDefaultDecoration(token, value);
+  },
+
+  evaluate: function(expr) {
+    if (!(expr instanceof Array)) return expr;
+
+    var token = expr[0];
+    expr.shift();
+    var self = this;
+    var value = [];
+    expr.forEach(function(obj, index) {
+      value.push(self.evaluate(obj));
+    });
+    return this.apply(token, value.join(''));
+  },
+
+  substitute: function(language, options) {
+    return this.evaluate(this.parse());
   }
 
-  this.getNextFragment();
-  return tree;
-};
-
-Tr8n.Tokenizers.Decoration.prototype.isTokenAllowed = function(token) {
-  return (this.opts["allowed_tokens"] == null || this.opts["allowed_tokens"].indexOf(token) != -1);
-};
-
-Tr8n.Tokenizers.Decoration.prototype.getDefaultDecoration = function(token, value) {
-  var default_decoration = Tr8n.config.getDefaultToken(token, "decoration");
-  if (default_decoration == null) return value;
-
-  var decoration_token_values = this.context[token];
-  default_decoration = default_decoration.replace(PLACEHOLDER, value);
-
-  if (decoration_token_values instanceof Object) {
-    var keys = Tr8n.Utils.keys(decoration_token_values);
-    for (var i = 0; i < keys.length; i++) {
-      default_decoration = default_decoration.replace("{$" + keys[i] + "}", decoration_token_values[keys[i]]);
-    }
-  }
-
-  return default_decoration;
-};
-
-Tr8n.Tokenizers.Decoration.prototype.apply = function(token, value) {
-  if (token == RESERVED_TOKEN) return value;
-  if (!this.isTokenAllowed(token)) return value;
-
-  var method = this.context[token];
-
-  if (method != null) {
-    if (typeof method === 'string')
-      return method.replace(PLACEHOLDER, value);
-
-    if (typeof method === 'function')
-      return method(value);
-
-    if (typeof method === 'object')
-      return this.getDefaultDecoration(token, value);
-
-    return value;
-  }
-
-  return this.getDefaultDecoration(token, value);
-};
-
-Tr8n.Tokenizers.Decoration.prototype.evaluate = function(expr) {
-  if (!(expr instanceof Array)) return expr;
-
-  var token = expr[0];
-  expr.shift();
-  var self = this;
-  var value = [];
-  expr.forEach(function(obj, index) {
-    value.push(self.evaluate(obj));
-  });
-  return this.apply(token, value.join(''));
-};
-
-Tr8n.Tokenizers.Decoration.prototype.substitute = function(language, options) {
-  return this.evaluate(this.parse());
 };

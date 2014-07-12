@@ -38,169 +38,190 @@ Tr8n.Configuration = function() {
 //  this.api_client_class = Tr8n.Api.Request;
 };
 
-Tr8n.Configuration.prototype.initDefaultTokens = function() {
-  this.default_tokens = {
-      html : {
-        data : {
-          ndash  :  "&ndash;",       // –
-          mdash  :  "&mdash;",       // —
-          iexcl  :  "&iexcl;",       // ¡
-          iquest :  "&iquest;",      // ¿
-          quot   :  "&quot;",        // "
-          ldquo  :  "&ldquo;",       // “
-          rdquo  :  "&rdquo;",       // ”
-          lsquo  :  "&lsquo;",       // ‘
-          rsquo  :  "&rsquo;",       // ’
-          laquo  :  "&laquo;",       // «
-          raquo  :  "&raquo;",       // »
-          nbsp   :  "&nbsp;",        // space
-          lsaquo :  "&lsaquo;",      // ‹
-          rsaquo :  "&rsaquo;",      // ›
-          br     :  "<br/>",         // line break
-          lbrace :  "{",
-          rbrace :  "}",
-          trade  :  "&trade;"       // TM
+Tr8n.Configuration.prototype = {
+  initDefaultTokens: function() {
+    this.default_tokens = {
+        html : {
+          data : {
+            ndash  :  "&ndash;",       // –
+            mdash  :  "&mdash;",       // —
+            iexcl  :  "&iexcl;",       // ¡
+            iquest :  "&iquest;",      // ¿
+            quot   :  "&quot;",        // "
+            ldquo  :  "&ldquo;",       // “
+            rdquo  :  "&rdquo;",       // ”
+            lsquo  :  "&lsquo;",       // ‘
+            rsquo  :  "&rsquo;",       // ’
+            laquo  :  "&laquo;",       // «
+            raquo  :  "&raquo;",       // »
+            nbsp   :  "&nbsp;",        // space
+            lsaquo :  "&lsaquo;",      // ‹
+            rsaquo :  "&rsaquo;",      // ›
+            br     :  "<br/>",         // line break
+            lbrace :  "{",
+            rbrace :  "}",
+            trade  :  "&trade;"       // TM
+          },
+          decoration : {
+            strong :  "<strong>{$0}</strong>",
+            bold   :  "<strong>{$0}</strong>",
+            b      :  "<strong>{$0}</strong>",
+            em     :  "<em>{$0}</em>",
+            italic :  "<i>{$0}</i>",
+            i      :  "<i>{$0}</i>",
+            link   :  "<a href='{$href}'>{$0}</a>",
+            br     :  "<br>{$0}",
+            strike :  "<strike>{$0}</strike>",
+            div    :  "<div id='{$id}' class='{$class}' style='{$style}'>{$0}</div>",
+            span   :  "<span id='{$id}' class='{$class}' style='{$style}'>{$0}</span>",
+            h1     :  "<h1>{$0}</h1>",
+            h2     :  "<h2>{$0}</h2>",
+            h3     :  "<h3>{$0}</h3>"
+          }
         },
-        decoration : {
-          strong :  "<strong>{$0}</strong>",
-          bold   :  "<strong>{$0}</strong>",
-          b      :  "<strong>{$0}</strong>",
-          em     :  "<em>{$0}</em>",
-          italic :  "<i>{$0}</i>",
-          i      :  "<i>{$0}</i>",
-          link   :  "<a href='{$href}'>{$0}</a>",
-          br     :  "<br>{$0}",
-          strike :  "<strike>{$0}</strike>",
-          div    :  "<div id='{$id}' class='{$class}' style='{$style}'>{$0}</div>",
-          span   :  "<span id='{$id}' class='{$class}' style='{$style}'>{$0}</span>",
-          h1     :  "<h1>{$0}</h1>",
-          h2     :  "<h2>{$0}</h2>",
-          h3     :  "<h3>{$0}</h3>"
+        text : {
+          data : {
+            ndash  :  "–",
+            mdash  :  "-",
+            iexcl  :  "¡",
+            iquest :  "¿",
+            quot   :  '"',
+            ldquo  :  "“",
+            rdquo  :  "”",
+            lsquo  :  "‘",
+            rsquo  :  "’",
+            laquo  :  "«",
+            raquo  :  "»",
+            nbsp   :  " ",
+            lsaquo :  "‹",
+            rsaquo :  "›",
+            br     :  "\n",
+            lbrace :  "{",
+            rbrace :  "}",
+            trade  :  "™"
+          },
+          decoration : {
+            strong :  "{$0}",
+            bold   :  "{$0}",
+            b      :  "{$0}",
+            em     :  "{$0}",
+            italic :  "{$0}",
+            i      :  "{$0}",
+            link   :  "{$0}{$1}",
+            br     :  "\n{$0}",
+            strike :  "{$0}",
+            div    :  "{$0}",
+            span   :  "{$0}",
+            h1     :  "{$0}",
+            h2     :  "{$0}",
+            h3     :  "{$0}"
+          }
+        }
+      };
+
+  },
+
+  getDefaultToken: function(token, type, format) {
+    type = type || "data"; format = format || "html";
+    if (typeof this.default_tokens[format][type][token] === 'undefined') return null;
+    return new String(this.default_tokens[format][type][token]);
+  },
+
+  setDefaultToken: function(token, value, type, format) {
+    type = type || "data"; format = format || "html";
+    this.default_tokens[format] = this.default_tokens[format] || {};
+    this.default_tokens[format][type] = this.default_tokens[format][type] || {};
+    this.default_tokens[format][type][token] = value;
+  },
+
+  initTranslatorOptions: function() {
+    this.translator_options = {
+      "debug": true,
+      "debug_format_html": "<span style='font-size:20px;color:red;'>{<\/span> {$0} <span style='font-size:20px;color:red;'>}<\/span>",
+      "debug_format": "{{{{$0}}}}",
+      "split_sentences": false,
+      "nodes": {
+        "ignored":    [],
+        "scripts":    ["style", "script"],
+        "inline":     ["a", "span", "i", "b", "img", "strong", "s", "em", "u", "sub", "sup"],
+        "short":      ["i", "b"],
+        "splitters":  ["br", "hr"]
+      },
+      "attributes": {
+        "labels": ["title", "alt"]
+      },
+      "name_mapping": {
+        "b": "bold",
+        "i": "italic",
+        "a": "link",
+        "img": "picture"
+      },
+      "data_tokens": {
+        "special": false,
+        "numeric": false,
+        "numeric_name": "num"
+      }
+    }
+  },
+
+  initContextRules: function() {
+    this.context_rules = {
+      number: {
+        variables: {}
+      },
+      gender: {
+        variables: {
+          "@gender": "gender"
         }
       },
-      text : {
-        data : {
-          ndash  :  "–",
-          mdash  :  "-",
-          iexcl  :  "¡",
-          iquest :  "¿",
-          quot   :  '"',
-          ldquo  :  "“",
-          rdquo  :  "”",
-          lsquo  :  "‘",
-          rsquo  :  "’",
-          laquo  :  "«",
-          raquo  :  "»",
-          nbsp   :  " ",
-          lsaquo :  "‹",
-          rsaquo :  "›",
-          br     :  "\n",
-          lbrace :  "{",
-          rbrace :  "}",
-          trade  :  "™"
-        },
-        decoration : {
-          strong :  "{$0}",
-          bold   :  "{$0}",
-          b      :  "{$0}",
-          em     :  "{$0}",
-          italic :  "{$0}",
-          i      :  "{$0}",
-          link   :  "{$0}{$1}",
-          br     :  "\n{$0}",
-          strike :  "{$0}",
-          div    :  "{$0}",
-          span   :  "{$0}",
-          h1     :  "{$0}",
-          h2     :  "{$0}",
-          h3     :  "{$0}"
+      genders: {
+        variables: {
+          "@genders": function(list) {
+            var genders = [];
+            list.forEach(function(obj) {
+              genders.push(obj.gender);
+            });
+            return genders;
+          }
         }
+      },
+      date: {
+        variables: {}
+      },
+      time: {
+        variables: {}
       }
     };
+  },
 
-};
+  getContextRules: function(key) {
+    return this.context_rules[key] || {};
+  },
 
-Tr8n.Configuration.prototype.getDefaultToken = function(token, type, format) {
-  type = type || "data"; format = format || "html";
-  if (typeof this.default_tokens[format][type][token] === 'undefined') return null;
-  return new String(this.default_tokens[format][type][token]);
-};
+  isDisabled: function() {
+    return !enabled;
+  },
 
-Tr8n.Configuration.prototype.setDefaultToken = function(token, value, type, format) {
-  type = type || "data"; format = format || "html";
-  this.default_tokens[format] = this.default_tokens[format] || {};
-  this.default_tokens[format][type] = this.default_tokens[format][type] || {};
-  this.default_tokens[format][type][token] = value;
-};
+  isEnabled: function() {
+    return enabled;
+  },
 
-Tr8n.Configuration.prototype.initTranslatorOptions = function() {
-  this.translator_options = {
-    "debug": true,
-    "debug_format_html": "<span style='font-size:20px;color:red;'>{<\/span> {$0} <span style='font-size:20px;color:red;'>}<\/span>",
-    "debug_format": "{{{{$0}}}}",
-    "split_sentences": false,
-    "nodes": {
-      "ignored":    [],
-      "scripts":    ["style", "script"],
-      "inline":     ["a", "span", "i", "b", "img", "strong", "s", "em", "u", "sub", "sup"],
-      "short":      ["i", "b"],
-      "splitters":  ["br", "hr"]
-    },
-    "attributes": {
-      "labels": ["title", "alt"]
-    },
-    "name_mapping": {
-      "b": "bold",
-      "i": "italic",
-      "a": "link",
-      "img": "picture"
-    },
-    "data_tokens": {
-      "special": false,
-      "numeric": false,
-      "numeric_name": "num"
-    }
+  getTokenObject: function(tokens, name) {
+    if (tokens == null) return null;
+
+    var object = tokens[name];
+    if (typeof object === 'array')
+      return object[0];
+
+    return object.object || object;
+  },
+
+  getSupportedTokens: function() {
+    return [
+      [/(\{[^_:][\w]*(:[\w]+)*(::[\w]+)*\})/, Tr8n.Tokens.Data],
+      [/(\{[^_:.][\w]*(\.[\w]+)(:[\w]+)*(::[\w]+)*\})/, Tr8n.Tokens.Method],
+      [/(\{[^_:|][\w]*(:[\w]+)*(::[\w]+)*\s*\|\|?[^{^}]+\})/, Tr8n.Tokens.Piped]
+    ];
   }
-};
 
-Tr8n.Configuration.prototype.initContextRules = function() {
-  this.context_rules = {
-    number: {
-      variables: {}
-    },
-    gender: {
-      variables: {
-        "@gender": "gender"
-      }
-    },
-    genders: {
-      variables: {
-        "@genders": function(list) {
-          var genders = [];
-          list.forEach(function(obj) {
-            genders.push(obj.gender);
-          });
-          return genders;
-        }
-      }
-    },
-    date: {
-      variables: {}
-    },
-    time: {
-      variables: {}
-    }
-  };
-};
-
-Tr8n.Configuration.prototype.getContextRules = function(key) {
-  return this.context_rules[key] || {};
-};
-
-Tr8n.Configuration.prototype.isDisabled = function() {
-  return !enabled;
-};
-
-Tr8n.Configuration.prototype.isEnabled = function() {
-  return enabled;
 };

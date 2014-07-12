@@ -30,5 +30,6 @@
  */
 
 Tr8n.Source = function(attrs) {
-  this.attrs = attrs;
+  Tr8n.Utils.extend(this, attrs);
+
 };

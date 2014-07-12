@@ -33,39 +33,47 @@ Tr8n.Language = function(attrs) {
   Tr8n.Utils.extend(this, attrs);
 
   this.contexts = {};
-  for(var key in Tr8n.Utils.keys(attrs.contexts || {})) {
-    this.contexts[key] = new Tr8n.LanguageContext(Tr8n.Utils.extend(attrs.contexts[key], {language: this}));
+  var keys = Tr8n.Utils.keys(attrs.contexts || {});
+  for (var i=0; i<keys.length; i++) {
+    this.contexts[keys[i]] = new Tr8n.LanguageContext(Tr8n.Utils.extend(attrs.contexts[keys[i]], {language: this}));
   }
 
   this.cases = {};
-  for(key in Tr8n.Utils.keys(attrs.cases || {})) {
-    this.cases[key] = new Tr8n.LanguageContext(Tr8n.Utils.extend(attrs.cases[key], {language: this}));
+  keys = Tr8n.Utils.keys(attrs.cases || {});
+  for (i=0; i<keys.length; i++) {
+    this.cases[keys[i]] = new Tr8n.LanguageContext(Tr8n.Utils.extend(attrs.cases[keys[i]], {language: this}));
   }
 };
 
-Tr8n.Language.prototype.getContextByKeyword = function(key) {
-  return this.contexts[key];
-};
-
-Tr8n.Language.prototype.getContextByTokenName = function(token_name) {
-  for(var key in this.contexts) {
-    if (this.contexts[key].isAppliedToToken(token_name))
-      return this.contexts[key];
+Tr8n.Language.prototype = {
+  getContextByKeyword: function(key) {
+    return this.contexts[key];
+  },
+  
+  getContextByTokenName: function(token_name) {
+    var keys = Tr8n.Utils.keys(attrs.contexts || {});
+    for (var i=0; i<keys.length; i++) {
+      if (this.contexts[keys[i]].isAppliedToToken(token_name))
+        return this.contexts[keys[i]];
+    }
+    return null;
+  },
+  
+  getLanguageCaseByKeyword: function(key) {
+    return this.cases[key];
+  },
+  
+  translate: function(label, description, tokens, options) {
+  
+    var translation_key = new Tr8n.TranslationKey({
+      label: label,
+      description: description
+    });
+  
+    // TODO: add implementation for getting translations from the cache or putting them on the queue
+  
+    return translation_key.translate(this, tokens, options);
   }
-
-  return null;
-};
-
-Tr8n.Language.prototype.getLanguageCaseByKeyword = function(key) {
-  return this.cases[key];
-};
-
-Tr8n.Language.prototype.translate = function(label, description, tokens, options) {
-
-
-
-
-  return label;
 };
 
 
