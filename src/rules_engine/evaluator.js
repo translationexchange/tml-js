@@ -44,43 +44,6 @@ Tr8n.RulesEngine.Evaluator = function(ctx) {
   
     'set'     : function(l, r){ this.vars[l] = this.ctx[l] = r; return r; },
 
-    /*
-    '='       : function(args){ return (args[0] == args[1]); },
-    '!='      : function(args){ return (args[0] != args[1]); },
-    '<'       : function(args){ return (args[0] < args[1]); },
-    '>'       : function(args){ return (args[0] > args[1]); },
-    '+'       : function(args){ return (args[0] + args[1]); },
-    '-'       : function(args){ return (args[0] - args[1]); },
-    '*'       : function(args){ return (args[0] * args[1]); },
-    '/'       : function(args){ return (args[0] / args[1]); },
-    '!'       : function(args){ return !((""+args) == "true")},
-    'not'     : function(args){ return this.ctx['!'].bind(this)(args); },
-    
-    '&&'      : function()        {return Array.prototype.slice.call(arguments).every(function(e){return this.evaluate(e)})},            // ['&&', [], [], ...]
-    'and'     : function()        {return Array.prototype.slice.call(arguments).every(function(e){return this.evaluate(e)})},            // ['and', [], [], ...]
-    '||'      : function()        {return !!Array.prototype.slice.call(arguments).filter(function(e){return this.evaluate(e)}).length},  // ['||', [], [], ...]
-    'or'      : function()        {return !!Array.prototype.slice.call(arguments).filter(function(e){return this.evaluate(e)}).length},  // ['or', [], [], ...]
-
-    '&&'      : function(args){
-      for (var index = 0; index < args.length; ++index) {
-        if (!this.evaluate(args[index])) return false;
-      }
-      return true;
-    },
-
-    'and'     : function(args){ return this.ctx['&&'].bind(this)(args); },
-
-    '||'      : function(args){
-      for (var index = 0; index < args.length; ++index) {
-        if (this.evaluate(args[index])) return true;
-      }
-      return false;
-    },
-
-    'or':      function(args){ return this.ctx['||'].bind(this)(args); }
-    */
-    
-
     '='       : function(l, r)    {return l == r },                                                     // ['=', 1, 2]
     '!='      : function(l, r)    {return l != r },                                                     // ['!=', 1, 2]
     '<'       : function(l, r)    {return l < r },                                                      // ['<', 1, 2]
