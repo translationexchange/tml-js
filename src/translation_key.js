@@ -63,17 +63,48 @@ Tr8n.Application.prototype.addTranslations = function(translations_by_locale) {
   }
 };
 
+Tr8n.Application.prototype.getTranslationsForLanguage = function(language) {
+  if (!this.translations) return [];
+  return (this.translations[language.locale] || []);
+};
+
+Tr8n.Application.prototype.findFirstValidTranslation = function(language, tokens) {
+  var translations = this.getTranslationsForLanguage(language);
+
+  for(var i=0; i<translations.length; i++) {
+    if (translations[i].isValidTranslation(tokens))
+      return translations[i];
+  }
+
+  return null;
+};
+
 Tr8n.Application.prototype.translate = function(language, tokens, options) {
   if (Tr8n.config.isDisabled())
     return this.substituteTokens(this.label, tokens, language, options);
 
+  var translation = this.findFirstValidTranslation(language, tokens);
+  var decorator = Tr8n.Decorators.Html;
 
+  if (translation) {
+    return decorator.decorate(
+      this.substituteTokens(translation.label, tokens, translation.language, options),
+      translation.language,
+      this, options
+    );
+  }
+
+  return decorator.decorate(
+    this.substituteTokens(this.label, tokens, this.language, options),
+    this.language,
+    this, options
+  );
 };
 
 Tr8n.Application.prototype.getDataTokens = function() {
   if (!this.data_tokens) {
     var tokenizer = new Tr8n.Tokenizers.Data(this.label);
-    this.data_tokens = tokenizer.tokens();
+    this.data_tokens = tokenizer.tokens;
   }
   return this.data_tokens;
 };
@@ -87,15 +118,24 @@ Tr8n.Application.prototype.getDataTokenNames = function() {
   return this.data_token_names;
 };
 
+
+Tr8n.Application.prototype.getDecorationTokenNames = function() {
+  if (!this.decoration_tokens) {
+    var tokenizer = new Tr8n.Tokenizers.Decoration(this.label);
+    this.decoration_tokens = tokenizer.tokens;
+  }
+  return this.decoration_tokens;
+};
+
 Tr8n.Application.prototype.substituteTokens = function(label, tokens, language, options) {
   if (label.indexOf('{') != -1) {
-    var tokenizer = new Tr8n.Tokenizers.Data(label, tokens, Tr8n.Utils.extend(options, {allowed_tokens: this.dataTokens()}));
+    var tokenizer = new Tr8n.Tokenizers.Data(label, tokens, Tr8n.Utils.extend(options, {allowed_tokens: this.getDataTokenNames()}));
     label = tokenizer.substitute(language, options);
   }
 
   if (label.indexOf('[') != -1) {
-    var tokenizer = new Tr8n.Tokenizers.Decoration(label, tokens, Tr8n.Utils.extend(options, {allowed_tokens: this.decorationTokens()}));
-    label = tokenizer.substitute();
+    tokenizer = new Tr8n.Tokenizers.Decoration(label, tokens, Tr8n.Utils.extend(options, {allowed_tokens: this.getDecorationTokenNames()}));
+    label = tokenizer.substitute(language, options);
   }
   return label;
 };
