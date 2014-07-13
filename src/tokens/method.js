@@ -30,8 +30,41 @@
  */
 
 Tr8n.Tokens.Method = function() {
-
+  Tr8n.Tokens.Data.apply(this, arguments);
 };
 
-//Tr8n.Tokens.Method.prototype = new Tr8n.Tokens.Data();
+Tr8n.Tokens.Method.prototype = Tr8n.Tokens.Data.prototype;
+Tr8n.Tokens.Method.prototype.constructor = Tr8n.Tokens.Data;
+
+Tr8n.Tokens.Method.prototype.initObject = function() {
+  var parts = this.short_name.split('.');
+  this.object_name = parts[0];
+  this.object_method = parts[1];
+};
+
+Tr8n.Tokens.Method.prototype.getObjectName = function() {
+  if (!this.object_name) {
+    this.initObject();
+  }
+  return this.object_name;
+};
+
+Tr8n.Tokens.Method.prototype.getObjectMethod = function() {
+  if (!this.object_method) {
+    this.initObject();
+  }
+  return this.object_method;
+};
+
+Tr8n.Tokens.Method.prototype.substitute = function(label, tokens, language, options) {
+  var name = this.getObjectName();
+  var object = Tr8n.Utils.tokenObject(tokens, name);
+  if (!object) return this.error("Missing value for token");
+
+  var method = this.getObjectMethod();
+
+  return label.replace(this.full_name,
+    this.sanitize(object[method](), object, language, Tr8n.Utils.extend(options, {safe: false}))
+  );
+};
 

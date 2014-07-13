@@ -112,8 +112,6 @@ describe('RulesEngine.Evaluator', function(){
       assert.deepEqual(e.evaluate(["now"]), Date.now());
 
 
-
-
     })
   })
 

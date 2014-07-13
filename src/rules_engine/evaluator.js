@@ -88,7 +88,7 @@ Tr8n.RulesEngine.Evaluator = function(ctx) {
           bounds = range(f,l);
           bounds.push(l);
           return bounds.join()
-        })
+        });
       return values
         .split(',')
         .indexOf(String(search)) != -1;
