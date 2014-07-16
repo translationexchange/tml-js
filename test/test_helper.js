@@ -1,7 +1,7 @@
 var Tr8n = require("../lib/tr8n");
 var fs = require("fs");
 var path = require('path');
-
+var async = require('async');
 var fixture_path = "test/fixtures/";
 
 var FixtureHelper = {
@@ -14,9 +14,21 @@ var FixtureHelper = {
 };
 
 var ModelHelper = {
-  language: function(locale, callback) {
-    FixtureHelper.load("languages/" + locale, function (data) {
-      callback(new Tr8n.Language(data));
+  languages: function(locales, main_callback) {
+    var languages = {};
+
+    locales.forEach(function(locale) {
+      languages[locale] = function(callback) {
+        FixtureHelper.load("languages/" + locale, function (data) {
+          callback(null, new Tr8n.Language(data));
+        });
+      };
+    });
+
+    async.parallel(languages, function(err, results) {
+      if (err) throw err;
+
+      main_callback(results);
     });
   },
 

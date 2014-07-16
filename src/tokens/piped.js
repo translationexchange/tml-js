@@ -166,12 +166,13 @@ Tr8n.Tokens.Piped.prototype.generateValueMapForContext = function(context) {
 
   for (var i=0; i<keys.length; i++) {
     var key = keys[i];
-
     var value = token_mapping[key];
+
     values[key] = value;
 
     // token form {$0::plural} - number followed by language cases
-    var internal_keys = value.match(/{\$\d(::[\w]+)*\}/g);
+
+    var internal_keys = value.match(/{\$\d(::[\w]+)*\}/g) || [];
 
     for (var j=0; j<internal_keys.length; j++) {
       var token = internal_keys[j];

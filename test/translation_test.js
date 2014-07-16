@@ -5,10 +5,25 @@ var assert = require("assert");
 describe('Tr8n.Translation', function(){
   describe('creation', function(){
     it('should correctly create a key', function() {
-      helper.fixtures.load("languages/en-US", function(data) {
-        var language = new Tr8n.Language(data);
+      helper.models.languages(["en-US", "ru"], function(languages) {
+//        console.log(languages);
 
+        var translation = new Tr8n.Translation({
+          label: "Hello {user}",
+          language: languages["en-US"]
+        });
 
+        assert.ok(!translation.hasContextRules());
+        assert.ok(translation.isValidTranslation({user: {gender: "male"}}));
+
+        translation = new Tr8n.Translation({
+          label: "Hello {user}", context: {user: {gender: "male"}},
+          language: languages["en-US"]
+        });
+
+        assert.ok(translation.hasContextRules());
+        assert.ok(translation.isValidTranslation({user: {gender: "male"}}));
+        assert.ok(!translation.isValidTranslation({user: {gender: "female"}}));
 
       });
     });

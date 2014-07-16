@@ -52,14 +52,14 @@ Tr8n.TranslationKey = function(attrs) {
 Tr8n.TranslationKey.prototype = {
 
   addTranslation: function(translation) {
-    if (this.translations == null)
+    if (!this.translations)
       this.translations = {};
 
-    if (this.translations[translation.locale])
+    if (!this.translations[translation.locale])
       this.translations[translation.locale] = [];
 
     this.translations[translation.locale].push(
-      new Tr8n.Translation(Tr8n.Utils.merge(translation, {translation_key: this}))
+      new Tr8n.Translation(Tr8n.Utils.extend(translation, {translation_key: this}))
     );
   },
 
@@ -69,6 +69,10 @@ Tr8n.TranslationKey.prototype = {
         this.addTranslation(translation);
       }
     }
+  },
+
+  resetTranslations: function() {
+    this.translations = {};
   },
 
   getTranslationsForLanguage: function(language) {

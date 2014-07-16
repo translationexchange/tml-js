@@ -51,23 +51,29 @@ Tr8n.Translation.prototype = {
   },
 
   isValidTranslation: function(tokens) {
-    if (this.hasContextRules())
+    if (!this.hasContextRules())
       return true;
 
     var token_names = Tr8n.Utils.keys(this.context);
     for(var i=0; i<token_names.length; i++) {
-      var object = Tr8n.Configuration.prototype.tokenObject(tokens, token_names[i]);
+      var token_name = token_names[i];
+      var rules = this.context[token_name];
+      var object = Tr8n.Tokens.Data.prototype.getTokenObject(tokens, token_name);
+
       if (!object) return false;
 
-      var rule_keys = Tr8n.Utils.keys(this.context[token_names[i]]);
+      var rule_keys = Tr8n.Utils.keys(rules);
 
       for(var j=0; j<rule_keys.length; j++) {
-        if (rule_keys[j] != "other") {
-          var context = this.language.getContextByKeyword(rule_keys[j]);
-          if (context == null) return false; // unsupported context type
+        var context_key = rule_keys[j];
+        var rule_key = rules[rule_keys[j]];
+
+        if (rule_key != "other") {
+          var context = this.language.getContextByKeyword(context_key);
+          if (!context) return false; // unsupported context type
 
           var rule = context.findMatchingRule(object);
-          if (!rule || rule.keyword != rule_keys[j])
+          if (!rule || rule.keyword != rule_key)
             return false;
         }
       }

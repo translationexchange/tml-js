@@ -72,6 +72,7 @@ exports.LanguageCase = Tr8n.LanguageCase;
 exports.LanguageCaseRule = Tr8n.LanguageCaseRule;
 exports.Application = Tr8n.Application;
 exports.TranslationKey = Tr8n.TranslationKey;
+exports.Translation = Tr8n.Translation;
 
 
 exports.configure = function(callback) {
