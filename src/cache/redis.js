@@ -29,6 +29,6 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Tr8n.Api.Request = function() {
+Tr8n.Cache.Redis = function() {
 
 };
