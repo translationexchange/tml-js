@@ -15,6 +15,7 @@ describe('Tokenizers.Data', function(){
       assert.ok(!tokenizer.isTokenAllowed("users", {allowed_tokens: ["user"]}));
 
       var tokenizer = new Tr8n.Tokenizers.Data("You have {count || message}", {}, {allowed_tokens: ["user"]});
+      assert.equal(1, tokenizer.tokens.length);
 
     });
   });

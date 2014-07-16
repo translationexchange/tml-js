@@ -61,20 +61,34 @@ Tr8n.Tokens.Piped.prototype.constructor = Tr8n.Tokens.Data;
 
 Tr8n.Tokens.Piped.prototype.parseElements = function() {
   var name_without_parens = this.full_name.substring(1, this.full_name.length-1);
-  var name_without_case_keys = name_without_parens.split('::')[0].trim();
 
-  this.short_name = name_without_parens.split(':')[0].trim();
+  var parts = name_without_parens.split('|');
+  var name_without_pipes = parts[0].trim();
+
+  this.short_name = name_without_pipes.split(':')[0].trim();
+
   this.case_keys = [];
-
-  var keys = name_without_parens.match(/(::\s*\w+)/g) || [];
+  var keys = name_without_pipes.match(/(::\s*\w+)/g) || [];
   for (var i=0; i<keys.length; i++) {
     this.case_keys.push(keys[i].replace(/[:]/g, "").trim());
   }
 
   this.context_keys = [];
+  var name_without_case_keys = name_without_pipes.split('::')[0].trim();
   keys = name_without_case_keys.match(/(:\s*\w+)/g) || [];
   for (i=0; i<keys.length; i++) {
     this.context_keys.push(keys[i].replace(/[:]/g, "").trim());
+  }
+
+  this.separator = (this.full_name.indexOf("||") != -1 ? '||' : '|');
+
+  this.parameters = [];
+  parts = name_without_parens.split(this.separator);
+  if (parts.length > 1) {
+    parts = parts[1].split(',');
+    for (i=0; i<parts.length; i++) {
+      this.parameters.push(parts[i].trim());
+    }
   }
 };
 
