@@ -199,11 +199,11 @@ Tr8n.Configuration.prototype = {
   },
 
   isDisabled: function() {
-    return !enabled;
+    return !this.isEnabled();
   },
 
   isEnabled: function() {
-    return enabled;
+    return this.enabled;
   },
 
   getTokenObject: function(tokens, name) {
@@ -218,9 +218,9 @@ Tr8n.Configuration.prototype = {
 
   getSupportedTokens: function() {
     return [
-      [/(\{[^_:][\w]*(:[\w]+)*(::[\w]+)*\})/, Tr8n.Tokens.Data],
-      [/(\{[^_:.][\w]*(\.[\w]+)(:[\w]+)*(::[\w]+)*\})/, Tr8n.Tokens.Method],
-      [/(\{[^_:|][\w]*(:[\w]+)*(::[\w]+)*\s*\|\|?[^{^}]+\})/, Tr8n.Tokens.Piped]
+      [/(\{[^_:][\w]*(:[\w]+)*(::[\w]+)*\})/g, Tr8n.Tokens.Data],
+      [/(\{[^_:.][\w]*(\.[\w]+)(:[\w]+)*(::[\w]+)*\})/g, Tr8n.Tokens.Method],
+      [/(\{[^_:|][\w]*(:[\w]+)*(::[\w]+)*\s*\|\|?[^{^}]+\})/g, Tr8n.Tokens.Piped]
     ];
   }
 

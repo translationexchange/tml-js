@@ -32,7 +32,7 @@
 Tr8n.Translation = function(attrs) {
   Tr8n.Utils.extend(this, attrs);
 
-  if (this.locale && this.translation_key) {
+  if (!this.language && this.locale && this.translation_key) {
     this.language = this.translation_key.application.getLanguage(this.locale);
   }
 

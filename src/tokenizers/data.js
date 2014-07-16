@@ -29,10 +29,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Tr8n.Tokenizers.Data = function(label, context, options) {
+Tr8n.Tokenizers.Data = function(label) {
   this.label = label;
-  this.context = context || {};
-  this.options = options || {};
   this.tokenize();
 };
 
@@ -41,25 +39,28 @@ Tr8n.Tokenizers.Data.prototype = {
   tokenize: function() {
     this.tokens = [];
     var tokens = Tr8n.config.getSupportedTokens();
+
+    var label = "" + this.label;
     for (var i=0; i<tokens.length; i++) {
-      var matches = this.label.match(tokens[i][0]) || [];
-      for (var i=0; i<matches.length; i++) {
-          this.tokens.push(new tokens[i][1](matches[i], this.label));
+      var matches = label.match(tokens[i][0]) || [];
+      for (var j=0; j<matches.length; j++) {
+          this.tokens.push(new tokens[i][1](matches[j], this.label));
       }
+      label = label.replace(tokens[i][0], "");
     }
   },
 
-  isTokenAllowed: function(token) {
-    if (this.options.allowed_tokens) return true;
-    return (this.options.allowed_tokens.indexOf(token.name) != -1);
+  isTokenAllowed: function(token, options) {
+    if (!options.allowed_tokens) return true;
+    return (options.allowed_tokens.indexOf(token) != -1);
   },
 
-  substitute: function(language, options) {
+  substitute: function(language, context, options) {
     var label = this.label;
     for (var i=0; i<this.tokens.length; i++) {
       var token = this.tokens[i];
-      if (this.isTokenAllowed(token)) {
-        label = token.substitute(label, this.context, language, options);
+      if (this.isTokenAllowed(token.name, options)) {
+        label = token.substitute(label, context, language, options);
       }
     }
     return label;

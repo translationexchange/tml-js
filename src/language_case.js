@@ -53,21 +53,21 @@ Tr8n.LanguageCase.prototype = {
   },
 
   apply: function(value, object, options) {
-    var tags = Tr8n.Utils.unique(value.match(/<\/?[^>]*>/g));
-    var sanitized_value = value.replaceAll(/<\/?[^>]*>/, '');
+    var tags = Tr8n.Utils.unique(value.match(/<\/?[^>]*>/g) || []);
+    var sanitized_value = value.replace(/<\/?[^>]*>/g, '');
 
     var elements = [sanitized_value];
     if (this.application != 'phrase')
-      elements = Tr8n.Utils.unique(sanitized_value.split(/[\s\/]/));
+      elements = Tr8n.Utils.unique(sanitized_value.split(/[\s\/]/) || []);
 
     // replace html tokens with temporary placeholders {$h1}
     for(var i=0; i<tags.length; i++) {
-      value = value.replaceAll(tags[i], '{$h' + i + '}');
+      value = value.replace(tags[i], '{$h' + i + '}');
     }
 
     // replace words with temporary placeholders {$w1}
     for(i=0; i<elements.length; i++) {
-      value = value.replaceAll(elements[i], '{$w' + i + '}');
+      value = value.replace(elements[i], '{$w' + i + '}');
     }
 
     var transformed_elements = [];
@@ -80,12 +80,12 @@ Tr8n.LanguageCase.prototype = {
 
     // replace back temporary placeholders {$w1}
     for(i=0; i<elements.length; i++) {
-      value = value.replaceAll('{$w' + i + '}', transformed_elements[i]);
+      value = value.replace('{$w' + i + '}', transformed_elements[i]);
     }
 
     // replace back temporary placeholders {$h1}
     for(var i=0; i<tags.length; i++) {
-      value = value.replaceAll('{$h' + i + '}', tags[i]);
+      value = value.replace('{$h' + i + '}', tags[i]);
     }
 
     return value;

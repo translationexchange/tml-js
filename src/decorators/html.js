@@ -32,20 +32,21 @@
 Tr8n.Decorators.Html = {
 
   decorate: function(translated_label, translation_language, target_language, translation_key, options) {
+    options = options || {};
     if (options.skip_decorations) return translated_label;
 
     if (translation_key.language == target_language) return translated_label;
 
-    if (Tr8n.request && Tr8n.request.current_translator && Tr8n.request.current_translator.inline_mode) {
+    if (options.current_translator && options.current_translator.inline_mode) {
     } else return translated_label;
 
-    if (translation_key.locked && !Tr8n.request.current_translator.manager) return translated_label;
+    if (translation_key.locked && !options.current_translator.manager) return translated_label;
 
     var element = 'tr8n:tr';
     var classes = ['tr8n_translatable'];
 
     if (translation_key.locked) {
-      if (!Tr8n.request.current_translator.isFeatureEnabled("show_locked_keys"))
+      if (!options.current_translator.isFeatureEnabled("show_locked_keys"))
           return translated_label;
       classes.push('tr8n_locked');
     } else if (translation_language == translation_key.language) {
