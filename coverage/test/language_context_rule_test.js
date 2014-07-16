@@ -20,9 +20,10 @@ describe('Tr8n.LanguageContextRule', function(){
       assert.ok(rule.evaluate());
 
       rule = new Tr8n.LanguageContextRule({conditions: "(= 1 @var)"});
-      console.log(rule.evaluate({"var": "1"}));
-//      assert.ok(rule.evaluate({"@var": "1"}));
+      assert.ok(rule.evaluate({"@var": "1"}));
 
+      rule = new Tr8n.LanguageContextRule({conditions: "(= (+ @n 10) 15)"});
+      assert.ok(rule.evaluate({"@n": 5}));
     });
   });
 });

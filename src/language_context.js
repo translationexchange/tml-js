@@ -35,8 +35,8 @@ Tr8n.LanguageContext = function(attrs) {
   this.rules = {};
 
   var keys = Tr8n.Utils.keys(attrs.rules || {});
-  for (i=0; i<keys.length; i++) {
-    rules[keys[i]] = new Tr8n.LanguageContextRule(Tr8n.Utils.extend(attrs.rules[keys[i]], {language: this}));
+  for (var i=0; i<keys.length; i++) {
+    this.rules[keys[i]] = new Tr8n.LanguageContextRule(Tr8n.Utils.extend(attrs.rules[keys[i]], {language_context: this}));
   }
 
 };
@@ -44,7 +44,8 @@ Tr8n.LanguageContext = function(attrs) {
 Tr8n.LanguageContext.prototype = {
 
   isAppliedToToken: function(token) {
-    return token.match(new RegExp(this.token_expression)) != null;
+    var expr = new RegExp(this.token_expression.substring(1,this.token_expression.length-2));
+    return token.match(expr) != null;
   },
   
   getFallbackRule: function() {
@@ -52,18 +53,21 @@ Tr8n.LanguageContext.prototype = {
       var keys = Tr8n.Utils.keys(this.rules);
       for (var i=0; i<keys.length; i++) {
         var key = keys[i];
-        if (this.rules[key].isFallback()) {
-          this.fallback_rule = rule;
-        }
+        if (this.rules[key].isFallback())
+          this.fallback_rule = this.rules[key];
       }
     }
     return this.fallback_rule;
   },
-  
+
+  getConfig: function() {
+    return Tr8n.config.getContextRules(this.keyword);
+  },
+
   getVars: function(obj) {
     var vars = {};
-    var config = Tr8n.config.getContextRules(this.keyword);
-  
+    var config = this.getConfig();
+
     for (var i=0; i<this.variables.length; i++) {
       var key = this.variables[i];
       if (!config.variables || !config.variables[key]) {

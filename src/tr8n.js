@@ -59,6 +59,7 @@ fs.readFile("./../config/languages/en-US.json", function (err, data) {
 //Tr8n.api = new Tr8n.ApiClient();
 
 // Exporting classes
+exports.Configuration = Tr8n.Configuration;
 exports.RulesEngine = Tr8n.RulesEngine;
 exports.Tokenizers = Tr8n.Tokenizers;
 exports.Tokens = Tr8n.Tokens;
