@@ -172,6 +172,7 @@ Tr8n.RulesEngine.Evaluator.prototype = {
 
   evaluate: function(expr) {
     if (this.ctx['atom'].call(this, expr)) {
+      if (typeof expr == "string" && this.vars[expr]) return this.vars[expr];
       return (expr in this.ctx ? this.ctx[expr] : expr);
     }
     var 
