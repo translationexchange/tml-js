@@ -92,7 +92,15 @@ module.exports = function(grunt) {
           'lib/<%= pkg.name %>.min.js': ['<%= concat.dist.dest %>']
         }
       }
-    }
+    },
+    jsdoc : {
+      dist : {
+        src: ['src/*.js'], 
+        options: {
+          destination: 'doc'
+        }
+      }
+    }    
   });
 
   // Load the plugin that provides the "uglify" task.
@@ -106,10 +114,11 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-blanket');
+  grunt.loadNpmTasks('grunt-jsdoc');
 
 //  grunt.registerTask('test', ['jshint', 'mocha']);
   grunt.registerTask('test', ['concat', 'comments', 'clean', 'blanket', 'copy', 'mochaTest']);
-
+  grunt.registerTask('doc', ['jsdoc'])
   // Default task(s).
   grunt.registerTask('default', ['concat', 'uglify']);
 

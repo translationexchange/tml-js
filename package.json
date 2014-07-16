@@ -30,21 +30,22 @@
   },
   "devDependencies": {
     "grunt": "~0.4.5",
+    "grunt-blanket": "*",
+    "grunt-contrib-clean": "*",
     "grunt-contrib-concat": "~0.4.0",
+    "grunt-contrib-copy": "*",
     "grunt-contrib-jshint": "~0.10.0",
     "grunt-contrib-nodeunit": "~0.3.3",
     "grunt-contrib-uglify": "~0.4.0",
-    "grunt-stripcomments": "~0.3.0",
-    "grunt-contrib-clean": "*",
-    "grunt-contrib-copy": "*",
-    "grunt-blanket": "*",
-    "travis-cov": "*",
+    "grunt-jsdoc": "^0.5.6",
     "grunt-mocha-test": "^0.11.0",
-    "phantomjs": "1.8.1-1",
-    "should": "4.0.4",
+    "grunt-stripcomments": "~0.3.0",
     "jake": "*",
+    "jsdom": "*",
+    "phantomjs": "1.8.1-1",
     "request": "*",
-    "jsdom": "*"
+    "should": "4.0.4",
+    "travis-cov": "*"
   },
   "engines": {
     "node": "*"
