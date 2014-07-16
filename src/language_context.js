@@ -90,8 +90,9 @@ Tr8n.LanguageContext.prototype = {
   
   findMatchingRule: function(obj) {
     var token_vars = this.getVars(obj);
-  
+
     var keys = Tr8n.Utils.keys(this.rules);
+
     for (var i=0; i<keys.length; i++) {
       var rule = this.rules[keys[i]];
       if (!rule.isFallback() && rule.evaluate(token_vars))

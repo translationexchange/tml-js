@@ -34,6 +34,9 @@ describe('Tr8n.LanguageContext', function(){
         assert.deepEqual({"@gender": "male"}, context.getVars({g: 1}));
         assert.deepEqual({"@gender": "female"}, context.getVars({g: 0}));
 
+        assert.deepEqual("male", context.findMatchingRule({g: 1}).keyword);
+        assert.deepEqual("female", context.findMatchingRule({g: 0}).keyword);
+        assert.deepEqual("male", context.findMatchingRule({g: 2}).keyword);
       });
 
     });

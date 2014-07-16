@@ -68,6 +68,8 @@ exports.Utils = Tr8n.Utils;
 exports.Language = Tr8n.Language;
 exports.LanguageContext = Tr8n.LanguageContext;
 exports.LanguageContextRule = Tr8n.LanguageContextRule;
+exports.LanguageCase = Tr8n.LanguageCase;
+exports.LanguageCaseRule = Tr8n.LanguageCaseRule;
 exports.Application = Tr8n.Application;
 
 

@@ -38,3 +38,74 @@ Tr8n.LanguageCase = function(attrs) {
     this.rules.push(new Tr8n.LanguageCaseRule(Tr8n.Utils.extend(attrs.rules[i], {language_case: this})));
   }
 };
+
+
+Tr8n.LanguageCase.prototype = {
+
+  findMatchingRule: function(value, object) {
+    for (var i=0; i<this.rules.length; i++) {
+      var rule = this.rules[i];
+      if (rule.evaluate(value, object))
+        return rule;
+    }
+
+    return null;
+  },
+
+  apply: function(value, object, options) {
+    var tags = Tr8n.Utils.unique(value.match(/<\/?[^>]*>/g));
+    var sanitized_value = value.replaceAll(/<\/?[^>]*>/, '');
+
+    var elements = [sanitized_value];
+    if (this.application != 'phrase')
+      elements = Tr8n.Utils.unique(sanitized_value.split(/[\s\/]/));
+
+    // replace html tokens with temporary placeholders {$h1}
+    for(var i=0; i<tags.length; i++) {
+      value = value.replaceAll(tags[i], '{$h' + i + '}');
+    }
+
+    // replace words with temporary placeholders {$w1}
+    for(i=0; i<elements.length; i++) {
+      value = value.replaceAll(elements[i], '{$w' + i + '}');
+    }
+
+    var transformed_elements = [];
+    for(i=0; i<elements.length; i++) {
+      var element = elements[i];
+      var rule = this.findMatchingRule(element, object);
+      var case_value = (rule ? rule.apply(element) : element);
+      transformed_elements.push(this.decorate(element, case_value, rule, options));
+    }
+
+    // replace back temporary placeholders {$w1}
+    for(i=0; i<elements.length; i++) {
+      value = value.replaceAll('{$w' + i + '}', transformed_elements[i]);
+    }
+
+    // replace back temporary placeholders {$h1}
+    for(var i=0; i<tags.length; i++) {
+      value = value.replaceAll('{$h' + i + '}', tags[i]);
+    }
+
+    return value;
+  },
+
+  getConfig: function() {
+    return Tr8n.config;
+  },
+
+  decorate: function(original, value, rule, options) {
+    if (
+        (options && options.skip_decoration) ||
+        this.language == null ||
+        this.language.isDefault() ||
+        this.getConfig().current_translator == null ||
+        !this.getConfig().current_translator.isInlineModeEnabled()
+      ) return value;
+
+    return "<tr8n:tr class='tr8n_language_case' data-original='" + original.replaceAll("'", "\'") + "'>" + value + "</tr8n:tr>";
+  }
+
+};
+

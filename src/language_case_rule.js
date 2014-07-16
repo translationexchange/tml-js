@@ -63,21 +63,21 @@ Tr8n.LanguageCaseRule.prototype = {
   },
   
   evaluate: function(value, object) {
-    if (this.attrs.conditions == null)
+    if (this.conditions == null)
       return false;
   
     var evaluator = new Tr8n.RulesEngine.Evaluator();
-    evaluator.setVars(Tr8n.Utils.extend({value: value}, this.getGenderVariables(object)));
+    evaluator.setVars(Tr8n.Utils.extend({"@value": value}, this.getGenderVariables(object)));
   
     return evaluator.evaluate(this.getConditionsExpression());
   },
   
   apply: function(value) {
-    if (this.attrs.operations == null)
+    if (this.operations == null)
       return value;
   
     var evaluator = new Tr8n.RulesEngine.Evaluator();
-    evaluator.setVars({value: value});
+    evaluator.setVars({"@value": value});
   
     return evaluator.evaluate(this.getOperationsExpression());
   }
