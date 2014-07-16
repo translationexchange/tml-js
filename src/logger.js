@@ -29,37 +29,13 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Tr8n.Tokens.Method = function(name, label) {
-  if (!name) return;
-  this.full_name = name;
-  this.label = label;
-  this.parseElements();
-  this.initObject();
+/**
+ * Logger
+ */
+Tr8n.Logger = {
+
+  log: function(msg) {
+    console.log(new Date() + ": " + msg);
+  }
+
 };
-
-Tr8n.Tokens.Method.prototype = new Tr8n.Tokens.Data();
-Tr8n.Tokens.Method.prototype.constructor = Tr8n.Tokens.Method;
-
-Tr8n.Tokens.Method.prototype.initObject = function() {
-  var parts = this.short_name.split('.');
-  this.short_name = parts[0];
-  this.object_method = parts[1];
-};
-
-Tr8n.Tokens.Method.prototype.getTokenValue = function(tokens, language, options) {
-  tokens = tokens || {};
-
-  var object = tokens[this.short_name];
-  if (!object) return this.error("Missing token value");
-
-  var value = object[this.object_method] || object[this.object_method]();
-
-  return value || value.toString();
-};
-
-Tr8n.Tokens.Method.prototype.substitute = function(label, tokens, language, options) {
-  return label.replace(this.full_name,
-    this.sanitize(this.getTokenValue(tokens), this.getTokenObject(tokens), language, Tr8n.Utils.extend(options, {safe: false}))
-  );
-};
-

@@ -26,8 +26,8 @@ module.exports = function(grunt) {
       },
       dist: {
         src: [
-          'vendor/*.js', 'src/api/*.js',
-          'src/namespace.js', 'src/utils.js', 'src/configuration.js',
+          'vendor/*.js', 'src/namespace.js',
+          'src/api/*.js', 'src/cache/*.js', 'src/utils.js', 'src/configuration.js', 'src/logger.js',
           'src/tokens/data.js', 'src/tokens/method.js', 'src/tokens/piped.js',
           'src/rules_engine/*.js', 'src/tokenizers/**/*.js', 'src/decorators/*.js',
           'src/application.js', 'src/source.js',
@@ -100,7 +100,13 @@ module.exports = function(grunt) {
           destination: 'doc'
         }
       }
-    }    
+    },
+    watch: {
+      all: {
+        files: ['src/**/*.js', 'test/**/*.js'],
+        tasks: ['concat', 'comments', 'clean', 'blanket', 'copy', 'mochaTest'] //NOTE the :run flag
+      }
+    }
   });
 
   // Load the plugin that provides the "uglify" task.
@@ -113,6 +119,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-mocha-test');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-blanket');
   grunt.loadNpmTasks('grunt-jsdoc');
 

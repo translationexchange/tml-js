@@ -27,6 +27,7 @@ describe('Tr8n.LanguageContext', function(){
         assert.deepEqual(["@gender"], context.variables);
         assert.deepEqual({"@gender": "male"}, context.getVars({gender: "male"}));
 
+        var temp = context.getConfig().variables["@gender"];
         context.getConfig().variables["@gender"] = function(obj) {
           return (obj.g == 0 ? "female" : "male");
         };
@@ -37,6 +38,8 @@ describe('Tr8n.LanguageContext', function(){
         assert.deepEqual("male", context.findMatchingRule({g: 1}).keyword);
         assert.deepEqual("female", context.findMatchingRule({g: 0}).keyword);
         assert.deepEqual("male", context.findMatchingRule({g: 2}).keyword);
+
+        context.getConfig().variables["@gender"] = temp;
       });
 
     });

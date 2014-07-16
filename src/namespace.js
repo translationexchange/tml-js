@@ -34,5 +34,7 @@ var Tr8n = {
   "Tokens": {},
   "RulesEngine": {},
   "Decorators": {},
-  "Utils": {}
+  "Utils": {},
+  "Api": {},
+  "Cache": {}
 }

@@ -106,8 +106,8 @@ Tr8n.TranslationKey.prototype = {
     }
 
     return decorator.decorate(
-      this.substituteTokens(this.label, tokens, this.language, options),
-      this.language,
+      this.substituteTokens(this.label, tokens, this.language || language, options),
+      this.language || language,
       language,
       this, options
     );
@@ -133,6 +133,7 @@ Tr8n.TranslationKey.prototype = {
   getDecorationTokenNames: function() {
     if (!this.decoration_tokens) {
       var tokenizer = new Tr8n.Tokenizers.Decoration(this.label);
+      tokenizer.parse();
       this.decoration_tokens = tokenizer.tokens;
     }
     return this.decoration_tokens;
@@ -145,8 +146,8 @@ Tr8n.TranslationKey.prototype = {
     }
 
     if (label.indexOf('[') != -1) {
-      tokenizer = new Tr8n.Tokenizers.Decoration(label, tokens, Tr8n.Utils.extend(options, {allowed_tokens: this.getDecorationTokenNames()}));
-      label = tokenizer.substitute(language, options);
+      tokenizer = new Tr8n.Tokenizers.Decoration(label);
+      label = tokenizer.substitute(tokens, Tr8n.Utils.extend(options, {allowed_tokens: this.getDecorationTokenNames()}));
     }
     return label;
   }

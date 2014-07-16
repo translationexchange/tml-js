@@ -39,10 +39,8 @@ var TOKEN_TYPE_SHORT     = "short";
 var TOKEN_TYPE_LONG      = "long";
 var PLACEHOLDER          = "{$0}";
 
-Tr8n.Tokenizers.Decoration = function(label, context, opts) {
+Tr8n.Tokenizers.Decoration = function(label) {
   this.label =  "[" + RESERVED_TOKEN + "]" + label + "[/" + RESERVED_TOKEN + "]";
-  this.context = context || {};
-  this.opts = opts || {};
   this.fragments = [];
   this.tokens = [];
   this.tokenize();
@@ -108,7 +106,7 @@ Tr8n.Tokenizers.Decoration.prototype = {
   },
 
   isTokenAllowed: function(token) {
-    return (this.opts["allowed_tokens"] == null || this.opts["allowed_tokens"].indexOf(token) != -1);
+    return (!this.options.allowed_tokens || this.options.allowed_tokens.indexOf(token) != -1);
   },
 
   getDefaultDecoration: function(token, value) {
@@ -157,13 +155,16 @@ Tr8n.Tokenizers.Decoration.prototype = {
     expr.shift();
     var self = this;
     var value = [];
-    expr.forEach(function(obj, index) {
-      value.push(self.evaluate(obj));
-    });
+    for (var i=0; i<expr.length; i++) {
+      value.push(self.evaluate(expr[i]));
+    }
     return this.apply(token, value.join(''));
   },
 
-  substitute: function(language, options) {
+  substitute: function(tokens, options) {
+    this.context = tokens || {};
+    this.options = options || {};
+
     return this.evaluate(this.parse());
   }
 

@@ -58,28 +58,28 @@ describe('Decoration', function(){
       var tokenizer = new Tr8n.Tokenizers.Decoration("[bold] Hello World [/bold]");
       assert.deepEqual("<strong> Hello World </strong>", tokenizer.substitute());
 
-      var tokenizer = new Tr8n.Tokenizers.Decoration("[p: Hello World]", {p: '<p>{$0}</p>'});
-      assert.deepEqual("<p>Hello World</p>", tokenizer.substitute());
+      var tokenizer = new Tr8n.Tokenizers.Decoration("[p: Hello World]");
+      assert.deepEqual("<p>Hello World</p>", tokenizer.substitute({p: '<p>{$0}</p>'}));
 
-      var tokenizer = new Tr8n.Tokenizers.Decoration("[p: Hello World]", {p: function(text) {
+      var tokenizer = new Tr8n.Tokenizers.Decoration("[p: Hello World]");
+      assert.deepEqual("<p>Hello World</p>", tokenizer.substitute({p: function(text) {
         return "<p>" + text + "</p>";
-      }});
-      assert.deepEqual("<p>Hello World</p>", tokenizer.substitute());
+      }}));
 
-      var tokenizer = new Tr8n.Tokenizers.Decoration("[link: you have 5 messages]", {link: '<a href="http://mail.google.com">{$0}</a>'});
-      assert.deepEqual("<a href=\"http://mail.google.com\">you have 5 messages</a>", tokenizer.substitute());
+      var tokenizer = new Tr8n.Tokenizers.Decoration("[link: you have 5 messages]");
+      assert.deepEqual("<a href=\"http://mail.google.com\">you have 5 messages</a>", tokenizer.substitute({link: '<a href="http://mail.google.com">{$0}</a>'}));
 
-      var tokenizer = new Tr8n.Tokenizers.Decoration("[link: you have 5 messages]", {link: {href: "http://www.google.com"}});
-      assert.deepEqual("<a href='http://www.google.com'>you have 5 messages</a>", tokenizer.substitute());
+      var tokenizer = new Tr8n.Tokenizers.Decoration("[link: you have 5 messages]");
+      assert.deepEqual("<a href='http://www.google.com'>you have 5 messages</a>", tokenizer.substitute({link: {href: "http://www.google.com"}}));
 
-      var tokenizer = new Tr8n.Tokenizers.Decoration("[link: you have {count || message}]", {link: {href: "http://www.google.com"}});
-      assert.deepEqual("<a href='http://www.google.com'>you have {count || message}</a>", tokenizer.substitute());
+      var tokenizer = new Tr8n.Tokenizers.Decoration("[link: you have {count || message}]");
+      assert.deepEqual("<a href='http://www.google.com'>you have {count || message}</a>", tokenizer.substitute({link: {href: "http://www.google.com"}}));
 
       var tokenizer = new Tr8n.Tokenizers.Decoration("[custom: you have {count || message}]");
       assert.deepEqual("you have {count || message}", tokenizer.substitute());
 
-      var tokenizer = new Tr8n.Tokenizers.Decoration("[custom: you have {count || message}]", {custom:1});
-      assert.deepEqual("you have {count || message}", tokenizer.substitute());
+      var tokenizer = new Tr8n.Tokenizers.Decoration("[custom: you have {count || message}]");
+      assert.deepEqual("you have {count || message}", tokenizer.substitute({custom:1}));
 
     });
   });

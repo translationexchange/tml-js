@@ -52,12 +52,15 @@
  *
  */
 
-Tr8n.Tokens.Piped = function() {
-  Tr8n.Tokens.Data.apply(this, arguments);
+Tr8n.Tokens.Piped = function(name, label) {
+  if (!name) return;
+  this.full_name = name;
+  this.label = label;
+  this.parseElements();
 };
 
-Tr8n.Tokens.Piped.prototype = Tr8n.Tokens.Data.prototype;
-Tr8n.Tokens.Piped.prototype.constructor = Tr8n.Tokens.Data;
+Tr8n.Tokens.Piped.prototype = new Tr8n.Tokens.Data();
+Tr8n.Tokens.Piped.prototype.constructor = Tr8n.Tokens.Piped;
 
 Tr8n.Tokens.Piped.prototype.parseElements = function() {
   var name_without_parens = this.full_name.substring(1, this.full_name.length-1);
@@ -97,27 +100,27 @@ Tr8n.Tokens.Piped.prototype.isValueDisplayedInTranslation = function() {
 };
 
 /**
- * token:      {count|| one: message, many: messages}
- * results in: {"one": "message", "many": "messages"}
- *
- * token:      {count|| message}
- * transform:  [{"one": "{$0}", "other": "{$0::plural}"}, {"one": "{$0}", "other": "{$1}"}]
- * results in: {"one": "message", "other": "messages"}
- *
- * token:      {count|| message, messages}
- * transform:  [{"one": "{$0}", "other": "{$0::plural}"}, {"one": "{$0}", "other": "{$1}"}]
- * results in: {"one": "message", "other": "messages"}
- *
- * token:      {user| Dorogoi, Dorogaya}
- * transform:  ["unsupported", {"male": "{$0}", "female": "{$1}", "other": "{$0}/{$1}"}]
- * results in: {"male": "Dorogoi", "female": "Dorogaya", "other": "Dorogoi/Dorogaya"}
- *
- * token:      {actors:|| likes, like}
- * transform:  ["unsupported", {"one": "{$0}", "other": "{$1}"}]
- * results in: {"one": "likes", "other": "like"}
- *
- *
- */
+* token:      {count|| one: message, many: messages}
+* results in: {"one": "message", "many": "messages"}
+*
+* token:      {count|| message}
+* transform:  [{"one": "{$0}", "other": "{$0::plural}"}, {"one": "{$0}", "other": "{$1}"}]
+* results in: {"one": "message", "other": "messages"}
+*
+* token:      {count|| message, messages}
+* transform:  [{"one": "{$0}", "other": "{$0::plural}"}, {"one": "{$0}", "other": "{$1}"}]
+* results in: {"one": "message", "other": "messages"}
+*
+* token:      {user| Dorogoi, Dorogaya}
+* transform:  ["unsupported", {"male": "{$0}", "female": "{$1}", "other": "{$0}/{$1}"}]
+* results in: {"male": "Dorogoi", "female": "Dorogaya", "other": "Dorogoi/Dorogaya"}
+*
+* token:      {actors:|| likes, like}
+* transform:  ["unsupported", {"one": "{$0}", "other": "{$1}"}]
+* results in: {"one": "likes", "other": "like"}
+*
+*
+*/
 
 Tr8n.Tokens.Piped.prototype.generateValueMapForContext = function(context) {
   var values = {};
@@ -138,20 +141,21 @@ Tr8n.Tokens.Piped.prototype.generateValueMapForContext = function(context) {
   }
 
   // "unsupported"
-  if (typeof token_mapping == "string") {
+  if (typeof token_mapping === "string") {
     this.error("The token mapping " + token_mapping + " does not support the parameters.");
     return null;
   }
 
   // ["unsupported", {}]
-  if (typeof token_mapping == "array") {
+  if (Tr8n.Utils.isArray(token_mapping)) {
     if (this.parameters.length > token_mapping.length) {
       this.error("The token mapping " + token_mapping + " does not support " + this.parameters.length + " parameters");
       return null;
     }
 
     token_mapping = token_mapping[this.parameters.length-1];
-    if (typeof token_mapping == "string") {
+
+    if (typeof token_mapping === "string") {
       this.error("The token mapping " + token_mapping + " does not support " + this.parameters.length + " parameters");
       return null;
     }
@@ -159,16 +163,18 @@ Tr8n.Tokens.Piped.prototype.generateValueMapForContext = function(context) {
 
   // {}
   var keys = Tr8n.Utils.keys(token_mapping);
-  for (i=0; i<keys.length; i++) {
+
+  for (var i=0; i<keys.length; i++) {
     var key = keys[i];
+
     var value = token_mapping[key];
     values[key] = value;
 
     // token form {$0::plural} - number followed by language cases
-    keys = value.match(/{\$\d(::[\w]+)*\}/g);
+    var internal_keys = value.match(/{\$\d(::[\w]+)*\}/g);
 
-    for (var j=0; j<keys.length; j++) {
-      var token = keys[j];
+    for (var j=0; j<internal_keys.length; j++) {
+      var token = internal_keys[j];
       var token_without_parens = token.replace(/[\{\}]/g, '');
       var parts = token_without_parens.split('::');
       var index = parseInt(parts[0].replace(/[$]/, ''));
@@ -180,15 +186,13 @@ Tr8n.Tokens.Piped.prototype.generateValueMapForContext = function(context) {
 
       var val = this.parameters[index];
 
-      // TODO: check if language cases are enabled
-
-      parts.pop();
+      parts.shift();
       for (var k=0; k<parts.length; k++) {
         var language_case = context.language.getLanguageCaseByKeyword(parts[k]);
         if (language_case) val = language_case.apply(val);
       }
 
-      values[key] = values[key].replace(tkey, val);
+      values[key] = values[key].replace(internal_keys[j], val);
     }
   }
 
@@ -201,7 +205,7 @@ Tr8n.Tokens.Piped.prototype.substitute = function(label, tokens, language, optio
     return label;
   }
 
-  var object = this.tokenObject(tokens, this.short_name);
+  var object = this.getTokenObject(tokens);
 
   if (this.parameters.length == 0) {
     this.error("Piped params may not be empty");
@@ -224,16 +228,17 @@ Tr8n.Tokens.Piped.prototype.substitute = function(label, tokens, language, optio
     if (fallback_rule && piped_values[fallback_rule.keyword]) {
       value = piped_values[fallback_rule.keyword];
     } else {
+      this.error("No matching context rule found and no fallback provided");
       return label;
     }
   }
 
   var token_value = [];
   if (this.isValueDisplayedInTranslation()) {
-    token_value.push(this.tokenValue(tokens, language, options));
+    token_value.push(this.getTokenValue(tokens, language, options));
     token_value.push(" ");
   } else {
-    value = value.replace("#" + this.short_name + "#", this.tokenValue(tokens, language, options));
+    value = value.replace("#" + this.short_name + "#", this.getTokenValue(tokens, language, options));
   }
   token_value.push(value);
 

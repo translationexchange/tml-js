@@ -211,16 +211,6 @@ Tr8n.Configuration.prototype = {
     return this.enabled;
   },
 
-  getTokenObject: function(tokens, name) {
-    if (tokens == null) return null;
-
-    var object = tokens[name];
-    if (typeof object === 'array')
-      return object[0];
-
-    return object.object || object;
-  },
-
   getSupportedTokens: function() {
     return [
       [/(\{[^_:][\w]*(:[\w]+)*(::[\w]+)*\})/g, Tr8n.Tokens.Data],

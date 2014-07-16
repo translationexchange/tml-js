@@ -101,6 +101,28 @@ Tr8n.Utils = {
   
   generateKey: function(label, description) {
     return MD5(label + ";;;" + description);
+  },
+
+  isArray: function(object) {
+    return (Object.prototype.toString.call( object ) === "[object Array]");
+  },
+
+  isObject: function(object) {
+    return (typeof object === "object");
+  },
+
+  isFunction: function(object) {
+    return (typeof object === "function");
+  },
+
+  escapeHTML: function(str) {
+    return str.replace(/[&<>]/g, function(tag) {
+      return {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;'
+      }[tag] || tag;
+    });
   }
 
 };

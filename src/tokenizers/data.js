@@ -42,9 +42,10 @@ Tr8n.Tokenizers.Data.prototype = {
 
     var label = "" + this.label;
     for (var i=0; i<tokens.length; i++) {
-      var matches = label.match(tokens[i][0]) || [];
+      var token = tokens[i];
+      var matches = label.match(token[0]) || [];
       for (var j=0; j<matches.length; j++) {
-          this.tokens.push(new tokens[i][1](matches[j], this.label));
+        this.tokens.push(new token[1](matches[j], this.label));
       }
       label = label.replace(tokens[i][0], "");
     }
@@ -56,7 +57,9 @@ Tr8n.Tokenizers.Data.prototype = {
   },
 
   substitute: function(language, context, options) {
+    options = options || {};
     var label = this.label;
+
     for (var i=0; i<this.tokens.length; i++) {
       var token = this.tokens[i];
       if (this.isTokenAllowed(token.name, options)) {

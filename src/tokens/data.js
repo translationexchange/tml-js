@@ -41,6 +41,7 @@
  */
 
 Tr8n.Tokens.Data = function(name, label) {
+  if (!name) return;
   this.full_name = name;
   this.label = label;
   this.parseElements();
@@ -90,11 +91,13 @@ Tr8n.Tokens.Data.prototype = {
    * @param name
    * @returns {*}
    */
-  tokenObject: function(tokens, name) {
-    if (tokens == null) return null;
-  
+  getTokenObject: function(tokens, name) {
+    if (!tokens) return null;
+
+    name = name || this.short_name;
+
     var object = tokens[name];
-    if (typeof object === 'array')
+    if (Tr8n.Utils.isArray(object))
       return object[0];
   
     return object.object || object;
@@ -120,32 +123,24 @@ Tr8n.Tokens.Data.prototype = {
    * @example
    *
    * tr("Hello {user}", {user: [{name: "Michael", gender: "male"}, "Michael"]}}
-   * tr("Hello {user}", {user: [{name: "Michael", gender: "male"}, "@name"]}}
-   * tr("Hello {user}", {user: [{name: "Michael", gender: "male"}, "@@method"]}}
    *
    */
   
   getTokenValueFromArrayParam: function(arr, language, options) {
     options = options || {};
-    if (arr.lenght == 0)
+    if (arr.length == 0)
       return this.error("Invalid number of params of an array");
   
     var object = arr[0];
-    var method = arr.lenght > 1 ? arr[1] : null;
+    var method = arr.length > 1 ? arr[1] : null;
   
-    if (typeof object === "array")
+    if (Tr8n.Utils.isArray(object))
       return this.getTokenValueFromArray(arr, language, options);
   
-    if (method == null)
-      return this.sanitize("" + object, object, language, Tr8n.Utils.extend(options, {safe: false}));
-  
-    if (method.match(/^@@/))
-      return this.sanitize(object[method](), object, language, Tr8n.Utils.extend(options, {safe: false}));
-  
-    if (method.match(/^@/))
-      return this.sanitize(object[method], object, language, Tr8n.Utils.extend(options, {safe: false}));
-  
-    return this.sanitize(method, object, language, Tr8n.Utils.extend(options, {safe: true}));
+    if (!method)
+      return this.sanitize(object.toString(), object, language, Tr8n.Utils.extend(options, {safe: false}));
+
+    return this.sanitize(method.toString(), object, language, Tr8n.Utils.extend(options, {safe: true}));
   },
   
   
@@ -167,8 +162,8 @@ Tr8n.Tokens.Data.prototype = {
     var object = hash.object;
   
     if (value) return this.sanitize(value, object || hash, language, Tr8n.Utils.extend(options, {safe: true}));
-    if (!object) return this.error("No object or value are provided in the hash");
-  
+    if (!object) return this.sanitize(hash.toString(), object, language, Tr8n.Utils.extend(options, {safe: false}));
+
     var attr = hash.attribute;
   
     if (!attr) return this.error("Missing value for hash token");
@@ -213,41 +208,43 @@ Tr8n.Tokens.Data.prototype = {
       separator: ", ",
       joiner: 'and',
       less: '{laquo} less',
-      expandable: true,
+      expandable: false,
       collapsable: true
     };
-  
+
+    options = options || {};
     var objects = params[0];
     var method = (params.length > 1 ? params[1] : null);
   
     if (params.length > 2)
-      list_options = Tr8n.Utils.merge(list_options, params[2]);
+      list_options = Tr8n.Utils.extend(list_options, params[2]);
   
-    if (options["skip_decorations"])
+    if (options.skip_decorations)
       list_options.expandable = false;
   
     var values = [];
-    for (var obj in objects) {
+    for (var i=0; i<objects.length; i++) {
+      var obj = objects[i];
       if (method == null) {
         values.push(this.sanitize("" + obj, obj, language, Tr8n.Utils.extend(options, {safe: false})));
       } else if (typeof method === "string") {
-        if (method.match(/^@@/))
-          values.push(this.sanitize(obj[method](), obj, language, Tr8n.Utils.extend(options, {safe: false})));
-        else if (method.match(/^@/))
-          values.push(this.sanitize(obj[method], obj, language, Tr8n.Utils.extend(options, {safe: false})));
-        else
+        if (method.match(/^@/)) {
+          var attr = method.replace(/^@/, "");
+          values.push(this.sanitize(obj[attr] || obj[attr](), obj, language, Tr8n.Utils.extend(options, {safe: false})));
+        } else {
           values.push(method.replace("{$0}", this.sanitize("" + obj, obj, language, Tr8n.Utils.extend(options, {safe: false}))));
-      } else if (typeof method === "object") {
+        }
+      } else if (Tr8n.Utils.isObject(method)) {
         var attribute = method.attribute;
         var value = method.value;
   
-        if (attribute == null)
+        if (!attribute)
           return this.error("No attribute is provided for the hash object in the array");
   
-        if (!object[attribute])
+        if (!obj[attribute])
           return this.error("Hash object in the array does not contain such attribute");
   
-        attribute = this.sanitize(object[attribute], object, language, Tr8n.Utils.extend(options, {safe: false}));
+        attribute = this.sanitize(obj[attribute], obj, language, Tr8n.Utils.extend(options, {safe: false}));
   
         if (value)
           values.push(value.replace("{$0}", attribute));
@@ -258,7 +255,7 @@ Tr8n.Tokens.Data.prototype = {
       }
     }
   
-    if (values.lenght == 1)
+    if (values.length == 1)
       return values[0];
   
     if (!list_options.joiner || list_options.joiner == "")
@@ -277,9 +274,9 @@ Tr8n.Tokens.Data.prototype = {
     var result = displayed_values.join(list_options.separator);
     var other_values = language.translate("{count||other}", list_options.description, {count: remaining_values.length}, options);
   
-    if (list_options.expandable) {
+    if (!list_options.expandable) {
       result = result + " " + joiner + " ";
-      if (list_options.remainder && typeof list_options.remainder === "function")
+      if (Tr8n.Utils.isFunction(list_options))
         return result + list_options.remainder(remaining_values);
       return result + other_values;
     }
@@ -312,26 +309,19 @@ Tr8n.Tokens.Data.prototype = {
   },
   
   getTokenValue: function(tokens, language, options) {
+    tokens = tokens || {};
     options = options || {};
-    var object = null;
-  
-    if (tokens[this.short_name])
-      object = tokens[this.short_name];
-    else
-      object = Tr8n.config.getDefaultToken(this.short_name);
-  
-    if (!object)
-      return this.error("Missing token value");
-  
-    if (typeof object === "array") {
+
+    var object = tokens[this.short_name] || Tr8n.config.getDefaultToken(this.short_name);
+    if (!object) return this.error("Missing token value");
+
+    if (Tr8n.Utils.isArray(object))
       return this.getTokenValueFromArrayParam(object, language, options);
-    }
-  
-    if (typeof object === "object") {
+
+    if (Tr8n.Utils.isObject(object))
       return this.getTokenValueFromHashParam(object, language, options);
-    }
-  
-    return this.sanitize("" + object, object, language, Tr8n.Utils.extend(options, {safe: false}));
+
+    return this.sanitize(object.toString(), object, language, Tr8n.Utils.extend(options, {safe: false}));
   },
   
   applyCase: function(key, value, object, language, options) {
@@ -341,12 +331,11 @@ Tr8n.Tokens.Data.prototype = {
   },
   
   sanitize: function(value, object, language, options) {
-    value = "" + value;
+    options = options || {};
+    value = value.toString();
   
-    if (!options.safe) {
-      value = escape(value);
-    }
-  
+    if (!options.safe) value = Tr8n.Utils.escapeHTML(value);
+
     if (this.case_keys.length > 0) {
       for (var i=0; i<this.case_keys.length; i++) {
         value = this.applyCase(this.case_keys[i], value, object, language, options);
