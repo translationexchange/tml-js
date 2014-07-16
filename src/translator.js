@@ -29,6 +29,12 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+/**
+ * Translator
+ *
+ * @constructor
+ * @param {object} attrs - options
+ */
 Tr8n.Translator = function(attrs) {
   Tr8n.Utils.extend(this, attrs);
 };

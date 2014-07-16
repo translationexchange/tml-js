@@ -29,14 +29,24 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+/**
+ * Utils
+ */
 Tr8n.Utils = {
 
-  hashValue: function(hash, key, defaultValue) {
-    defaultValue = defaultValue || null;
+  /**
+   * hashValue
+   *
+   * @param {object} hash - hash to look for data
+   * @param {string} key - dot separated nested key
+   * @param {string} default_value - value to be returned if nothing is found
+   */
+  hashValue: function(hash, key, default_value) {
+    default_value = default_value || null;
     var parts = key.split(".");
     for(var i=0; i<parts.length; i++) {
       var part = parts[i];
-      if (typeof hash[part] === "undefined") return defaultValue;
+      if (typeof hash[part] === "undefined") return default_value;
       hash = hash[part];
     }
     return hash;

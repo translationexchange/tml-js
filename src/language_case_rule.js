@@ -29,6 +29,12 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+/**
+ * Language Case Rule
+ *
+ * @constructor
+ * @param {object} attrs - options
+ */
 Tr8n.LanguageCaseRule = function(attrs) {
   Tr8n.Utils.extend(this, attrs);
 };

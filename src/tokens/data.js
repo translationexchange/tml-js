@@ -29,6 +29,17 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+/**
+ * Tokens.Data
+ *
+ * @description
+ * Data token
+ *
+ * @constructor
+ * @param name
+ * @param label
+ */
+
 Tr8n.Tokens.Data = function(name, label) {
   this.full_name = name;
   this.label = label;
@@ -36,6 +47,10 @@ Tr8n.Tokens.Data = function(name, label) {
 };
 
 Tr8n.Tokens.Data.prototype = {
+
+  /**
+   *  parseElements
+   */
   parseElements: function() {
     var name_without_parens = this.full_name.substring(1, this.full_name.length-1);
     var name_without_case_keys = name_without_parens.split('::')[0].trim();
@@ -54,14 +69,27 @@ Tr8n.Tokens.Data.prototype = {
       this.context_keys.push(keys[i].replace(/[:]/g, "").trim());
     }
   },
-  
+
+  /**
+   * getContextForLanguage
+   *
+   * @param language
+   * @returns {*}
+   */
   getContextForLanguage: function(language) {
     if (this.context_keys.length > 0)
       return language.getContextByKeyword(this.context_keys[0]);
   
     return language.getContextByTokenName(this.short_name);
   },
-  
+
+  /**
+   * tokenObject
+   *
+   * @param tokens
+   * @param name
+   * @returns {*}
+   */
   tokenObject: function(tokens, name) {
     if (tokens == null) return null;
   
@@ -71,17 +99,25 @@ Tr8n.Tokens.Data.prototype = {
   
     return object.object || object;
   },
-  
+
+  /**
+   * error
+   *
+   * @param msg
+   * @returns {*}
+   */
   error: function(msg) {
     console.log(this.full_name + " in \"" + this.label + "\" : " + msg);
     return this.full_name;
   },
   
   /**
+   * getTokenValueFromArrayParam
    *
+   * @description
    * gets the value based on various evaluation methods
    *
-   * examples:
+   * @example
    *
    * tr("Hello {user}", {user: [{name: "Michael", gender: "male"}, "Michael"]}}
    * tr("Hello {user}", {user: [{name: "Michael", gender: "male"}, "@name"]}}
@@ -114,10 +150,11 @@ Tr8n.Tokens.Data.prototype = {
   
   
   /**
-   * examples:
+   * getTokenValueFromHashParam
+   *
+   * @example
    *
    * tr("Hello {user}", {user: {value: "Michael", gender: "male"}}}
-   *
    * tr("Hello {user}", {user: {object: {gender: "male"}, value: "Michael"}}}
    * tr("Hello {user}", {user: {object: {name: "Michael", gender: "male"}, property: "name"}}}
    * tr("Hello {user}", {user: {object: {name: "Michael", gender: "male"}, attribute: "name"}}}
@@ -141,22 +178,21 @@ Tr8n.Tokens.Data.prototype = {
   
   
   /**
+   * getTokenValueFromArray
    *
-   * tr("Hello {user_list}!", {user_list: [[user1, user2, user3], "@name"]}}
-   *
+   * @description
    * first element is an array, the rest of the elements are similar to the
    * regular tokens lambda, symbol, string, with parameters that follow
    *
    * if you want to pass options, then make the second parameter an array as well
    *
+   * @example
+   *
+   * tr("Hello {user_list}!", {user_list: [[user1, user2, user3], "@name"]}}
    * tr("{users} joined the site", {users: [[user1, user2, user3], "@name"]})
-   *
    * tr("{users} joined the site", {users: [[user1, user2, user3], function(user) { return user.name; }]})
-   *
    * tr("{users} joined the site", {users: [[user1, user2, user3], {attribute: "name"})
-   *
    * tr("{users} joined the site", {users: [[user1, user2, user3], {attribute: "name", value: "<strong>{$0}</strong>"})
-   *
    * tr("{users} joined the site", {users: [[user1, user2, user3], "<strong>{$0}</strong>")
    *
    * tr("{users} joined the site", {users: [[user1, user2, user3], "@name", {

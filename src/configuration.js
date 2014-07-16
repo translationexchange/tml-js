@@ -29,6 +29,11 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+/**
+ * Configuration options
+ *
+ * @constructor
+ */
 Tr8n.Configuration = function() {
   this.initDefaultTokens();
   this.initTranslatorOptions();

@@ -29,9 +29,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-
 /**
- * The Main TR8N Application
+ * Application
+ *
  * @constructor
  * @param {object} attrs - options
  */
@@ -54,11 +54,27 @@ Tr8n.Application.prototype = {
     return this.api_client;
   },
 
+  /**
+   * addLanguage
+   *
+   * @function
+   * @param {Language} language - language to be added
+   */
   addLanguage: function(language) {
     language.application = this;
     this.languages_by_locale[language.attrs.locale] = language;
   },
 
+
+  /**
+   * getLanguage
+   *
+   * @description
+   * returns a language object for a given locale
+   *
+   * @function
+   * @param {string} locale - locale for which to get a language
+   */
   getLanguage: function(locale) {
     return this.languages_by_locale[locale || Tr8n.config.default_locale];
   }
