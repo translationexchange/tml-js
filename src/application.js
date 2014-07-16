@@ -29,6 +29,12 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+
+/**
+ * The Main TR8N Application
+ * @constructor
+ * @param {object} attrs - options
+ */
 Tr8n.Application = function(attrs) {
   Tr8n.Utils.extend(this, attrs);
 

@@ -1595,6 +1595,7 @@ _$jscoverage['lib/tr8n.js'].source=['',
 '',
 '',
 ';',
+'',
 'Tr8n.Application = function(attrs) {',
 '  Tr8n.Utils.extend(this, attrs);',
 '',
@@ -2780,7 +2781,7 @@ _$jscoverage['lib/tr8n.js'][1098]=0;
 _$jscoverage['lib/tr8n.js'][1086]=0;
 _$jscoverage['lib/tr8n.js'][1091]=0;
 _$jscoverage['lib/tr8n.js'][1092]=0;
-_$jscoverage['lib/tr8n.js'][1597]=0;
+_$jscoverage['lib/tr8n.js'][1598]=0;
 _$jscoverage['lib/tr8n.js'][1160]=0;
 _$jscoverage['lib/tr8n.js'][1112]=0;
 _$jscoverage['lib/tr8n.js'][1116]=0;
@@ -2806,7 +2807,7 @@ _$jscoverage['lib/tr8n.js'][1142]=0;
 _$jscoverage['lib/tr8n.js'][1136]=0;
 _$jscoverage['lib/tr8n.js'][1145]=0;
 _$jscoverage['lib/tr8n.js'][1144]=0;
-_$jscoverage['lib/tr8n.js'][1631]=0;
+_$jscoverage['lib/tr8n.js'][1632]=0;
 _$jscoverage['lib/tr8n.js'][1202]=0;
 _$jscoverage['lib/tr8n.js'][1162]=0;
 _$jscoverage['lib/tr8n.js'][1163]=0;
@@ -2828,7 +2829,7 @@ _$jscoverage['lib/tr8n.js'][1185]=0;
 _$jscoverage['lib/tr8n.js'][1189]=0;
 _$jscoverage['lib/tr8n.js'][1181]=0;
 _$jscoverage['lib/tr8n.js'][1188]=0;
-_$jscoverage['lib/tr8n.js'][1650]=0;
+_$jscoverage['lib/tr8n.js'][1651]=0;
 _$jscoverage['lib/tr8n.js'][1243]=0;
 _$jscoverage['lib/tr8n.js'][1203]=0;
 _$jscoverage['lib/tr8n.js'][1205]=0;
@@ -2848,7 +2849,7 @@ _$jscoverage['lib/tr8n.js'][1230]=0;
 _$jscoverage['lib/tr8n.js'][1236]=0;
 _$jscoverage['lib/tr8n.js'][1235]=0;
 _$jscoverage['lib/tr8n.js'][1237]=0;
-_$jscoverage['lib/tr8n.js'][1675]=0;
+_$jscoverage['lib/tr8n.js'][1676]=0;
 _$jscoverage['lib/tr8n.js'][1273]=0;
 _$jscoverage['lib/tr8n.js'][1246]=0;
 _$jscoverage['lib/tr8n.js'][1272]=0;
@@ -2868,7 +2869,7 @@ _$jscoverage['lib/tr8n.js'][1252]=0;
 _$jscoverage['lib/tr8n.js'][1262]=0;
 _$jscoverage['lib/tr8n.js'][1268]=0;
 _$jscoverage['lib/tr8n.js'][1253]=0;
-_$jscoverage['lib/tr8n.js'][1706]=0;
+_$jscoverage['lib/tr8n.js'][1707]=0;
 _$jscoverage['lib/tr8n.js'][1304]=0;
 _$jscoverage['lib/tr8n.js'][1281]=0;
 _$jscoverage['lib/tr8n.js'][1283]=0;
@@ -2885,7 +2886,7 @@ _$jscoverage['lib/tr8n.js'][1297]=0;
 _$jscoverage['lib/tr8n.js'][1295]=0;
 _$jscoverage['lib/tr8n.js'][1300]=0;
 _$jscoverage['lib/tr8n.js'][1291]=0;
-_$jscoverage['lib/tr8n.js'][1718]=0;
+_$jscoverage['lib/tr8n.js'][1719]=0;
 _$jscoverage['lib/tr8n.js'][1332]=0;
 _$jscoverage['lib/tr8n.js'][1305]=0;
 _$jscoverage['lib/tr8n.js'][1309]=0;
@@ -2902,7 +2903,7 @@ _$jscoverage['lib/tr8n.js'][1327]=0;
 _$jscoverage['lib/tr8n.js'][1328]=0;
 _$jscoverage['lib/tr8n.js'][1330]=0;
 _$jscoverage['lib/tr8n.js'][1328]=0;
-_$jscoverage['lib/tr8n.js'][1737]=0;
+_$jscoverage['lib/tr8n.js'][1738]=0;
 _$jscoverage['lib/tr8n.js'][1371]=0;
 _$jscoverage['lib/tr8n.js'][1333]=0;
 _$jscoverage['lib/tr8n.js'][1335]=0;
@@ -2919,7 +2920,7 @@ _$jscoverage['lib/tr8n.js'][1358]=0;
 _$jscoverage['lib/tr8n.js'][1359]=0;
 _$jscoverage['lib/tr8n.js'][1363]=0;
 _$jscoverage['lib/tr8n.js'][1367]=0;
-_$jscoverage['lib/tr8n.js'][1757]=0;
+_$jscoverage['lib/tr8n.js'][1758]=0;
 _$jscoverage['lib/tr8n.js'][1411]=0;
 _$jscoverage['lib/tr8n.js'][1411]=0;
 _$jscoverage['lib/tr8n.js'][1372]=0;
@@ -2936,7 +2937,7 @@ _$jscoverage['lib/tr8n.js'][1398]=0;
 _$jscoverage['lib/tr8n.js'][1402]=0;
 _$jscoverage['lib/tr8n.js'][1406]=0;
 _$jscoverage['lib/tr8n.js'][1406]=0;
-_$jscoverage['lib/tr8n.js'][1774]=0;
+_$jscoverage['lib/tr8n.js'][1775]=0;
 _$jscoverage['lib/tr8n.js'][1441]=0;
 _$jscoverage['lib/tr8n.js'][1416]=0;
 _$jscoverage['lib/tr8n.js'][1416]=0;
@@ -2952,7 +2953,7 @@ _$jscoverage['lib/tr8n.js'][1432]=0;
 _$jscoverage['lib/tr8n.js'][1429]=0;
 _$jscoverage['lib/tr8n.js'][1435]=0;
 _$jscoverage['lib/tr8n.js'][1439]=0;
-_$jscoverage['lib/tr8n.js'][1782]=0;
+_$jscoverage['lib/tr8n.js'][1783]=0;
 _$jscoverage['lib/tr8n.js'][1466]=0;
 _$jscoverage['lib/tr8n.js'][1442]=0;
 _$jscoverage['lib/tr8n.js'][1444]=0;
@@ -2967,7 +2968,7 @@ _$jscoverage['lib/tr8n.js'][1462]=0;
 _$jscoverage['lib/tr8n.js'][1461]=0;
 _$jscoverage['lib/tr8n.js'][1463]=0;
 _$jscoverage['lib/tr8n.js'][1460]=0;
-_$jscoverage['lib/tr8n.js'][1800]=0;
+_$jscoverage['lib/tr8n.js'][1801]=0;
 _$jscoverage['lib/tr8n.js'][1495]=0;
 _$jscoverage['lib/tr8n.js'][1470]=0;
 _$jscoverage['lib/tr8n.js'][1471]=0;
@@ -2984,7 +2985,7 @@ _$jscoverage['lib/tr8n.js'][1487]=0;
 _$jscoverage['lib/tr8n.js'][1490]=0;
 _$jscoverage['lib/tr8n.js'][1488]=0;
 _$jscoverage['lib/tr8n.js'][1467]=0;
-_$jscoverage['lib/tr8n.js'][1819]=0;
+_$jscoverage['lib/tr8n.js'][1820]=0;
 _$jscoverage['lib/tr8n.js'][1521]=0;
 _$jscoverage['lib/tr8n.js'][1519]=0;
 _$jscoverage['lib/tr8n.js'][1496]=0;
@@ -2999,7 +3000,7 @@ _$jscoverage['lib/tr8n.js'][1510]=0;
 _$jscoverage['lib/tr8n.js'][1511]=0;
 _$jscoverage['lib/tr8n.js'][1515]=0;
 _$jscoverage['lib/tr8n.js'][1517]=0;
-_$jscoverage['lib/tr8n.js'][1810]=0;
+_$jscoverage['lib/tr8n.js'][1811]=0;
 _$jscoverage['lib/tr8n.js'][1550]=0;
 _$jscoverage['lib/tr8n.js'][1549]=0;
 _$jscoverage['lib/tr8n.js'][1522]=0;
@@ -3016,7 +3017,7 @@ _$jscoverage['lib/tr8n.js'][1544]=0;
 _$jscoverage['lib/tr8n.js'][1546]=0;
 _$jscoverage['lib/tr8n.js'][1523]=0;
 _$jscoverage['lib/tr8n.js'][1547]=0;
-_$jscoverage['lib/tr8n.js'][1858]=0;
+_$jscoverage['lib/tr8n.js'][1859]=0;
 _$jscoverage['lib/tr8n.js'][1576]=0;
 _$jscoverage['lib/tr8n.js'][1552]=0;
 _$jscoverage['lib/tr8n.js'][1559]=0;
@@ -3034,248 +3035,248 @@ _$jscoverage['lib/tr8n.js'][1566]=0;
 _$jscoverage['lib/tr8n.js'][1568]=0;
 _$jscoverage['lib/tr8n.js'][1569]=0;
 _$jscoverage['lib/tr8n.js'][1572]=0;
-_$jscoverage['lib/tr8n.js'][1873]=0;
-_$jscoverage['lib/tr8n.js'][1610]=0;
+_$jscoverage['lib/tr8n.js'][1874]=0;
+_$jscoverage['lib/tr8n.js'][1611]=0;
 _$jscoverage['lib/tr8n.js'][1578]=0;
 _$jscoverage['lib/tr8n.js'][1580]=0;
-_$jscoverage['lib/tr8n.js'][1607]=0;
+_$jscoverage['lib/tr8n.js'][1608]=0;
 _$jscoverage['lib/tr8n.js'][1577]=0;
 _$jscoverage['lib/tr8n.js'][1583]=0;
-_$jscoverage['lib/tr8n.js'][1596]=0;
+_$jscoverage['lib/tr8n.js'][1597]=0;
 _$jscoverage['lib/tr8n.js'][1584]=0;
 _$jscoverage['lib/tr8n.js'][1585]=0;
 _$jscoverage['lib/tr8n.js'][1586]=0;
 _$jscoverage['lib/tr8n.js'][1587]=0;
-_$jscoverage['lib/tr8n.js'][1599]=0;
-_$jscoverage['lib/tr8n.js'][1601]=0;
 _$jscoverage['lib/tr8n.js'][1600]=0;
-_$jscoverage['lib/tr8n.js'][1604]=0;
-_$jscoverage['lib/tr8n.js'][1882]=0;
-_$jscoverage['lib/tr8n.js'][1647]=0;
-_$jscoverage['lib/tr8n.js'][1614]=0;
-_$jscoverage['lib/tr8n.js'][1615]=0;
-_$jscoverage['lib/tr8n.js'][1619]=0;
-_$jscoverage['lib/tr8n.js'][1626]=0;
-_$jscoverage['lib/tr8n.js'][1625]=0;
-_$jscoverage['lib/tr8n.js'][1633]=0;
-_$jscoverage['lib/tr8n.js'][1636]=0;
-_$jscoverage['lib/tr8n.js'][1635]=0;
-_$jscoverage['lib/tr8n.js'][1644]=0;
-_$jscoverage['lib/tr8n.js'][1639]=0;
-_$jscoverage['lib/tr8n.js'][1630]=0;
-_$jscoverage['lib/tr8n.js'][1638]=0;
-_$jscoverage['lib/tr8n.js'][1641]=0;
-_$jscoverage['lib/tr8n.js'][1911]=0;
-_$jscoverage['lib/tr8n.js'][1684]=0;
-_$jscoverage['lib/tr8n.js'][1683]=0;
-_$jscoverage['lib/tr8n.js'][1651]=0;
+_$jscoverage['lib/tr8n.js'][1602]=0;
+_$jscoverage['lib/tr8n.js'][1601]=0;
+_$jscoverage['lib/tr8n.js'][1605]=0;
+_$jscoverage['lib/tr8n.js'][1883]=0;
 _$jscoverage['lib/tr8n.js'][1648]=0;
-_$jscoverage['lib/tr8n.js'][1653]=0;
+_$jscoverage['lib/tr8n.js'][1615]=0;
+_$jscoverage['lib/tr8n.js'][1616]=0;
+_$jscoverage['lib/tr8n.js'][1620]=0;
+_$jscoverage['lib/tr8n.js'][1627]=0;
+_$jscoverage['lib/tr8n.js'][1626]=0;
+_$jscoverage['lib/tr8n.js'][1634]=0;
+_$jscoverage['lib/tr8n.js'][1637]=0;
+_$jscoverage['lib/tr8n.js'][1636]=0;
+_$jscoverage['lib/tr8n.js'][1645]=0;
+_$jscoverage['lib/tr8n.js'][1640]=0;
+_$jscoverage['lib/tr8n.js'][1631]=0;
+_$jscoverage['lib/tr8n.js'][1639]=0;
+_$jscoverage['lib/tr8n.js'][1642]=0;
+_$jscoverage['lib/tr8n.js'][1912]=0;
+_$jscoverage['lib/tr8n.js'][1685]=0;
+_$jscoverage['lib/tr8n.js'][1684]=0;
+_$jscoverage['lib/tr8n.js'][1652]=0;
+_$jscoverage['lib/tr8n.js'][1649]=0;
+_$jscoverage['lib/tr8n.js'][1654]=0;
+_$jscoverage['lib/tr8n.js'][1662]=0;
+_$jscoverage['lib/tr8n.js'][1680]=0;
 _$jscoverage['lib/tr8n.js'][1661]=0;
-_$jscoverage['lib/tr8n.js'][1679]=0;
 _$jscoverage['lib/tr8n.js'][1660]=0;
-_$jscoverage['lib/tr8n.js'][1659]=0;
-_$jscoverage['lib/tr8n.js'][1667]=0;
-_$jscoverage['lib/tr8n.js'][1667]=0;
 _$jscoverage['lib/tr8n.js'][1668]=0;
-_$jscoverage['lib/tr8n.js'][1672]=0;
-_$jscoverage['lib/tr8n.js'][1676]=0;
-_$jscoverage['lib/tr8n.js'][1674]=0;
-_$jscoverage['lib/tr8n.js'][1928]=0;
-_$jscoverage['lib/tr8n.js'][1723]=0;
-_$jscoverage['lib/tr8n.js'][1722]=0;
-_$jscoverage['lib/tr8n.js'][1686]=0;
-_$jscoverage['lib/tr8n.js'][1687]=0;
-_$jscoverage['lib/tr8n.js'][1690]=0;
-_$jscoverage['lib/tr8n.js'][1689]=0;
-_$jscoverage['lib/tr8n.js'][1697]=0;
-_$jscoverage['lib/tr8n.js'][1713]=0;
-_$jscoverage['lib/tr8n.js'][1707]=0;
-_$jscoverage['lib/tr8n.js'][1705]=0;
-_$jscoverage['lib/tr8n.js'][1715]=0;
-_$jscoverage['lib/tr8n.js'][1709]=0;
-_$jscoverage['lib/tr8n.js'][1714]=0;
-_$jscoverage['lib/tr8n.js'][1716]=0;
-_$jscoverage['lib/tr8n.js'][1944]=0;
-_$jscoverage['lib/tr8n.js'][1745]=0;
+_$jscoverage['lib/tr8n.js'][1668]=0;
+_$jscoverage['lib/tr8n.js'][1669]=0;
+_$jscoverage['lib/tr8n.js'][1673]=0;
+_$jscoverage['lib/tr8n.js'][1677]=0;
+_$jscoverage['lib/tr8n.js'][1675]=0;
+_$jscoverage['lib/tr8n.js'][1929]=0;
 _$jscoverage['lib/tr8n.js'][1724]=0;
-_$jscoverage['lib/tr8n.js'][1726]=0;
-_$jscoverage['lib/tr8n.js'][1731]=0;
-_$jscoverage['lib/tr8n.js'][1732]=0;
-_$jscoverage['lib/tr8n.js'][1730]=0;
-_$jscoverage['lib/tr8n.js'][1736]=0;
-_$jscoverage['lib/tr8n.js'][1735]=0;
-_$jscoverage['lib/tr8n.js'][1739]=0;
-_$jscoverage['lib/tr8n.js'][1953]=0;
-_$jscoverage['lib/tr8n.js'][1749]=0;
-_$jscoverage['lib/tr8n.js'][1748]=0;
+_$jscoverage['lib/tr8n.js'][1723]=0;
+_$jscoverage['lib/tr8n.js'][1687]=0;
+_$jscoverage['lib/tr8n.js'][1688]=0;
+_$jscoverage['lib/tr8n.js'][1691]=0;
+_$jscoverage['lib/tr8n.js'][1690]=0;
+_$jscoverage['lib/tr8n.js'][1698]=0;
+_$jscoverage['lib/tr8n.js'][1714]=0;
+_$jscoverage['lib/tr8n.js'][1708]=0;
+_$jscoverage['lib/tr8n.js'][1706]=0;
+_$jscoverage['lib/tr8n.js'][1716]=0;
+_$jscoverage['lib/tr8n.js'][1710]=0;
+_$jscoverage['lib/tr8n.js'][1715]=0;
+_$jscoverage['lib/tr8n.js'][1717]=0;
+_$jscoverage['lib/tr8n.js'][1945]=0;
 _$jscoverage['lib/tr8n.js'][1746]=0;
-_$jscoverage['lib/tr8n.js'][1957]=0;
-_$jscoverage['lib/tr8n.js'][1776]=0;
-_$jscoverage['lib/tr8n.js'][1771]=0;
-_$jscoverage['lib/tr8n.js'][1765]=0;
-_$jscoverage['lib/tr8n.js'][1772]=0;
-_$jscoverage['lib/tr8n.js'][1754]=0;
-_$jscoverage['lib/tr8n.js'][1774]=0;
-_$jscoverage['lib/tr8n.js'][1775]=0;
-_$jscoverage['lib/tr8n.js'][1762]=0;
-_$jscoverage['lib/tr8n.js'][1761]=0;
-_$jscoverage['lib/tr8n.js'][1764]=0;
-_$jscoverage['lib/tr8n.js'][1773]=0;
-_$jscoverage['lib/tr8n.js'][1766]=0;
-_$jscoverage['lib/tr8n.js'][1767]=0;
-_$jscoverage['lib/tr8n.js'][1767]=0;
-_$jscoverage['lib/tr8n.js'][1769]=0;
-_$jscoverage['lib/tr8n.js'][1976]=0;
-_$jscoverage['lib/tr8n.js'][1805]=0;
-_$jscoverage['lib/tr8n.js'][1794]=0;
+_$jscoverage['lib/tr8n.js'][1725]=0;
+_$jscoverage['lib/tr8n.js'][1727]=0;
+_$jscoverage['lib/tr8n.js'][1732]=0;
+_$jscoverage['lib/tr8n.js'][1733]=0;
+_$jscoverage['lib/tr8n.js'][1731]=0;
+_$jscoverage['lib/tr8n.js'][1737]=0;
+_$jscoverage['lib/tr8n.js'][1736]=0;
+_$jscoverage['lib/tr8n.js'][1740]=0;
+_$jscoverage['lib/tr8n.js'][1954]=0;
+_$jscoverage['lib/tr8n.js'][1750]=0;
+_$jscoverage['lib/tr8n.js'][1749]=0;
+_$jscoverage['lib/tr8n.js'][1747]=0;
+_$jscoverage['lib/tr8n.js'][1958]=0;
 _$jscoverage['lib/tr8n.js'][1777]=0;
-_$jscoverage['lib/tr8n.js'][1791]=0;
-_$jscoverage['lib/tr8n.js'][1790]=0;
+_$jscoverage['lib/tr8n.js'][1772]=0;
+_$jscoverage['lib/tr8n.js'][1766]=0;
+_$jscoverage['lib/tr8n.js'][1773]=0;
+_$jscoverage['lib/tr8n.js'][1755]=0;
+_$jscoverage['lib/tr8n.js'][1775]=0;
+_$jscoverage['lib/tr8n.js'][1776]=0;
+_$jscoverage['lib/tr8n.js'][1763]=0;
+_$jscoverage['lib/tr8n.js'][1762]=0;
+_$jscoverage['lib/tr8n.js'][1765]=0;
+_$jscoverage['lib/tr8n.js'][1774]=0;
+_$jscoverage['lib/tr8n.js'][1767]=0;
+_$jscoverage['lib/tr8n.js'][1768]=0;
+_$jscoverage['lib/tr8n.js'][1768]=0;
+_$jscoverage['lib/tr8n.js'][1770]=0;
+_$jscoverage['lib/tr8n.js'][1977]=0;
+_$jscoverage['lib/tr8n.js'][1806]=0;
 _$jscoverage['lib/tr8n.js'][1795]=0;
-_$jscoverage['lib/tr8n.js'][1797]=0;
+_$jscoverage['lib/tr8n.js'][1778]=0;
+_$jscoverage['lib/tr8n.js'][1792]=0;
+_$jscoverage['lib/tr8n.js'][1791]=0;
+_$jscoverage['lib/tr8n.js'][1796]=0;
 _$jscoverage['lib/tr8n.js'][1798]=0;
 _$jscoverage['lib/tr8n.js'][1799]=0;
-_$jscoverage['lib/tr8n.js'][1803]=0;
+_$jscoverage['lib/tr8n.js'][1800]=0;
 _$jscoverage['lib/tr8n.js'][1804]=0;
-_$jscoverage['lib/tr8n.js'][1990]=0;
-_$jscoverage['lib/tr8n.js'][1843]=0;
-_$jscoverage['lib/tr8n.js'][1812]=0;
-_$jscoverage['lib/tr8n.js'][1816]=0;
-_$jscoverage['lib/tr8n.js'][1806]=0;
-_$jscoverage['lib/tr8n.js'][1842]=0;
-_$jscoverage['lib/tr8n.js'][1818]=0;
-_$jscoverage['lib/tr8n.js'][1817]=0;
-_$jscoverage['lib/tr8n.js'][1836]=0;
-_$jscoverage['lib/tr8n.js'][1821]=0;
-_$jscoverage['lib/tr8n.js'][1825]=0;
-_$jscoverage['lib/tr8n.js'][1830]=0;
-_$jscoverage['lib/tr8n.js'][1997]=0;
-_$jscoverage['lib/tr8n.js'][1867]=0;
-_$jscoverage['lib/tr8n.js'][1845]=0;
-_$jscoverage['lib/tr8n.js'][1846]=0;
-_$jscoverage['lib/tr8n.js'][1848]=0;
-_$jscoverage['lib/tr8n.js'][1866]=0;
-_$jscoverage['lib/tr8n.js'][1847]=0;
-_$jscoverage['lib/tr8n.js'][1857]=0;
-_$jscoverage['lib/tr8n.js'][1859]=0;
-_$jscoverage['lib/tr8n.js'][1853]=0;
-_$jscoverage['lib/tr8n.js'][1856]=0;
-_$jscoverage['lib/tr8n.js'][1862]=0;
-_$jscoverage['lib/tr8n.js'][2015]=0;
-_$jscoverage['lib/tr8n.js'][1886]=0;
-_$jscoverage['lib/tr8n.js'][1885]=0;
-_$jscoverage['lib/tr8n.js'][1869]=0;
-_$jscoverage['lib/tr8n.js'][1871]=0;
-_$jscoverage['lib/tr8n.js'][1870]=0;
-_$jscoverage['lib/tr8n.js'][1874]=0;
-_$jscoverage['lib/tr8n.js'][1878]=0;
-_$jscoverage['lib/tr8n.js'][1884]=0;
-_$jscoverage['lib/tr8n.js'][1877]=0;
-_$jscoverage['lib/tr8n.js'][1881]=0;
-_$jscoverage['lib/tr8n.js'][1883]=0;
-_$jscoverage['lib/tr8n.js'][2024]=0;
-_$jscoverage['lib/tr8n.js'][1920]=0;
-_$jscoverage['lib/tr8n.js'][1919]=0;
-_$jscoverage['lib/tr8n.js'][1890]=0;
-_$jscoverage['lib/tr8n.js'][1913]=0;
-_$jscoverage['lib/tr8n.js'][1889]=0;
-_$jscoverage['lib/tr8n.js'][1894]=0;
-_$jscoverage['lib/tr8n.js'][1893]=0;
-_$jscoverage['lib/tr8n.js'][1897]=0;
-_$jscoverage['lib/tr8n.js'][1901]=0;
-_$jscoverage['lib/tr8n.js'][1905]=0;
-_$jscoverage['lib/tr8n.js'][2014]=0;
-_$jscoverage['lib/tr8n.js'][1941]=0;
-_$jscoverage['lib/tr8n.js'][1927]=0;
-_$jscoverage['lib/tr8n.js'][1926]=0;
-_$jscoverage['lib/tr8n.js'][1933]=0;
-_$jscoverage['lib/tr8n.js'][1932]=0;
-_$jscoverage['lib/tr8n.js'][1938]=0;
-_$jscoverage['lib/tr8n.js'][1934]=0;
-_$jscoverage['lib/tr8n.js'][1939]=0;
-_$jscoverage['lib/tr8n.js'][1923]=0;
-_$jscoverage['lib/tr8n.js'][2042]=0;
-_$jscoverage['lib/tr8n.js'][1964]=0;
-_$jscoverage['lib/tr8n.js'][1963]=0;
-_$jscoverage['lib/tr8n.js'][1942]=0;
-_$jscoverage['lib/tr8n.js'][1947]=0;
-_$jscoverage['lib/tr8n.js'][1959]=0;
-_$jscoverage['lib/tr8n.js'][1956]=0;
-_$jscoverage['lib/tr8n.js'][1946]=0;
-_$jscoverage['lib/tr8n.js'][1949]=0;
-_$jscoverage['lib/tr8n.js'][1954]=0;
-_$jscoverage['lib/tr8n.js'][2050]=0;
-_$jscoverage['lib/tr8n.js'][1981]=0;
-_$jscoverage['lib/tr8n.js'][1975]=0;
-_$jscoverage['lib/tr8n.js'][1966]=0;
-_$jscoverage['lib/tr8n.js'][1967]=0;
-_$jscoverage['lib/tr8n.js'][1969]=0;
-_$jscoverage['lib/tr8n.js'][1978]=0;
-_$jscoverage['lib/tr8n.js'][1980]=0;
-_$jscoverage['lib/tr8n.js'][2060]=0;
-_$jscoverage['lib/tr8n.js'][1999]=0;
-_$jscoverage['lib/tr8n.js'][1995]=0;
-_$jscoverage['lib/tr8n.js'][1982]=0;
-_$jscoverage['lib/tr8n.js'][1987]=0;
+_$jscoverage['lib/tr8n.js'][1805]=0;
 _$jscoverage['lib/tr8n.js'][1991]=0;
-_$jscoverage['lib/tr8n.js'][1996]=0;
+_$jscoverage['lib/tr8n.js'][1844]=0;
+_$jscoverage['lib/tr8n.js'][1813]=0;
+_$jscoverage['lib/tr8n.js'][1817]=0;
+_$jscoverage['lib/tr8n.js'][1807]=0;
+_$jscoverage['lib/tr8n.js'][1843]=0;
+_$jscoverage['lib/tr8n.js'][1819]=0;
+_$jscoverage['lib/tr8n.js'][1818]=0;
+_$jscoverage['lib/tr8n.js'][1837]=0;
+_$jscoverage['lib/tr8n.js'][1822]=0;
+_$jscoverage['lib/tr8n.js'][1826]=0;
+_$jscoverage['lib/tr8n.js'][1831]=0;
 _$jscoverage['lib/tr8n.js'][1998]=0;
-_$jscoverage['lib/tr8n.js'][2068]=0;
-_$jscoverage['lib/tr8n.js'][2019]=0;
-_$jscoverage['lib/tr8n.js'][2003]=0;
-_$jscoverage['lib/tr8n.js'][2007]=0;
-_$jscoverage['lib/tr8n.js'][2017]=0;
-_$jscoverage['lib/tr8n.js'][2011]=0;
-_$jscoverage['lib/tr8n.js'][2012]=0;
-_$jscoverage['lib/tr8n.js'][2000]=0;
+_$jscoverage['lib/tr8n.js'][1868]=0;
+_$jscoverage['lib/tr8n.js'][1846]=0;
+_$jscoverage['lib/tr8n.js'][1847]=0;
+_$jscoverage['lib/tr8n.js'][1849]=0;
+_$jscoverage['lib/tr8n.js'][1867]=0;
+_$jscoverage['lib/tr8n.js'][1848]=0;
+_$jscoverage['lib/tr8n.js'][1858]=0;
+_$jscoverage['lib/tr8n.js'][1860]=0;
+_$jscoverage['lib/tr8n.js'][1854]=0;
+_$jscoverage['lib/tr8n.js'][1857]=0;
+_$jscoverage['lib/tr8n.js'][1863]=0;
 _$jscoverage['lib/tr8n.js'][2016]=0;
-_$jscoverage['lib/tr8n.js'][2076]=0;
-_$jscoverage['lib/tr8n.js'][2020]=0;
-_$jscoverage['lib/tr8n.js'][2078]=0;
-_$jscoverage['lib/tr8n.js'][2035]=0;
-_$jscoverage['lib/tr8n.js'][2031]=0;
-_$jscoverage['lib/tr8n.js'][2023]=0;
-_$jscoverage['lib/tr8n.js'][2021]=0;
-_$jscoverage['lib/tr8n.js'][2021]=0;
-_$jscoverage['lib/tr8n.js'][2022]=0;
-_$jscoverage['lib/tr8n.js'][2026]=0;
-_$jscoverage['lib/tr8n.js'][2090]=0;
-_$jscoverage['lib/tr8n.js'][2045]=0;
-_$jscoverage['lib/tr8n.js'][2037]=0;
-_$jscoverage['lib/tr8n.js'][2040]=0;
-_$jscoverage['lib/tr8n.js'][2039]=0;
-_$jscoverage['lib/tr8n.js'][2041]=0;
-_$jscoverage['lib/tr8n.js'][2096]=0;
-_$jscoverage['lib/tr8n.js'][2066]=0;
-_$jscoverage['lib/tr8n.js'][2062]=0;
-_$jscoverage['lib/tr8n.js'][2066]=0;
-_$jscoverage['lib/tr8n.js'][2049]=0;
-_$jscoverage['lib/tr8n.js'][2053]=0;
-_$jscoverage['lib/tr8n.js'][2056]=0;
+_$jscoverage['lib/tr8n.js'][1887]=0;
+_$jscoverage['lib/tr8n.js'][1886]=0;
+_$jscoverage['lib/tr8n.js'][1870]=0;
+_$jscoverage['lib/tr8n.js'][1872]=0;
+_$jscoverage['lib/tr8n.js'][1871]=0;
+_$jscoverage['lib/tr8n.js'][1875]=0;
+_$jscoverage['lib/tr8n.js'][1879]=0;
+_$jscoverage['lib/tr8n.js'][1885]=0;
+_$jscoverage['lib/tr8n.js'][1878]=0;
+_$jscoverage['lib/tr8n.js'][1882]=0;
+_$jscoverage['lib/tr8n.js'][1884]=0;
+_$jscoverage['lib/tr8n.js'][2025]=0;
+_$jscoverage['lib/tr8n.js'][1921]=0;
+_$jscoverage['lib/tr8n.js'][1920]=0;
+_$jscoverage['lib/tr8n.js'][1891]=0;
+_$jscoverage['lib/tr8n.js'][1914]=0;
+_$jscoverage['lib/tr8n.js'][1890]=0;
+_$jscoverage['lib/tr8n.js'][1895]=0;
+_$jscoverage['lib/tr8n.js'][1894]=0;
+_$jscoverage['lib/tr8n.js'][1898]=0;
+_$jscoverage['lib/tr8n.js'][1902]=0;
+_$jscoverage['lib/tr8n.js'][1906]=0;
+_$jscoverage['lib/tr8n.js'][2015]=0;
+_$jscoverage['lib/tr8n.js'][1942]=0;
+_$jscoverage['lib/tr8n.js'][1928]=0;
+_$jscoverage['lib/tr8n.js'][1927]=0;
+_$jscoverage['lib/tr8n.js'][1934]=0;
+_$jscoverage['lib/tr8n.js'][1933]=0;
+_$jscoverage['lib/tr8n.js'][1939]=0;
+_$jscoverage['lib/tr8n.js'][1935]=0;
+_$jscoverage['lib/tr8n.js'][1940]=0;
+_$jscoverage['lib/tr8n.js'][1924]=0;
+_$jscoverage['lib/tr8n.js'][2043]=0;
+_$jscoverage['lib/tr8n.js'][1965]=0;
+_$jscoverage['lib/tr8n.js'][1964]=0;
+_$jscoverage['lib/tr8n.js'][1943]=0;
+_$jscoverage['lib/tr8n.js'][1948]=0;
+_$jscoverage['lib/tr8n.js'][1960]=0;
+_$jscoverage['lib/tr8n.js'][1957]=0;
+_$jscoverage['lib/tr8n.js'][1947]=0;
+_$jscoverage['lib/tr8n.js'][1950]=0;
+_$jscoverage['lib/tr8n.js'][1955]=0;
+_$jscoverage['lib/tr8n.js'][2051]=0;
+_$jscoverage['lib/tr8n.js'][1982]=0;
+_$jscoverage['lib/tr8n.js'][1976]=0;
+_$jscoverage['lib/tr8n.js'][1967]=0;
+_$jscoverage['lib/tr8n.js'][1968]=0;
+_$jscoverage['lib/tr8n.js'][1970]=0;
+_$jscoverage['lib/tr8n.js'][1979]=0;
+_$jscoverage['lib/tr8n.js'][1981]=0;
 _$jscoverage['lib/tr8n.js'][2061]=0;
-_$jscoverage['lib/tr8n.js'][2100]=0;
-_$jscoverage['lib/tr8n.js'][2075]=0;
+_$jscoverage['lib/tr8n.js'][2000]=0;
+_$jscoverage['lib/tr8n.js'][1996]=0;
+_$jscoverage['lib/tr8n.js'][1983]=0;
+_$jscoverage['lib/tr8n.js'][1988]=0;
+_$jscoverage['lib/tr8n.js'][1992]=0;
+_$jscoverage['lib/tr8n.js'][1997]=0;
+_$jscoverage['lib/tr8n.js'][1999]=0;
 _$jscoverage['lib/tr8n.js'][2069]=0;
-_$jscoverage['lib/tr8n.js'][2071]=0;
-_$jscoverage['lib/tr8n.js'][2102]=0;
-_$jscoverage['lib/tr8n.js'][2089]=0;
-_$jscoverage['lib/tr8n.js'][2088]=0;
-_$jscoverage['lib/tr8n.js'][2089]=0;
-_$jscoverage['lib/tr8n.js'][2086]=0;
-_$jscoverage['lib/tr8n.js'][2104]=0;
-_$jscoverage['lib/tr8n.js'][2098]=0;
+_$jscoverage['lib/tr8n.js'][2020]=0;
+_$jscoverage['lib/tr8n.js'][2004]=0;
+_$jscoverage['lib/tr8n.js'][2008]=0;
+_$jscoverage['lib/tr8n.js'][2018]=0;
+_$jscoverage['lib/tr8n.js'][2012]=0;
+_$jscoverage['lib/tr8n.js'][2013]=0;
+_$jscoverage['lib/tr8n.js'][2001]=0;
+_$jscoverage['lib/tr8n.js'][2017]=0;
+_$jscoverage['lib/tr8n.js'][2077]=0;
+_$jscoverage['lib/tr8n.js'][2021]=0;
+_$jscoverage['lib/tr8n.js'][2079]=0;
+_$jscoverage['lib/tr8n.js'][2036]=0;
+_$jscoverage['lib/tr8n.js'][2032]=0;
+_$jscoverage['lib/tr8n.js'][2024]=0;
+_$jscoverage['lib/tr8n.js'][2022]=0;
+_$jscoverage['lib/tr8n.js'][2022]=0;
+_$jscoverage['lib/tr8n.js'][2023]=0;
+_$jscoverage['lib/tr8n.js'][2027]=0;
+_$jscoverage['lib/tr8n.js'][2091]=0;
+_$jscoverage['lib/tr8n.js'][2046]=0;
+_$jscoverage['lib/tr8n.js'][2038]=0;
+_$jscoverage['lib/tr8n.js'][2041]=0;
+_$jscoverage['lib/tr8n.js'][2040]=0;
+_$jscoverage['lib/tr8n.js'][2042]=0;
 _$jscoverage['lib/tr8n.js'][2097]=0;
-_$jscoverage['lib/tr8n.js'][2095]=0;
-_$jscoverage['lib/tr8n.js'][2099]=0;
+_$jscoverage['lib/tr8n.js'][2067]=0;
+_$jscoverage['lib/tr8n.js'][2063]=0;
+_$jscoverage['lib/tr8n.js'][2067]=0;
+_$jscoverage['lib/tr8n.js'][2050]=0;
+_$jscoverage['lib/tr8n.js'][2054]=0;
+_$jscoverage['lib/tr8n.js'][2057]=0;
+_$jscoverage['lib/tr8n.js'][2062]=0;
 _$jscoverage['lib/tr8n.js'][2101]=0;
+_$jscoverage['lib/tr8n.js'][2076]=0;
+_$jscoverage['lib/tr8n.js'][2070]=0;
+_$jscoverage['lib/tr8n.js'][2072]=0;
 _$jscoverage['lib/tr8n.js'][2103]=0;
+_$jscoverage['lib/tr8n.js'][2090]=0;
+_$jscoverage['lib/tr8n.js'][2089]=0;
+_$jscoverage['lib/tr8n.js'][2090]=0;
+_$jscoverage['lib/tr8n.js'][2087]=0;
 _$jscoverage['lib/tr8n.js'][2105]=0;
+_$jscoverage['lib/tr8n.js'][2099]=0;
+_$jscoverage['lib/tr8n.js'][2098]=0;
+_$jscoverage['lib/tr8n.js'][2096]=0;
+_$jscoverage['lib/tr8n.js'][2100]=0;
+_$jscoverage['lib/tr8n.js'][2102]=0;
+_$jscoverage['lib/tr8n.js'][2104]=0;
 _$jscoverage['lib/tr8n.js'][2106]=0;
-_$jscoverage['lib/tr8n.js'][2109]=0;
+_$jscoverage['lib/tr8n.js'][2107]=0;
 _$jscoverage['lib/tr8n.js'][2110]=0;
-_$jscoverage['lib/tr8n.js'][2113]=0;
+_$jscoverage['lib/tr8n.js'][2111]=0;
 _$jscoverage['lib/tr8n.js'][2114]=0;
+_$jscoverage['lib/tr8n.js'][2115]=0;
 }
 _$jscoverage['lib/tr8n.js'][2]++;
 var MD5 = function (string) {
@@ -5991,158 +5992,159 @@ return html.join("");
 
 
 ;
-_$jscoverage['lib/tr8n.js'][1596]++;
+
+_$jscoverage['lib/tr8n.js'][1597]++;
 Tr8n.Application = function(attrs) {
-  _$jscoverage['lib/tr8n.js'][1597]++;
+  _$jscoverage['lib/tr8n.js'][1598]++;
 Tr8n.Utils.extend(this, attrs);
 
-  _$jscoverage['lib/tr8n.js'][1599]++;
-this.languages = [];
   _$jscoverage['lib/tr8n.js'][1600]++;
+this.languages = [];
+  _$jscoverage['lib/tr8n.js'][1601]++;
 for(var lang in (attrs.languages || [])) {
-    _$jscoverage['lib/tr8n.js'][1601]++;
+    _$jscoverage['lib/tr8n.js'][1602]++;
 this.languages.push(new Tr8n.Language(Tr8n.Utils.extend(lang, {application: this})));
   }
 
-  _$jscoverage['lib/tr8n.js'][1604]++;
+  _$jscoverage['lib/tr8n.js'][1605]++;
 this.languages_by_locale = {};
 };
 
-_$jscoverage['lib/tr8n.js'][1607]++;
+_$jscoverage['lib/tr8n.js'][1608]++;
 Tr8n.Application.prototype = {
 
   getApiClient: function() {
-    _$jscoverage['lib/tr8n.js'][1610]++;
+    _$jscoverage['lib/tr8n.js'][1611]++;
 return this.api_client;
   },
 
   addLanguage: function(language) {
-    _$jscoverage['lib/tr8n.js'][1614]++;
-language.application = this;
     _$jscoverage['lib/tr8n.js'][1615]++;
+language.application = this;
+    _$jscoverage['lib/tr8n.js'][1616]++;
 this.languages_by_locale[language.attrs.locale] = language;
   },
 
   getLanguage: function(locale) {
-    _$jscoverage['lib/tr8n.js'][1619]++;
+    _$jscoverage['lib/tr8n.js'][1620]++;
 return this.languages_by_locale[locale || Tr8n.config.default_locale];
   }
 
 };
 
 ;
-_$jscoverage['lib/tr8n.js'][1625]++;
+_$jscoverage['lib/tr8n.js'][1626]++;
 Tr8n.Source = function(attrs) {
-  _$jscoverage['lib/tr8n.js'][1626]++;
+  _$jscoverage['lib/tr8n.js'][1627]++;
 Tr8n.Utils.extend(this, attrs);
 
 };
 ;
-_$jscoverage['lib/tr8n.js'][1630]++;
+_$jscoverage['lib/tr8n.js'][1631]++;
 Tr8n.TranslationKey = function(attrs) {
-  _$jscoverage['lib/tr8n.js'][1631]++;
+  _$jscoverage['lib/tr8n.js'][1632]++;
 Tr8n.Utils.extend(this, attrs);
 
-  _$jscoverage['lib/tr8n.js'][1633]++;
+  _$jscoverage['lib/tr8n.js'][1634]++;
 this.key = this.key || Tr8n.Utils.generateKey(this.label, this.description);
 
-  _$jscoverage['lib/tr8n.js'][1635]++;
+  _$jscoverage['lib/tr8n.js'][1636]++;
 if (!this.locale && this.application)
       {
-_$jscoverage['lib/tr8n.js'][1636]++;
+_$jscoverage['lib/tr8n.js'][1637]++;
 this.locale = this.application.default_locale;}
 
 
-  _$jscoverage['lib/tr8n.js'][1638]++;
+  _$jscoverage['lib/tr8n.js'][1639]++;
 if (!this.language && this.application)
     {
-_$jscoverage['lib/tr8n.js'][1639]++;
+_$jscoverage['lib/tr8n.js'][1640]++;
 this.language = this.application.language(this.locale);}
 
 
-  _$jscoverage['lib/tr8n.js'][1641]++;
+  _$jscoverage['lib/tr8n.js'][1642]++;
 this.addTranslations(attrs.translations || {});
 };
 
-_$jscoverage['lib/tr8n.js'][1644]++;
+_$jscoverage['lib/tr8n.js'][1645]++;
 Tr8n.TranslationKey.prototype = {
 
   addTranslation: function(translation) {
-    _$jscoverage['lib/tr8n.js'][1647]++;
+    _$jscoverage['lib/tr8n.js'][1648]++;
 if (this.translations == null)
       {
-_$jscoverage['lib/tr8n.js'][1648]++;
+_$jscoverage['lib/tr8n.js'][1649]++;
 this.translations = {};}
 
 
-    _$jscoverage['lib/tr8n.js'][1650]++;
+    _$jscoverage['lib/tr8n.js'][1651]++;
 if (this.translations[translation.locale])
       {
-_$jscoverage['lib/tr8n.js'][1651]++;
+_$jscoverage['lib/tr8n.js'][1652]++;
 this.translations[translation.locale] = [];}
 
 
-    _$jscoverage['lib/tr8n.js'][1653]++;
+    _$jscoverage['lib/tr8n.js'][1654]++;
 this.translations[translation.locale].push(
       new Tr8n.Translation(Tr8n.Utils.merge(translation, {translation_key: this}))
     );
   },
 
   addTranslations: function(translations_by_locale) {
-    _$jscoverage['lib/tr8n.js'][1659]++;
+    _$jscoverage['lib/tr8n.js'][1660]++;
 for(var locale in Tr8n.Utils.keys(translations_by_locale || {})) {
-      _$jscoverage['lib/tr8n.js'][1660]++;
+      _$jscoverage['lib/tr8n.js'][1661]++;
 for(var translation in translations_by_locale[locale]) {
-        _$jscoverage['lib/tr8n.js'][1661]++;
+        _$jscoverage['lib/tr8n.js'][1662]++;
 this.addTranslation(translation);
       }
     }
   },
 
   getTranslationsForLanguage: function(language) {
-    _$jscoverage['lib/tr8n.js'][1667]++;
+    _$jscoverage['lib/tr8n.js'][1668]++;
 if (!this.translations) {
-_$jscoverage['lib/tr8n.js'][1667]++;
+_$jscoverage['lib/tr8n.js'][1668]++;
 return [];}
 
-    _$jscoverage['lib/tr8n.js'][1668]++;
+    _$jscoverage['lib/tr8n.js'][1669]++;
 return (this.translations[language.locale] || []);
   },
 
   findFirstValidTranslation: function(language, tokens) {
-    _$jscoverage['lib/tr8n.js'][1672]++;
+    _$jscoverage['lib/tr8n.js'][1673]++;
 var translations = this.getTranslationsForLanguage(language);
 
-    _$jscoverage['lib/tr8n.js'][1674]++;
+    _$jscoverage['lib/tr8n.js'][1675]++;
 for(var i=0; i<translations.length; i++) {
-      _$jscoverage['lib/tr8n.js'][1675]++;
+      _$jscoverage['lib/tr8n.js'][1676]++;
 if (translations[i].isValidTranslation(tokens))
         {
-_$jscoverage['lib/tr8n.js'][1676]++;
+_$jscoverage['lib/tr8n.js'][1677]++;
 return translations[i];}
 
     }
 
-    _$jscoverage['lib/tr8n.js'][1679]++;
+    _$jscoverage['lib/tr8n.js'][1680]++;
 return null;
   },
 
   translate: function(language, tokens, options) {
-    _$jscoverage['lib/tr8n.js'][1683]++;
+    _$jscoverage['lib/tr8n.js'][1684]++;
 if (Tr8n.config.isDisabled())
       {
-_$jscoverage['lib/tr8n.js'][1684]++;
+_$jscoverage['lib/tr8n.js'][1685]++;
 return this.substituteTokens(this.label, tokens, language, options);}
 
 
-    _$jscoverage['lib/tr8n.js'][1686]++;
-var translation = this.findFirstValidTranslation(language, tokens);
     _$jscoverage['lib/tr8n.js'][1687]++;
+var translation = this.findFirstValidTranslation(language, tokens);
+    _$jscoverage['lib/tr8n.js'][1688]++;
 var decorator = Tr8n.Decorators.Html;
 
-    _$jscoverage['lib/tr8n.js'][1689]++;
+    _$jscoverage['lib/tr8n.js'][1690]++;
 if (translation) {
-      _$jscoverage['lib/tr8n.js'][1690]++;
+      _$jscoverage['lib/tr8n.js'][1691]++;
 return decorator.decorate(
         this.substituteTokens(translation.label, tokens, translation.language, options),
         translation.language,
@@ -6150,7 +6152,7 @@ return decorator.decorate(
       );
     }
 
-    _$jscoverage['lib/tr8n.js'][1697]++;
+    _$jscoverage['lib/tr8n.js'][1698]++;
 return decorator.decorate(
       this.substituteTokens(this.label, tokens, this.language, options),
       this.language,
@@ -6159,136 +6161,136 @@ return decorator.decorate(
   },
 
   getDataTokens: function() {
-    _$jscoverage['lib/tr8n.js'][1705]++;
+    _$jscoverage['lib/tr8n.js'][1706]++;
 if (!this.data_tokens) {
-      _$jscoverage['lib/tr8n.js'][1706]++;
-var tokenizer = new Tr8n.Tokenizers.Data(this.label);
       _$jscoverage['lib/tr8n.js'][1707]++;
+var tokenizer = new Tr8n.Tokenizers.Data(this.label);
+      _$jscoverage['lib/tr8n.js'][1708]++;
 this.data_tokens = tokenizer.tokens;
     }
-    _$jscoverage['lib/tr8n.js'][1709]++;
+    _$jscoverage['lib/tr8n.js'][1710]++;
 return this.data_tokens;
   },
 
   getDataTokenNames: function() {
-    _$jscoverage['lib/tr8n.js'][1713]++;
+    _$jscoverage['lib/tr8n.js'][1714]++;
 if (!this.data_token_names) {
-      _$jscoverage['lib/tr8n.js'][1714]++;
-this.data_token_names = [];
       _$jscoverage['lib/tr8n.js'][1715]++;
+this.data_token_names = [];
+      _$jscoverage['lib/tr8n.js'][1716]++;
 for (var token in this.getDataTokens())
         {
-_$jscoverage['lib/tr8n.js'][1716]++;
+_$jscoverage['lib/tr8n.js'][1717]++;
 this.data_token_names.push(token.full_name);}
 
     }
-    _$jscoverage['lib/tr8n.js'][1718]++;
+    _$jscoverage['lib/tr8n.js'][1719]++;
 return this.data_token_names;
   },
 
   getDecorationTokenNames: function() {
-    _$jscoverage['lib/tr8n.js'][1722]++;
+    _$jscoverage['lib/tr8n.js'][1723]++;
 if (!this.decoration_tokens) {
-      _$jscoverage['lib/tr8n.js'][1723]++;
-var tokenizer = new Tr8n.Tokenizers.Decoration(this.label);
       _$jscoverage['lib/tr8n.js'][1724]++;
+var tokenizer = new Tr8n.Tokenizers.Decoration(this.label);
+      _$jscoverage['lib/tr8n.js'][1725]++;
 this.decoration_tokens = tokenizer.tokens;
     }
-    _$jscoverage['lib/tr8n.js'][1726]++;
+    _$jscoverage['lib/tr8n.js'][1727]++;
 return this.decoration_tokens;
   },
 
   substituteTokens: function(label, tokens, language, options) {
-    _$jscoverage['lib/tr8n.js'][1730]++;
+    _$jscoverage['lib/tr8n.js'][1731]++;
 if (label.indexOf('{') != -1) {
-      _$jscoverage['lib/tr8n.js'][1731]++;
-var tokenizer = new Tr8n.Tokenizers.Data(label, tokens, Tr8n.Utils.extend(options, {allowed_tokens: this.getDataTokenNames()}));
       _$jscoverage['lib/tr8n.js'][1732]++;
+var tokenizer = new Tr8n.Tokenizers.Data(label, tokens, Tr8n.Utils.extend(options, {allowed_tokens: this.getDataTokenNames()}));
+      _$jscoverage['lib/tr8n.js'][1733]++;
 label = tokenizer.substitute(language, options);
     }
 
-    _$jscoverage['lib/tr8n.js'][1735]++;
+    _$jscoverage['lib/tr8n.js'][1736]++;
 if (label.indexOf('[') != -1) {
-      _$jscoverage['lib/tr8n.js'][1736]++;
-tokenizer = new Tr8n.Tokenizers.Decoration(label, tokens, Tr8n.Utils.extend(options, {allowed_tokens: this.getDecorationTokenNames()}));
       _$jscoverage['lib/tr8n.js'][1737]++;
+tokenizer = new Tr8n.Tokenizers.Decoration(label, tokens, Tr8n.Utils.extend(options, {allowed_tokens: this.getDecorationTokenNames()}));
+      _$jscoverage['lib/tr8n.js'][1738]++;
 label = tokenizer.substitute(language, options);
     }
-    _$jscoverage['lib/tr8n.js'][1739]++;
+    _$jscoverage['lib/tr8n.js'][1740]++;
 return label;
   }
 
 };
 
 ;
-_$jscoverage['lib/tr8n.js'][1745]++;
+_$jscoverage['lib/tr8n.js'][1746]++;
 Tr8n.Translation = function(attrs) {
-  _$jscoverage['lib/tr8n.js'][1746]++;
+  _$jscoverage['lib/tr8n.js'][1747]++;
 Tr8n.Utils.extend(this, attrs);
 
-  _$jscoverage['lib/tr8n.js'][1748]++;
+  _$jscoverage['lib/tr8n.js'][1749]++;
 if (this.locale && this.translation_key) {
-    _$jscoverage['lib/tr8n.js'][1749]++;
+    _$jscoverage['lib/tr8n.js'][1750]++;
 this.language = this.translation_key.application.getLanguage(this.locale);
   }
 
 };
 
-_$jscoverage['lib/tr8n.js'][1754]++;
+_$jscoverage['lib/tr8n.js'][1755]++;
 Tr8n.Translation.prototype = {
 
   hasContextRules: function() {
-    _$jscoverage['lib/tr8n.js'][1757]++;
+    _$jscoverage['lib/tr8n.js'][1758]++;
 return (this.context && Tr8n.Utils.keys(this.context).length > 0);
   },
 
   isValidTranslation: function(tokens) {
-    _$jscoverage['lib/tr8n.js'][1761]++;
+    _$jscoverage['lib/tr8n.js'][1762]++;
 if (this.hasContextRules())
       {
-_$jscoverage['lib/tr8n.js'][1762]++;
+_$jscoverage['lib/tr8n.js'][1763]++;
 return true;}
 
 
-    _$jscoverage['lib/tr8n.js'][1764]++;
-var token_names = Tr8n.Utils.keys(this.context);
     _$jscoverage['lib/tr8n.js'][1765]++;
+var token_names = Tr8n.Utils.keys(this.context);
+    _$jscoverage['lib/tr8n.js'][1766]++;
 for(var i=0; i<token_names.length; i++) {
-      _$jscoverage['lib/tr8n.js'][1766]++;
-var object = Tr8n.Configuration.prototype.tokenObject(tokens, token_names[i]);
       _$jscoverage['lib/tr8n.js'][1767]++;
+var object = Tr8n.Configuration.prototype.tokenObject(tokens, token_names[i]);
+      _$jscoverage['lib/tr8n.js'][1768]++;
 if (!object) {
-_$jscoverage['lib/tr8n.js'][1767]++;
+_$jscoverage['lib/tr8n.js'][1768]++;
 return false;}
 
 
-      _$jscoverage['lib/tr8n.js'][1769]++;
+      _$jscoverage['lib/tr8n.js'][1770]++;
 var rule_keys = Tr8n.Utils.keys(this.context[token_names[i]]);
 
-      _$jscoverage['lib/tr8n.js'][1771]++;
+      _$jscoverage['lib/tr8n.js'][1772]++;
 for(var j=0; j<rule_keys.length; j++) {
-        _$jscoverage['lib/tr8n.js'][1772]++;
+        _$jscoverage['lib/tr8n.js'][1773]++;
 if (rule_keys[j] != "other") {
-          _$jscoverage['lib/tr8n.js'][1773]++;
-var context = this.language.getContextByKeyword(rule_keys[j]);
           _$jscoverage['lib/tr8n.js'][1774]++;
+var context = this.language.getContextByKeyword(rule_keys[j]);
+          _$jscoverage['lib/tr8n.js'][1775]++;
 if (context == null) {
-_$jscoverage['lib/tr8n.js'][1774]++;
+_$jscoverage['lib/tr8n.js'][1775]++;
 return false;}
  
-          _$jscoverage['lib/tr8n.js'][1775]++;
-var rule = context.findMatchingRule(object);
           _$jscoverage['lib/tr8n.js'][1776]++;
+var rule = context.findMatchingRule(object);
+          _$jscoverage['lib/tr8n.js'][1777]++;
 if (!rule || rule.keyword != rule_keys[j])
             {
-_$jscoverage['lib/tr8n.js'][1777]++;
+_$jscoverage['lib/tr8n.js'][1778]++;
 return false;}
 
         }
       }
     }
 
-    _$jscoverage['lib/tr8n.js'][1782]++;
+    _$jscoverage['lib/tr8n.js'][1783]++;
 return true;
   }
 
@@ -6297,183 +6299,183 @@ return true;
 
 
 ;
-_$jscoverage['lib/tr8n.js'][1790]++;
+_$jscoverage['lib/tr8n.js'][1791]++;
 Tr8n.Translator = function(attrs) {
-  _$jscoverage['lib/tr8n.js'][1791]++;
+  _$jscoverage['lib/tr8n.js'][1792]++;
 Tr8n.Utils.extend(this, attrs);
 };
 ;
-_$jscoverage['lib/tr8n.js'][1794]++;
+_$jscoverage['lib/tr8n.js'][1795]++;
 Tr8n.Language = function(attrs) {
-  _$jscoverage['lib/tr8n.js'][1795]++;
+  _$jscoverage['lib/tr8n.js'][1796]++;
 Tr8n.Utils.extend(this, attrs);
 
-  _$jscoverage['lib/tr8n.js'][1797]++;
-this.contexts = {};
   _$jscoverage['lib/tr8n.js'][1798]++;
-var keys = Tr8n.Utils.keys(attrs.contexts || {});
+this.contexts = {};
   _$jscoverage['lib/tr8n.js'][1799]++;
+var keys = Tr8n.Utils.keys(attrs.contexts || {});
+  _$jscoverage['lib/tr8n.js'][1800]++;
 for (var i=0; i<keys.length; i++) {
-    _$jscoverage['lib/tr8n.js'][1800]++;
+    _$jscoverage['lib/tr8n.js'][1801]++;
 this.contexts[keys[i]] = new Tr8n.LanguageContext(Tr8n.Utils.extend(attrs.contexts[keys[i]], {language: this}));
   }
 
-  _$jscoverage['lib/tr8n.js'][1803]++;
-this.cases = {};
   _$jscoverage['lib/tr8n.js'][1804]++;
-keys = Tr8n.Utils.keys(attrs.cases || {});
+this.cases = {};
   _$jscoverage['lib/tr8n.js'][1805]++;
+keys = Tr8n.Utils.keys(attrs.cases || {});
+  _$jscoverage['lib/tr8n.js'][1806]++;
 for (i=0; i<keys.length; i++) {
-    _$jscoverage['lib/tr8n.js'][1806]++;
+    _$jscoverage['lib/tr8n.js'][1807]++;
 this.cases[keys[i]] = new Tr8n.LanguageContext(Tr8n.Utils.extend(attrs.cases[keys[i]], {language: this}));
   }
 };
 
-_$jscoverage['lib/tr8n.js'][1810]++;
+_$jscoverage['lib/tr8n.js'][1811]++;
 Tr8n.Language.prototype = {
   getContextByKeyword: function(key) {
-    _$jscoverage['lib/tr8n.js'][1812]++;
+    _$jscoverage['lib/tr8n.js'][1813]++;
 return this.contexts[key];
   },
   
   getContextByTokenName: function(token_name) {
-    _$jscoverage['lib/tr8n.js'][1816]++;
-var keys = Tr8n.Utils.keys(attrs.contexts || {});
     _$jscoverage['lib/tr8n.js'][1817]++;
+var keys = Tr8n.Utils.keys(attrs.contexts || {});
+    _$jscoverage['lib/tr8n.js'][1818]++;
 for (var i=0; i<keys.length; i++) {
-      _$jscoverage['lib/tr8n.js'][1818]++;
+      _$jscoverage['lib/tr8n.js'][1819]++;
 if (this.contexts[keys[i]].isAppliedToToken(token_name))
         {
-_$jscoverage['lib/tr8n.js'][1819]++;
+_$jscoverage['lib/tr8n.js'][1820]++;
 return this.contexts[keys[i]];}
 
     }
-    _$jscoverage['lib/tr8n.js'][1821]++;
+    _$jscoverage['lib/tr8n.js'][1822]++;
 return null;
   },
   
   getLanguageCaseByKeyword: function(key) {
-    _$jscoverage['lib/tr8n.js'][1825]++;
+    _$jscoverage['lib/tr8n.js'][1826]++;
 return this.cases[key];
   },
   
   translate: function(label, description, tokens, options) {
   
-    _$jscoverage['lib/tr8n.js'][1830]++;
+    _$jscoverage['lib/tr8n.js'][1831]++;
 var translation_key = new Tr8n.TranslationKey({
       label: label,
       description: description
     });
   
       
-    _$jscoverage['lib/tr8n.js'][1836]++;
+    _$jscoverage['lib/tr8n.js'][1837]++;
 return translation_key.translate(this, tokens, options);
   }
 };
 
 
 ;
-_$jscoverage['lib/tr8n.js'][1842]++;
+_$jscoverage['lib/tr8n.js'][1843]++;
 Tr8n.LanguageCase = function(attrs) {
-  _$jscoverage['lib/tr8n.js'][1843]++;
+  _$jscoverage['lib/tr8n.js'][1844]++;
 Tr8n.Utils.extend(this, attrs);
 
-  _$jscoverage['lib/tr8n.js'][1845]++;
-this.rules = [];
   _$jscoverage['lib/tr8n.js'][1846]++;
-attrs.rules = attrs.rules || [];
+this.rules = [];
   _$jscoverage['lib/tr8n.js'][1847]++;
+attrs.rules = attrs.rules || [];
+  _$jscoverage['lib/tr8n.js'][1848]++;
 for (var i=0; i<attrs.rules.length; i++) {
-    _$jscoverage['lib/tr8n.js'][1848]++;
+    _$jscoverage['lib/tr8n.js'][1849]++;
 this.rules.push(new Tr8n.LanguageCaseRule(Tr8n.Utils.extend(attrs.rules[i], {language_case: this})));
   }
 };
 
 
-_$jscoverage['lib/tr8n.js'][1853]++;
+_$jscoverage['lib/tr8n.js'][1854]++;
 Tr8n.LanguageCase.prototype = {
 
   findMatchingRule: function(value, object) {
-    _$jscoverage['lib/tr8n.js'][1856]++;
+    _$jscoverage['lib/tr8n.js'][1857]++;
 for (var i=0; i<this.rules.length; i++) {
-      _$jscoverage['lib/tr8n.js'][1857]++;
-var rule = this.rules[i];
       _$jscoverage['lib/tr8n.js'][1858]++;
+var rule = this.rules[i];
+      _$jscoverage['lib/tr8n.js'][1859]++;
 if (rule.evaluate(value, object))
         {
-_$jscoverage['lib/tr8n.js'][1859]++;
+_$jscoverage['lib/tr8n.js'][1860]++;
 return rule;}
 
     }
 
-    _$jscoverage['lib/tr8n.js'][1862]++;
+    _$jscoverage['lib/tr8n.js'][1863]++;
 return null;
   },
 
   apply: function(value, object, options) {
-    _$jscoverage['lib/tr8n.js'][1866]++;
-var tags = Tr8n.Utils.unique(value.match(/<\/?[^>]*>/g));
     _$jscoverage['lib/tr8n.js'][1867]++;
+var tags = Tr8n.Utils.unique(value.match(/<\/?[^>]*>/g));
+    _$jscoverage['lib/tr8n.js'][1868]++;
 var sanitized_value = value.replaceAll(/<\/?[^>]*>/, '');
 
-    _$jscoverage['lib/tr8n.js'][1869]++;
-var elements = [sanitized_value];
     _$jscoverage['lib/tr8n.js'][1870]++;
+var elements = [sanitized_value];
+    _$jscoverage['lib/tr8n.js'][1871]++;
 if (this.application != 'phrase')
       {
-_$jscoverage['lib/tr8n.js'][1871]++;
+_$jscoverage['lib/tr8n.js'][1872]++;
 elements = Tr8n.Utils.unique(sanitized_value.split(/[\s\/]/));}
 
 
-        _$jscoverage['lib/tr8n.js'][1873]++;
+        _$jscoverage['lib/tr8n.js'][1874]++;
 for(var i=0; i<tags.length; i++) {
-      _$jscoverage['lib/tr8n.js'][1874]++;
+      _$jscoverage['lib/tr8n.js'][1875]++;
 value = value.replaceAll(tags[i], '{$h' + i + '}');
     }
 
-        _$jscoverage['lib/tr8n.js'][1877]++;
+        _$jscoverage['lib/tr8n.js'][1878]++;
 for(i=0; i<elements.length; i++) {
-      _$jscoverage['lib/tr8n.js'][1878]++;
+      _$jscoverage['lib/tr8n.js'][1879]++;
 value = value.replaceAll(elements[i], '{$w' + i + '}');
     }
 
-    _$jscoverage['lib/tr8n.js'][1881]++;
-var transformed_elements = [];
     _$jscoverage['lib/tr8n.js'][1882]++;
+var transformed_elements = [];
+    _$jscoverage['lib/tr8n.js'][1883]++;
 for(i=0; i<elements.length; i++) {
-      _$jscoverage['lib/tr8n.js'][1883]++;
-var element = elements[i];
       _$jscoverage['lib/tr8n.js'][1884]++;
-var rule = this.findMatchingRule(element, object);
+var element = elements[i];
       _$jscoverage['lib/tr8n.js'][1885]++;
-var case_value = (rule ? rule.apply(element) : element);
+var rule = this.findMatchingRule(element, object);
       _$jscoverage['lib/tr8n.js'][1886]++;
+var case_value = (rule ? rule.apply(element) : element);
+      _$jscoverage['lib/tr8n.js'][1887]++;
 transformed_elements.push(this.decorate(element, case_value, rule, options));
     }
 
-        _$jscoverage['lib/tr8n.js'][1889]++;
+        _$jscoverage['lib/tr8n.js'][1890]++;
 for(i=0; i<elements.length; i++) {
-      _$jscoverage['lib/tr8n.js'][1890]++;
+      _$jscoverage['lib/tr8n.js'][1891]++;
 value = value.replaceAll('{$w' + i + '}', transformed_elements[i]);
     }
 
-        _$jscoverage['lib/tr8n.js'][1893]++;
+        _$jscoverage['lib/tr8n.js'][1894]++;
 for(var i=0; i<tags.length; i++) {
-      _$jscoverage['lib/tr8n.js'][1894]++;
+      _$jscoverage['lib/tr8n.js'][1895]++;
 value = value.replaceAll('{$h' + i + '}', tags[i]);
     }
 
-    _$jscoverage['lib/tr8n.js'][1897]++;
+    _$jscoverage['lib/tr8n.js'][1898]++;
 return value;
   },
 
   getConfig: function() {
-    _$jscoverage['lib/tr8n.js'][1901]++;
+    _$jscoverage['lib/tr8n.js'][1902]++;
 return Tr8n.config;
   },
 
   decorate: function(original, value, rule, options) {
-    _$jscoverage['lib/tr8n.js'][1905]++;
+    _$jscoverage['lib/tr8n.js'][1906]++;
 if (
         (options && options.skip_decoration) ||
         this.language == null ||
@@ -6481,283 +6483,283 @@ if (
         this.getConfig().current_translator == null ||
         !this.getConfig().current_translator.isInlineModeEnabled()
       ) {
-_$jscoverage['lib/tr8n.js'][1911]++;
+_$jscoverage['lib/tr8n.js'][1912]++;
 return value;}
 
 
-    _$jscoverage['lib/tr8n.js'][1913]++;
+    _$jscoverage['lib/tr8n.js'][1914]++;
 return "<tr8n:tr class='tr8n_language_case' data-original='" + original.replaceAll("'", "\'") + "'>" + value + "</tr8n:tr>";
   }
 
 };
 
 ;
-_$jscoverage['lib/tr8n.js'][1919]++;
+_$jscoverage['lib/tr8n.js'][1920]++;
 Tr8n.LanguageCaseRule = function(attrs) {
-  _$jscoverage['lib/tr8n.js'][1920]++;
+  _$jscoverage['lib/tr8n.js'][1921]++;
 Tr8n.Utils.extend(this, attrs);
 };
 
-_$jscoverage['lib/tr8n.js'][1923]++;
+_$jscoverage['lib/tr8n.js'][1924]++;
 Tr8n.LanguageCaseRule.prototype = {
 
   getConditionsExpression: function() {
-    _$jscoverage['lib/tr8n.js'][1926]++;
+    _$jscoverage['lib/tr8n.js'][1927]++;
 if (!this.conditions_expression)
       {
-_$jscoverage['lib/tr8n.js'][1927]++;
+_$jscoverage['lib/tr8n.js'][1928]++;
 this.conditions_expression = (new Tr8n.RulesEngine.Parser(this.conditions)).parse();}
 
-    _$jscoverage['lib/tr8n.js'][1928]++;
+    _$jscoverage['lib/tr8n.js'][1929]++;
 return this.conditions_expression;
   },
   
   getOperationsExpression: function() {
-    _$jscoverage['lib/tr8n.js'][1932]++;
+    _$jscoverage['lib/tr8n.js'][1933]++;
 if (!this.operations_expression)
       {
-_$jscoverage['lib/tr8n.js'][1933]++;
+_$jscoverage['lib/tr8n.js'][1934]++;
 this.operations_expression = (new Tr8n.RulesEngine.Parser(this.operations)).parse();}
 
-    _$jscoverage['lib/tr8n.js'][1934]++;
+    _$jscoverage['lib/tr8n.js'][1935]++;
 return this.operations_expression;
   },
   
   getGenderVariables: function(object) {
-    _$jscoverage['lib/tr8n.js'][1938]++;
+    _$jscoverage['lib/tr8n.js'][1939]++;
 if (this.conditions.indexOf("@gender") == -1)
       {
-_$jscoverage['lib/tr8n.js'][1939]++;
+_$jscoverage['lib/tr8n.js'][1940]++;
 return {};}
 
   
-    _$jscoverage['lib/tr8n.js'][1941]++;
+    _$jscoverage['lib/tr8n.js'][1942]++;
 if (object == null)
       {
-_$jscoverage['lib/tr8n.js'][1942]++;
+_$jscoverage['lib/tr8n.js'][1943]++;
 return {gender: 'unknown'};}
 
   
-    _$jscoverage['lib/tr8n.js'][1944]++;
+    _$jscoverage['lib/tr8n.js'][1945]++;
 var context = this.language_case.language.getContextByKeyword("gender");
   
-    _$jscoverage['lib/tr8n.js'][1946]++;
+    _$jscoverage['lib/tr8n.js'][1947]++;
 if (context == null)
       {
-_$jscoverage['lib/tr8n.js'][1947]++;
+_$jscoverage['lib/tr8n.js'][1948]++;
 return {gender: 'unknown'};}
 
   
-    _$jscoverage['lib/tr8n.js'][1949]++;
+    _$jscoverage['lib/tr8n.js'][1950]++;
 return context.getVars(object);
   },
   
   evaluate: function(value, object) {
-    _$jscoverage['lib/tr8n.js'][1953]++;
+    _$jscoverage['lib/tr8n.js'][1954]++;
 if (this.conditions == null)
       {
-_$jscoverage['lib/tr8n.js'][1954]++;
+_$jscoverage['lib/tr8n.js'][1955]++;
 return false;}
 
   
-    _$jscoverage['lib/tr8n.js'][1956]++;
-var evaluator = new Tr8n.RulesEngine.Evaluator();
     _$jscoverage['lib/tr8n.js'][1957]++;
+var evaluator = new Tr8n.RulesEngine.Evaluator();
+    _$jscoverage['lib/tr8n.js'][1958]++;
 evaluator.setVars(Tr8n.Utils.extend({"@value": value}, this.getGenderVariables(object)));
   
-    _$jscoverage['lib/tr8n.js'][1959]++;
+    _$jscoverage['lib/tr8n.js'][1960]++;
 return evaluator.evaluate(this.getConditionsExpression());
   },
   
   apply: function(value) {
-    _$jscoverage['lib/tr8n.js'][1963]++;
+    _$jscoverage['lib/tr8n.js'][1964]++;
 if (this.operations == null)
       {
-_$jscoverage['lib/tr8n.js'][1964]++;
+_$jscoverage['lib/tr8n.js'][1965]++;
 return value;}
 
   
-    _$jscoverage['lib/tr8n.js'][1966]++;
-var evaluator = new Tr8n.RulesEngine.Evaluator();
     _$jscoverage['lib/tr8n.js'][1967]++;
+var evaluator = new Tr8n.RulesEngine.Evaluator();
+    _$jscoverage['lib/tr8n.js'][1968]++;
 evaluator.setVars({"@value": value});
   
-    _$jscoverage['lib/tr8n.js'][1969]++;
+    _$jscoverage['lib/tr8n.js'][1970]++;
 return evaluator.evaluate(this.getOperationsExpression());
   }
 
 };
 
 ;
-_$jscoverage['lib/tr8n.js'][1975]++;
+_$jscoverage['lib/tr8n.js'][1976]++;
 Tr8n.LanguageContext = function(attrs) {
-  _$jscoverage['lib/tr8n.js'][1976]++;
+  _$jscoverage['lib/tr8n.js'][1977]++;
 Tr8n.Utils.extend(this, attrs);
 
-  _$jscoverage['lib/tr8n.js'][1978]++;
+  _$jscoverage['lib/tr8n.js'][1979]++;
 this.rules = {};
 
-  _$jscoverage['lib/tr8n.js'][1980]++;
-var keys = Tr8n.Utils.keys(attrs.rules || {});
   _$jscoverage['lib/tr8n.js'][1981]++;
+var keys = Tr8n.Utils.keys(attrs.rules || {});
+  _$jscoverage['lib/tr8n.js'][1982]++;
 for (var i=0; i<keys.length; i++) {
-    _$jscoverage['lib/tr8n.js'][1982]++;
+    _$jscoverage['lib/tr8n.js'][1983]++;
 this.rules[keys[i]] = new Tr8n.LanguageContextRule(Tr8n.Utils.extend(attrs.rules[keys[i]], {language_context: this}));
   }
 
 };
 
-_$jscoverage['lib/tr8n.js'][1987]++;
+_$jscoverage['lib/tr8n.js'][1988]++;
 Tr8n.LanguageContext.prototype = {
 
   isAppliedToToken: function(token) {
-    _$jscoverage['lib/tr8n.js'][1990]++;
-var expr = new RegExp(this.token_expression.substring(1,this.token_expression.length-2));
     _$jscoverage['lib/tr8n.js'][1991]++;
+var expr = new RegExp(this.token_expression.substring(1,this.token_expression.length-2));
+    _$jscoverage['lib/tr8n.js'][1992]++;
 return token.match(expr) != null;
   },
   
   getFallbackRule: function() {
-    _$jscoverage['lib/tr8n.js'][1995]++;
+    _$jscoverage['lib/tr8n.js'][1996]++;
 if (!this.fallback_rule) {
-      _$jscoverage['lib/tr8n.js'][1996]++;
-var keys = Tr8n.Utils.keys(this.rules);
       _$jscoverage['lib/tr8n.js'][1997]++;
+var keys = Tr8n.Utils.keys(this.rules);
+      _$jscoverage['lib/tr8n.js'][1998]++;
 for (var i=0; i<keys.length; i++) {
-        _$jscoverage['lib/tr8n.js'][1998]++;
-var key = keys[i];
         _$jscoverage['lib/tr8n.js'][1999]++;
+var key = keys[i];
+        _$jscoverage['lib/tr8n.js'][2000]++;
 if (this.rules[key].isFallback())
           {
-_$jscoverage['lib/tr8n.js'][2000]++;
+_$jscoverage['lib/tr8n.js'][2001]++;
 this.fallback_rule = this.rules[key];}
 
       }
     }
-    _$jscoverage['lib/tr8n.js'][2003]++;
+    _$jscoverage['lib/tr8n.js'][2004]++;
 return this.fallback_rule;
   },
 
   getConfig: function() {
-    _$jscoverage['lib/tr8n.js'][2007]++;
+    _$jscoverage['lib/tr8n.js'][2008]++;
 return Tr8n.config.getContextRules(this.keyword);
   },
 
   getVars: function(obj) {
-    _$jscoverage['lib/tr8n.js'][2011]++;
-var vars = {};
     _$jscoverage['lib/tr8n.js'][2012]++;
+var vars = {};
+    _$jscoverage['lib/tr8n.js'][2013]++;
 var config = this.getConfig();
 
-    _$jscoverage['lib/tr8n.js'][2014]++;
+    _$jscoverage['lib/tr8n.js'][2015]++;
 for (var i=0; i<this.variables.length; i++) {
-      _$jscoverage['lib/tr8n.js'][2015]++;
-var key = this.variables[i];
       _$jscoverage['lib/tr8n.js'][2016]++;
+var key = this.variables[i];
+      _$jscoverage['lib/tr8n.js'][2017]++;
 if (!config.variables || !config.variables[key]) {
-        _$jscoverage['lib/tr8n.js'][2017]++;
+        _$jscoverage['lib/tr8n.js'][2018]++;
 vars[key] = obj;
       } else {
-        _$jscoverage['lib/tr8n.js'][2019]++;
-var method = config.variables[key];
         _$jscoverage['lib/tr8n.js'][2020]++;
+var method = config.variables[key];
+        _$jscoverage['lib/tr8n.js'][2021]++;
 if (typeof method === "string") {
-          _$jscoverage['lib/tr8n.js'][2021]++;
+          _$jscoverage['lib/tr8n.js'][2022]++;
 if (obj.object) {
-_$jscoverage['lib/tr8n.js'][2021]++;
+_$jscoverage['lib/tr8n.js'][2022]++;
 obj = obj.object;}
 
-          _$jscoverage['lib/tr8n.js'][2022]++;
+          _$jscoverage['lib/tr8n.js'][2023]++;
 vars[key] = obj[method];
         } else {
-_$jscoverage['lib/tr8n.js'][2023]++;
+_$jscoverage['lib/tr8n.js'][2024]++;
 if (typeof method === "function") {
-          _$jscoverage['lib/tr8n.js'][2024]++;
+          _$jscoverage['lib/tr8n.js'][2025]++;
 vars[key] = method(obj);
         } else {
-          _$jscoverage['lib/tr8n.js'][2026]++;
+          _$jscoverage['lib/tr8n.js'][2027]++;
 vars[key] = obj;
         }}
 
       }
     }
   
-    _$jscoverage['lib/tr8n.js'][2031]++;
+    _$jscoverage['lib/tr8n.js'][2032]++;
 return vars;
   },
   
   findMatchingRule: function(obj) {
-    _$jscoverage['lib/tr8n.js'][2035]++;
+    _$jscoverage['lib/tr8n.js'][2036]++;
 var token_vars = this.getVars(obj);
 
-    _$jscoverage['lib/tr8n.js'][2037]++;
+    _$jscoverage['lib/tr8n.js'][2038]++;
 var keys = Tr8n.Utils.keys(this.rules);
 
-    _$jscoverage['lib/tr8n.js'][2039]++;
+    _$jscoverage['lib/tr8n.js'][2040]++;
 for (var i=0; i<keys.length; i++) {
-      _$jscoverage['lib/tr8n.js'][2040]++;
-var rule = this.rules[keys[i]];
       _$jscoverage['lib/tr8n.js'][2041]++;
+var rule = this.rules[keys[i]];
+      _$jscoverage['lib/tr8n.js'][2042]++;
 if (!rule.isFallback() && rule.evaluate(token_vars))
           {
-_$jscoverage['lib/tr8n.js'][2042]++;
+_$jscoverage['lib/tr8n.js'][2043]++;
 return rule;}
 
     }
   
-    _$jscoverage['lib/tr8n.js'][2045]++;
+    _$jscoverage['lib/tr8n.js'][2046]++;
 return this.getFallbackRule();
   }
 
 };;
-_$jscoverage['lib/tr8n.js'][2049]++;
+_$jscoverage['lib/tr8n.js'][2050]++;
 Tr8n.LanguageContextRule = function(attrs) {
-  _$jscoverage['lib/tr8n.js'][2050]++;
+  _$jscoverage['lib/tr8n.js'][2051]++;
 Tr8n.Utils.extend(this, attrs);
 };
 
-_$jscoverage['lib/tr8n.js'][2053]++;
+_$jscoverage['lib/tr8n.js'][2054]++;
 Tr8n.LanguageContextRule.prototype = {
 
   isFallback: function() {
-    _$jscoverage['lib/tr8n.js'][2056]++;
+    _$jscoverage['lib/tr8n.js'][2057]++;
 return (this.keyword == "other");
   },
   
   getConditionsExpression: function() {
-    _$jscoverage['lib/tr8n.js'][2060]++;
+    _$jscoverage['lib/tr8n.js'][2061]++;
 if (!this.conditions_expression)
       {
-_$jscoverage['lib/tr8n.js'][2061]++;
+_$jscoverage['lib/tr8n.js'][2062]++;
 this.conditions_expression = (new Tr8n.RulesEngine.Parser(this.conditions)).parse();}
 
-    _$jscoverage['lib/tr8n.js'][2062]++;
+    _$jscoverage['lib/tr8n.js'][2063]++;
 return this.conditions_expression;
   },
   
   evaluate: function(vars) {
-    _$jscoverage['lib/tr8n.js'][2066]++;
+    _$jscoverage['lib/tr8n.js'][2067]++;
 if (this.isFallback()) {
-_$jscoverage['lib/tr8n.js'][2066]++;
+_$jscoverage['lib/tr8n.js'][2067]++;
 return true;}
 
   
-    _$jscoverage['lib/tr8n.js'][2068]++;
-var evaluator = new Tr8n.RulesEngine.Evaluator();
     _$jscoverage['lib/tr8n.js'][2069]++;
+var evaluator = new Tr8n.RulesEngine.Evaluator();
+    _$jscoverage['lib/tr8n.js'][2070]++;
 evaluator.setVars(vars || {});
   
-    _$jscoverage['lib/tr8n.js'][2071]++;
+    _$jscoverage['lib/tr8n.js'][2072]++;
 return evaluator.evaluate(this.getConditionsExpression())
   }
 
 };;
-_$jscoverage['lib/tr8n.js'][2075]++;
-var program = require('commander');
 _$jscoverage['lib/tr8n.js'][2076]++;
+var program = require('commander');
+_$jscoverage['lib/tr8n.js'][2077]++;
 var fs = require("fs");
 
-_$jscoverage['lib/tr8n.js'][2078]++;
+_$jscoverage['lib/tr8n.js'][2079]++;
 program.version('0.1.1')
   .option('-l, --label', 'Label to be translated')
   .option('-d, --description', 'Description of the label')
@@ -6766,56 +6768,56 @@ program.version('0.1.1')
   .parse(process.argv);
 
 
-_$jscoverage['lib/tr8n.js'][2086]++;
+_$jscoverage['lib/tr8n.js'][2087]++;
 Tr8n.config = new Tr8n.Configuration();
 
-_$jscoverage['lib/tr8n.js'][2088]++;
-fs.readFile("./../config/languages/en-US.json", function (err, data) {
-  _$jscoverage['lib/tr8n.js'][2089]++;
-if (err) {
 _$jscoverage['lib/tr8n.js'][2089]++;
+fs.readFile("./../config/languages/en-US.json", function (err, data) {
+  _$jscoverage['lib/tr8n.js'][2090]++;
+if (err) {
+_$jscoverage['lib/tr8n.js'][2090]++;
 throw err;}
 
-  _$jscoverage['lib/tr8n.js'][2090]++;
+  _$jscoverage['lib/tr8n.js'][2091]++;
 Tr8n.config.currentLanguage = new Tr8n.Language(JSON.parse(data));
 });
 
 
 
-_$jscoverage['lib/tr8n.js'][2095]++;
-exports.Configuration = Tr8n.Configuration;
 _$jscoverage['lib/tr8n.js'][2096]++;
-exports.RulesEngine = Tr8n.RulesEngine;
+exports.Configuration = Tr8n.Configuration;
 _$jscoverage['lib/tr8n.js'][2097]++;
-exports.Tokenizers = Tr8n.Tokenizers;
+exports.RulesEngine = Tr8n.RulesEngine;
 _$jscoverage['lib/tr8n.js'][2098]++;
-exports.Tokens = Tr8n.Tokens;
+exports.Tokenizers = Tr8n.Tokenizers;
 _$jscoverage['lib/tr8n.js'][2099]++;
-exports.Decorators = Tr8n.Decorators;
+exports.Tokens = Tr8n.Tokens;
 _$jscoverage['lib/tr8n.js'][2100]++;
-exports.Utils = Tr8n.Utils;
+exports.Decorators = Tr8n.Decorators;
 _$jscoverage['lib/tr8n.js'][2101]++;
-exports.Language = Tr8n.Language;
+exports.Utils = Tr8n.Utils;
 _$jscoverage['lib/tr8n.js'][2102]++;
-exports.LanguageContext = Tr8n.LanguageContext;
+exports.Language = Tr8n.Language;
 _$jscoverage['lib/tr8n.js'][2103]++;
-exports.LanguageContextRule = Tr8n.LanguageContextRule;
+exports.LanguageContext = Tr8n.LanguageContext;
 _$jscoverage['lib/tr8n.js'][2104]++;
-exports.LanguageCase = Tr8n.LanguageCase;
+exports.LanguageContextRule = Tr8n.LanguageContextRule;
 _$jscoverage['lib/tr8n.js'][2105]++;
-exports.LanguageCaseRule = Tr8n.LanguageCaseRule;
+exports.LanguageCase = Tr8n.LanguageCase;
 _$jscoverage['lib/tr8n.js'][2106]++;
+exports.LanguageCaseRule = Tr8n.LanguageCaseRule;
+_$jscoverage['lib/tr8n.js'][2107]++;
 exports.Application = Tr8n.Application;
 
 
-_$jscoverage['lib/tr8n.js'][2109]++;
+_$jscoverage['lib/tr8n.js'][2110]++;
 exports.configure = function(callback) {
-  _$jscoverage['lib/tr8n.js'][2110]++;
+  _$jscoverage['lib/tr8n.js'][2111]++;
 callback(Tr8n.config);
 };
 
-_$jscoverage['lib/tr8n.js'][2113]++;
+_$jscoverage['lib/tr8n.js'][2114]++;
 exports.tr = function(label, description, tokens, options) {
-  _$jscoverage['lib/tr8n.js'][2114]++;
+  _$jscoverage['lib/tr8n.js'][2115]++;
 return label;
 };
