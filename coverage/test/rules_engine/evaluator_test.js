@@ -33,6 +33,17 @@ describe('RulesEngine.Evaluator', function(){
     });
   });
 
+  describe('setting variables', function(){
+    it('should set and get vars', function(){
+      var e = new Tr8n.RulesEngine.Evaluator();
+
+      e.setVars({a: "a", "@b": "b"});
+      assert.deepEqual({a: "a", "@b": "b"}, e.getVars());
+
+      assert.deepEqual(e.evaluate(["=", "a", "a"]), true);
+      assert.deepEqual(e.evaluate(["=", "@b", "b"]), true);
+    });
+  });
 
   describe('evaluating extensions', function(){
     it('should generate correct arrays', function(){
@@ -94,10 +105,10 @@ describe('RulesEngine.Evaluator', function(){
       assert.deepEqual(e.evaluate(["replace", "/world$/", "moon", "hello world"]), "hello moon");
       assert.deepEqual(e.evaluate(["replace", "/(vert|ind)ices$/i", "$1ex", "vertices"]), "vertex");
 
-      assert.deepEqual(e.evaluate("hello world"), "hello world")
+      assert.deepEqual(e.evaluate("hello world"), "hello world");
 
-      assert.deepEqual(e.evaluate(["append", "world", "hello "]), "hello world")
-      assert.deepEqual(e.evaluate(["prepend", "hello ", "world"]), "hello world")
+      assert.deepEqual(e.evaluate(["append", "world", "hello "]), "hello world");
+      assert.deepEqual(e.evaluate(["prepend", "hello ", "world"]), "hello world");
 
       assert.deepEqual(e.evaluate(["count",[1,2,3,4,5]]), 5);
       assert.deepEqual(e.evaluate(["all",[1,2,3,4,5], 1]), false);

@@ -65,6 +65,8 @@ exports.Tokens = Tr8n.Tokens;
 exports.Decorators = Tr8n.Decorators;
 exports.Utils = Tr8n.Utils;
 exports.Language = Tr8n.Language;
+exports.LanguageContext = Tr8n.LanguageContext;
+exports.LanguageContextRule = Tr8n.LanguageContextRule;
 exports.Application = Tr8n.Application;
 
 

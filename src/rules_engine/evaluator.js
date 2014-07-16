@@ -67,10 +67,10 @@ Tr8n.RulesEngine.Evaluator = function(ctx) {
     'true'    : function()        {return true },                                                       // ['true']
     'false'   : function()        {return false },                                                      // ['false']
 
-    'date'    : function(date)    {return new Date(date) },                   // ['date', '2010-01-01']
-    'today'   : function()        {return new Date() },                                                       // ['today']
-    'time'    : function(expr)    {return new Date(expr) }, // ['time', '2010-01-01 10:10:05']
-    'now'     : function()        {return Date.now() },                                                       // ['now']
+    'date'    : function(date)    {return new Date(date) },                                             // ['date', '2010-01-01']
+    'today'   : function()        {return new Date() },                                                 // ['today']
+    'time'    : function(expr)    {return new Date(expr) },                                             // ['time', '2010-01-01 10:10:05']
+    'now'     : function()        {return Date.now() },                                                 // ['now']
 
     'append'  : function(l, r)    {return String(r) + String(l) },                                      // ['append', 'world', 'hello ']
     'prepend' : function(l, r)    {return String(l) + String(r) },                                      // ['prepend', 'hello  ', 'world']
@@ -121,7 +121,7 @@ Tr8n.RulesEngine.Evaluator = function(ctx) {
 
   };
   return this;
-},
+};
 
 Tr8n.RulesEngine.Evaluator.prototype = {
 
@@ -159,6 +159,10 @@ Tr8n.RulesEngine.Evaluator.prototype = {
     this.vars = vars;
   },
 
+  getVars: function() {
+    return this.vars;
+  },
+
   apply: function(fn, args) {
     if (typeof this.ctx[fn] == 'function') {
       return this.ctx[fn].apply(this,args);
@@ -179,4 +183,4 @@ Tr8n.RulesEngine.Evaluator.prototype = {
     }
     return this.apply(fn,args)
   }
-}
+};
