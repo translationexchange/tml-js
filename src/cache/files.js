@@ -52,7 +52,7 @@ Tr8n.Cache.Files.prototype = extend(new Tr8n.Cache.Base(), {
         value = (typeof def == "function") ? def() : def || null;
       } else {
         this.info("Cache hit " + key);
-        value = this.deserialize(key, data);
+        value = JSON.parse(data)
       }
       if(callback) callback(value)
     }.bind(this));

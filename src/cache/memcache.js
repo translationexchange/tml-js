@@ -48,7 +48,7 @@ Tr8n.Cache.Memcache.prototype = extend(new Tr8n.Cache.Base(), {
         value = (typeof def == "function") ? def() : def || null;
       } else {
         this.info("Cache hit " + key);
-        value = this.deserialize(key, data);
+        value = JSON.parse(data)
       }
       if(callback) callback(value);
     }.bind(this))
@@ -56,7 +56,7 @@ Tr8n.Cache.Memcache.prototype = extend(new Tr8n.Cache.Base(), {
 
   store: function(key, value, callback) {
     this.info("Cache store " + key);
-    return this.cache.set(this.versionedKey(key), this.serialize(key, value), callback)
+    return this.cache.set(this.versionedKey(key), JSON.stringify(value), callback)
   },
 
   delete: function(key, callback) {

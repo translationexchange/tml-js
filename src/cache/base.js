@@ -38,6 +38,9 @@ Tr8n.Cache.Base = function() {
 
 Tr8n.Cache.Base.prototype = {
 
+  version_key       : '__tr8n_version__',
+  key_prefix        : 'tr8n_v',
+
   read_only         : true,
   cached_by_source  : true,
   name              : "",
@@ -66,8 +69,15 @@ Tr8n.Cache.Base.prototype = {
     console.info("%s - %s", this.name, msg)
   },
 
-  versionedKey: function() {
-    return "tr8n_v" 
+  version:function() {
+    if (!this.version) {
+      this.version = 1; // fetch version from cache, ugh.
+    }
+    return this.version;
+  },
+
+  versionedKey: function(key) {
+    return this.key_prefix + this.version + "_" + key;
   }
 
 }
