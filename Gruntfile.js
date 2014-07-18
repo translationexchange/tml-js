@@ -27,7 +27,7 @@ module.exports = function(grunt) {
       basic: {
         src: [
           'vendor/*.js', 'src/namespace.js',
-          'src/api/*.js', 'src/cache/*.js', 'src/utils.js', 'src/configuration.js', 'src/logger.js',
+          'src/utils.js', 'src/api/*.js', 'src/cache/*.js', 'src/configuration.js', 'src/logger.js',
           'src/tokens/data.js', 'src/tokens/method.js', 'src/tokens/piped.js',
           'src/rules_engine/*.js', 'src/tokenizers/**/*.js', 'src/decorators/*.js',
           'src/application.js', 'src/source.js',

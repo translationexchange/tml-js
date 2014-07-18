@@ -29,6 +29,47 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Tr8n.Cache.Redis = function() {
+var redis   = require("redis");
+var extend  = Tr8n.Utils.extend;
 
+Tr8n.Cache.Redis = function() {
+  this.cache = redis.createClient({
+    // config.redis
+  });
 };
+
+Tr8n.Cache.Redis.prototype = extend(new Tr8n.Cache.Base(), {
+
+  name: "redis",
+  read_only: false,
+
+  fetch: function(key, def, callback) {
+    this.cache.get(key, function(err, data){
+      if (err || !data) {
+        this.info("Cache miss " + key);
+        value = (typeof def == "function") ? def() : def || null;
+      } else {
+        this.info("Cache hit " + key);
+        value = this.deserialize(key, data);
+      }
+      if(callback) callback(value);
+    }.bind(this))
+  },
+
+  store: function(key, value, callback) {
+    this.info("Cache store " + key);
+    return this.cache.set(this.versionedKey(key), this.serialize(key, value), callback)
+  },
+
+  delete: function(key, callback) {
+    this.cache.del(key, callback)
+  },
+
+  exists: function(key, callback){
+    this.cache.get(key, function(err, data){
+      if (callback) callback(!(err || !data))
+    })
+  }
+
+
+})

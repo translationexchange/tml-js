@@ -36,4 +36,16 @@ describe('Utils', function(){
     });
   });
 
+
+  describe("extend", function() {
+    it("should use extend", function() {
+      assert.ok(Tr8n.Utils.extend);
+      var o = {prop: 10};
+      o = Tr8n.Utils.extend(o, { prop: 20 }, { prop: 30, name: "Foo" }, { prop: 40, address: "Bar" });
+      assert.ok(o.name);
+      assert.equal(o.address, 'Bar')
+      assert.equal(o.prop,40);
+    });
+  });
+
 });

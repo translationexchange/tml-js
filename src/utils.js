@@ -145,6 +145,20 @@ Tr8n.Utils = {
 
     var payload_json = new Buffer(payload_json_encoded, 'base64').toString('utf-8');
     return JSON.parse(payload_json);
-  }
+  },
 
+  extend: function(destination, source) {   
+    var process = function(d, s) {   
+      for (var key in s) {
+        if (hasOwnProperty.call(s, key)) {
+          d[key] = s[key];
+        }
+      }
+      return d;
+    };
+    for(var i=1; i<arguments.length; i++) {
+      destination = process(destination, arguments[i]);
+    }
+    return destination;
+  }
 };
