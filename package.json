@@ -3,17 +3,25 @@
   "description": "Translation framework from TranslationExchange.com",
   "version": "0.1.1",
   "author": {
-    "name": "Michael Berkovich"
+    "name": "Michael Berkovich",
+    "email": "michael@tr8nhub.com"
   },
+  "bugs": {
+    "url": "https://github.com/tr8n/tr8n_javascript_clientsdk/issues"
+  },
+  "homepage": "https://github.com/tr8n/tr8n_javascript_clientsdk",
   "repository": {
     "type": "git",
     "url": "https://github.com/tr8n/tr8n_javascript_clientsdk"
   },
+  "licenses": "MIT",
   "main": "./lib/tr8n",
   "keywords": [
     "internationalization",
     "translation",
     "localization",
+    "translate",
+    "localize",
     "i18n",
     "t9n",
     "tr8n",

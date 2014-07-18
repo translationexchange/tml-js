@@ -5,6 +5,8 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+var tr8n = require('./../../lib/tr8n');
+
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
@@ -20,6 +22,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(tr8n.init("ksdfljafdlaksjdflkjas", "sdfasdkfjasldkf"));
 
 app.use('/', routes);
 app.use('/users', users);

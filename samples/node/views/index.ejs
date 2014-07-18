@@ -33,14 +33,49 @@ var restaurants = [
 <%- include includes/header.ejs %>
 <%- include includes/nav.ejs %>
 
+<% if (false) { %>
+<script>
+  Tr8n.configure(function(config) {
+    config.cache = {
+      application: {
+        languages: {
+          "en-US": ""
+        },
+        sources: {
+          "index": {
+            translation_keys: {
+              "dfgsdgsdfsdgsdfgsdfg": {
+                label: "You have {count || message}",
+                description: "description",
+                translations: {
+//                  "ru": [
+//                    {label: "You have {count || message, messages, message}"}
+//                  ]
+                  "ru": [
+                    {label: "You have {count} message", context: {count: {number: "one"}}},
+                    {label: "You have {count} message", context: {count: {number: "few"}}},
+                    {label: "You have {count} message", context: {count: {number: "other"}}},
+                    {label: "{actor} sent {target} {count} message", context: {count: {number: "other"}, actor: {gender: "male"}}}
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    };
+  });
+</script>
+<% } %>
+
 <div class="container">
 
     <div class="content">
 
         <div class="row">
             <div class="col-sm-12">
-                <div class="pull-right"><br><a href="#">More Cities</a></div>
-                <h4>Welp Los Angeles</h4>
+                <div class="pull-right"><br><a href="#"><%- tr("More Cities") %></a></div>
+                <h4><%- tr("Welp Los Angeles") %></h4>
                 <hr>
             </div>
         </div>
@@ -51,23 +86,23 @@ var restaurants = [
 
                 <div class="well">
                     <h3 class="text-primary">
-                        The best way to find local businesses
+                      <%- tr("The best way to find local businesses") %>
                     </h3>
                     <p class="text-muted">
-                        Search for everything from the city's tastiest burger to the most renowned cardiologist.
-                        What will you uncover in your neighborhood?
+                      <%- tr("Search for everything from the city's tastiest burger to the most renowned cardiologist.") %>
+                      <%- tr("What will you uncover in your neighborhood?") %>
                     </p>
                     <p>
-                        <a class="btn btn-primary" href="#">Create your free account</a>
+                        <a class="btn btn-primary" href="#"><%- tr("Create your free account") %></a>
                     </p>
                 </div>
 
-                <h3 class="text-primary">Best of Welp: Los Angeles</h3>
+                <h3 class="text-primary"><%- tr("Best of Welp: {city}", {city: "Los Angeles"}) %></h3>
                 <hr>
 
-                <small class="pull-right"><a href="#">See More</a></small>
+                <small class="pull-right"><a href="#"><%- tr("See More") %></a></small>
 
-                <h5 class="text-primary">Restaurants</h5>
+                <h5 class="text-primary"><%- tr("Restaurants") %></h5>
 
                 <%
                     for (var i=0; i<restaurants.length; i++) {

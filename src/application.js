@@ -62,7 +62,7 @@ Tr8n.Application.prototype = {
    */
   addLanguage: function(language) {
     language.application = this;
-    this.languages_by_locale[language.attrs.locale] = language;
+    this.languages_by_locale[language.locale] = language;
   },
 
 

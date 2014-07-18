@@ -125,7 +125,7 @@ module.exports = function(grunt) {
 
 //  grunt.registerTask('test', ['jshint', 'mocha']);
   grunt.registerTask('test', ['concat', 'comments', 'clean', 'blanket', 'copy', 'mochaTest']);
-  grunt.registerTask('doc', ['jsdoc'])
+  grunt.registerTask('doc', ['jsdoc']);
   // Default task(s).
   grunt.registerTask('default', ['concat', 'uglify']);
 
