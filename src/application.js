@@ -49,12 +49,6 @@ Tr8n.Application = function(attrs) {
 
 Tr8n.Application.prototype = {
 
-  getApiClient: function() {
-//    if (!this.api_client)
-//      this.api_client = new Tr8n.config.api_client_class(this);
-    return this.api_client;
-  },
-
   /**
    * addLanguage
    *
@@ -83,9 +77,108 @@ Tr8n.Application.prototype = {
     return (this.features && this.features[name]);
   },
 
-  submitMissingTranslationKeys: function() {
+  getApiClient: function() {
+    if (!this.api_client) {
+      this.api_client = new Tr8n.ApiClient(this);
+    }
+
+    return this.api_client;
+  },
+
+  init: function(options, callback) {
+    options = options || {};
+
+    this.getApiClient().get("application", {definition: true}, function (error, data) {
+      if (error) {
+        console.log(err);
+        throw err;
+      }
+      Tr8n.Utils.extend(this, data);
+
+      if (options.locales) {
+        this.loadLanguages(options.locales, function() {
+          callback(null);
+        });
+      } else {
+        callback(null);
+      }
+
+    }.bind(this));
+  },
+
+  loadLanguages: function(locales, languages_callback) {
+    var async = require('async');
+
+    var data = {};
+    var self = this;
+
+    locales.forEach(function(locale) {
+      data[locale] = function(callback) {
+        self.getApiClient().get("language", {locale: locale, definition: true}, function(error, data) {
+          if (error) {
+            callback(error, null);
+            return;
+          }
+          callback(null, new Tr8n.Language(data));
+        });
+      };
+    });
+
+    async.parallel(data, function(err, results) {
+      if (err) {
+        console.log(err);
+        throw err;
+      }
+
+      Object.keys(results).forEach(function(key) {
+        self.addLanguage(results[key]);
+      });
+
+      languages_callback();
+    });
+  },
+
+  loadDefaultLanguages: function(locales, languages_callback) {
+    var async = require('async');
+    var fs = require('fs');
+
+    var data = {};
+    var self = this;
+
+    locales.forEach(function(locale) {
+      data[locale] = function(callback) {
+        var path = __dirname + "/../config/data/" + locale + ".json";
+        console.log("Loading " + path + " ...");
+
+        fs.readFile(path, function (err, data) {
+          if (err) {
+            console.log(err);
+            throw err;
+          }
+
+          callback(null, new Tr8n.Language(JSON.parse(data)));
+        });
+      };
+    });
+
+    async.parallel(data, function(err, results) {
+      if (err) {
+        console.log(err);
+        throw err;
+      }
+
+      Object.keys(results).forEach(function(key) {
+        self.addLanguage(data[key]);
+      });
+
+      languages_callback();
+    });
+  },
+
+  submitMissingTranslationKeys: function(callback) {
     console.log("Submitting missing translation keys...");
     // TODO: finish it up
   }
+
 };
 
