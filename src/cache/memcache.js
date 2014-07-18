@@ -29,6 +29,44 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-Tr8n.Cache.Memcache = function() {
+var memcache  = require("memcache");
+var extend    = Tr8n.Utils.extend;
 
+Tr8n.Cache.Memcache = function() {
+  this.cache = new memcache.Client();
 };
+
+Tr8n.Cache.Memcache.prototype = extend(new Tr8n.Cache.Base(), {
+
+  name: "memcache",
+  read_only: false,
+
+  fetch: function(key, def, callback) {
+    this.cache.get(key, function(err, data){
+      if (err || !data) {
+        this.info("Cache miss " + key);
+        value = (typeof def == "function") ? def() : def || null;
+      } else {
+        this.info("Cache hit " + key);
+        value = JSON.parse(data)
+      }
+      if(callback) callback(value);
+    }.bind(this))
+  },
+
+  store: function(key, value, callback) {
+    this.info("Cache store " + key);
+    return this.cache.set(this.versionedKey(key), JSON.stringify(value), callback)
+  },
+
+  delete: function(key, callback) {
+    this.cache.delete(key, callback)
+  },
+
+  exists: function(key, callback){
+    this.cache.get(key, function(err, data){
+      if (callback) callback(!(err || !data))
+    })
+  }
+
+})

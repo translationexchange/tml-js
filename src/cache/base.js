@@ -29,56 +29,55 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-var fs = require("fs");
-var config = Tr8n.config;
-var extend = Tr8n.Utils.extend;
 
-Tr8n.Cache.Files = function() {
+
+
+Tr8n.Cache.Base = function() {
 
 };
 
-Tr8n.Cache.Files.prototype = extend(new Tr8n.Cache.Base(), {
+Tr8n.Cache.Base.prototype = {
 
-  name: "file",
+  version_key       : '__tr8n_version__',
+  key_prefix        : 'tr8n_v',
 
-  fetch: function(key, def, callback) {
-    var 
-      value,
-      file_path = this.filePath(key);
+  read_only         : true,
+  cached_by_source  : true,
+  name              : "",
 
-    fs.readFile(file_path, 'utf8', function (err, data) {
-      if (err) {
-        this.info("Cache miss " + key);
-        value = (typeof def == "function") ? def() : def || null;
-      } else {
-        this.info("Cache hit " + key);
-        value = JSON.parse(data)
-      }
-      if(callback) callback(value)
-    }.bind(this));
+  fetch: function(){
+    // should be overwritten
   },
 
-  cachePath: function() {
-    return "./../../cache/files/current"
-    //return Config::instance()->cachePath() . 'files/current';
-  },
-
-  filePath: function(key) {
-    return this.cachePath() + '/' + this.fileName(key);
-  },
-
-  fileName: function(key) {
-    return key.replace(/[\.\/]/g,'-') + '.json';
-  },
-
-  store: function(key, value) {
-    this.warn("This is a readonly cache");
+  store: function(key, value){
+    // should be overwritten
   },
 
   delete: function(key) {
-    this.warn("This is a readonly cache");
-    return null;
+    // should be overwritten
+  },
+
+  exists: function(key) {
+    // should be overwritten
+  },
+
+  warn: function(msg) {
+    console.warn("%s - %s", this.name, msg)
+  },
+
+  info: function(msg) {
+    console.info("%s - %s", this.name, msg)
+  },
+
+  version:function() {
+    if (!this.version) {
+      this.version = 1; // fetch version from cache, ugh.
+    }
+    return this.version;
+  },
+
+  versionedKey: function(key) {
+    return this.key_prefix + this.version + "_" + key;
   }
 
-
-})
+}
