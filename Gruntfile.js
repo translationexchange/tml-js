@@ -24,7 +24,7 @@ module.exports = function(grunt) {
       options: {
         separator: ';'
       },
-      dist: {
+      basic: {
         src: [
           'vendor/*.js', 'src/namespace.js',
           'src/api/*.js', 'src/cache/*.js', 'src/utils.js', 'src/configuration.js', 'src/logger.js',
@@ -37,6 +37,26 @@ module.exports = function(grunt) {
           'src/tr8n.js'
         ],
         dest: 'lib/<%= pkg.name %>.js'
+      },
+      express: {
+        src: [
+            'vendor/*.js', 'src/namespace.js',
+            'src/api/*.js', 'src/cache/*.js', 'src/utils.js', 'src/configuration.js', 'src/logger.js',
+            'src/tokens/data.js', 'src/tokens/method.js', 'src/tokens/piped.js',
+            'src/rules_engine/*.js', 'src/tokenizers/**/*.js', 'src/decorators/*.js',
+            'src/application.js', 'src/source.js',
+            'src/translation_key.js', 'src/translation.js', 'src/translator.js',
+            'src/language.js', 'src/language_case.js', 'src/language_case_rule.js',
+            'src/language_context.js', 'src/language_context_rule.js',
+            'src/extensions/express.js'
+        ],
+        dest: 'lib/<%= pkg.name %>.express.js'
+      },
+      helpers: {
+        src: [
+          'src/helpers/*.js'
+        ],
+        dest: 'lib/<%= pkg.name %>.helpers.js'
       }
     },
     comments: {
@@ -89,7 +109,8 @@ module.exports = function(grunt) {
       },
       dist: {
         files: {
-          'lib/<%= pkg.name %>.min.js': ['<%= concat.dist.dest %>']
+          'lib/<%= pkg.name %>.min.js': ['<%= concat.basic.dest %>'],
+          'lib/<%= pkg.name %>.express.min.js': ['<%= concat.express.dest %>']
         }
       }
     },

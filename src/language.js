@@ -77,7 +77,8 @@ Tr8n.Language.prototype = {
   
     var translation_key = new Tr8n.TranslationKey({
       label: label,
-      description: description
+      description: description,
+      language: this.application ? this.application.getLanguage() : null
     });
   
     // TODO: add implementation for getting translations from the cache or putting them on the queue

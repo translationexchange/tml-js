@@ -63,82 +63,8 @@ exports.Application = Tr8n.Application;
 exports.TranslationKey = Tr8n.TranslationKey;
 exports.Translation = Tr8n.Translation;
 
-
 exports.configure = function(callback) {
   callback(Tr8n.config);
 };
 
-//exports.tr = function(label, description, tokens, options) {
-//
-//  return label;
-//};
 
-exports.init = function init(key, secret, options) {
-    options = options || {};
-    options.url = options.url || "https://translationexchange.com";
-
-    return function init(req, res, next) {
-
-        console.log("Getting " + req.url);
-//        console.log(__dirname);
-
-        var files = ["application", "en-US"];
-        var data = {};
-
-        // TODO: load languages, cache for sources
-        // init cookies
-
-        files.forEach(function(file) {
-            data[file] = function(callback) {
-                var path = __dirname + "/../config/data/" + file + ".json";
-                console.log("Loading " + path + " ...");
-
-                fs.readFile(path, function (err, data) {
-                    if (err) {
-                        console.log(err);
-                        throw err;
-                    }
-
-                    if (file == "application")
-                        callback(null, new Tr8n.Application(JSON.parse(data)));
-                    else
-                        callback(null, new Tr8n.Language(JSON.parse(data)));
-                });
-            };
-        });
-
-        async.parallel(data, function(err, results) {
-            if (err) {
-                console.log(err);
-                throw err;
-            }
-
-            var app = results["application"];
-            app.addLanguage(results["en-US"]);
-            req.tr8n = app;
-
-            res.locals.tr = function(label, description, tokens, options) {
-                if (typeof description != "string") {
-                    tokens = description;
-                    description = "";
-                }
-
-                var value = app.getLanguage("en-US").translate(label, description, tokens, options);
-                console.log(value);
-                return value;
-            };
-
-            function finishRequest(){
-                res.removeListener('finish', finishRequest);
-                res.removeListener('close', finishRequest);
-                // TODO: flush the missing translation keys
-                console.log("Done");
-            }
-
-            res.on("finish", finishRequest);
-            res.on("close", finishRequest);
-
-            next();
-        });
-    };
-};

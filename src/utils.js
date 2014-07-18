@@ -29,6 +29,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+var crypto = require('crypto');
+
 /**
  * Utils
  */
@@ -123,6 +125,26 @@ Tr8n.Utils = {
         '>': '&gt;'
       }[tag] || tag;
     });
+  },
+
+  decodeAndVerifyParams: function(signed_request, secret) {
+    if (!signed_request) return null;
+
+    signed_request = decodeURIComponent(signed_request);
+    signed_request = decodeURIComponent(signed_request);
+    signed_request = new Buffer(signed_request, 'base64').toString('utf-8');
+
+    var parts = signed_request.split('.');
+    var payload_encoded_sig = parts[0].trim();
+    var payload_json_encoded = parts[1];
+
+    var verification_sig = crypto.createHmac('sha256', secret).update(payload_json_encoded).digest();
+    verification_sig = new Buffer(verification_sig).toString('base64').trim();
+
+    if (payload_encoded_sig != verification_sig) return null;
+
+    var payload_json = new Buffer(payload_json_encoded, 'base64').toString('utf-8');
+    return JSON.parse(payload_json);
   }
 
 };

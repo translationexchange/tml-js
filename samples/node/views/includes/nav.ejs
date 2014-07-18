@@ -2,7 +2,7 @@
     <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                <span class="sr-only">Toggle navigation</span>
+                <span class="sr-only"><%- tr("Toggle navigation") %></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
@@ -11,21 +11,21 @@
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li><a href="#">About Us</a></li>
-                <li><a href="#">Search</a></li>
-                <li><a href="#">Write a Review</a></li>
-                <li><a href="#">Find Friends</a></li>
-                <li><a href="#">Help</a></li>
+                <li><a href="#"><%- tr("About Us") %></a></li>
+                <li><a href="#"><%- tr("Search") %></a></li>
+                <li><a href="#"><%- tr("Write a Review") %></a></li>
+                <li><a href="#"><%- tr("Find Friends") %></a></li>
+                <li><a href="#"><%- tr("Help") %></a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">More <b class="caret"></b></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><%- tr("More {carret}", {carret: '<b class="caret"></b>'}) %></a>
 
                     <ul class="dropdown-menu">
                         <li class="divider"></li>
-                        <li><a href="#">Log in</a></li>
+                        <li><a href="#"><%- tr("Log in") %></a></li>
                         <li class="divider"></li>
-                        <li><a href="#">Sign Up</a></li>
+                        <li><a href="#"><%- tr("Sign Up") %></a></li>
                     </ul>
                 </li>
             </ul>

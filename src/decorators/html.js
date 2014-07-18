@@ -33,14 +33,14 @@ Tr8n.Decorators.Html = {
 
   decorate: function(translated_label, translation_language, target_language, translation_key, options) {
     options = options || {};
-    if (options.skip_decorations) return translated_label;
 
-    if (translation_key.language == target_language) return translated_label;
-
-    if (options.current_translator && options.current_translator.inline_mode) {
-    } else return translated_label;
-
-    if (translation_key.locked && !options.current_translator.manager) return translated_label;
+    if (
+         options.skip_decorations
+      || translation_key.language == target_language
+      || !options.current_translator
+      || !options.current_translator.inline
+      || (translation_key.locked && !options.current_translator.manager)
+    ) return translated_label;
 
     var element = 'tr8n:tr';
     var classes = ['tr8n_translatable'];

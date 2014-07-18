@@ -315,6 +315,9 @@ Tr8n.Tokens.Data.prototype = {
     var object = tokens[this.short_name] || Tr8n.config.getDefaultToken(this.short_name);
     if (!object) return this.error("Missing token value");
 
+    if (typeof object == "string")
+      return this.sanitize(object.toString(), object, language, Tr8n.Utils.extend(options, {safe: true}));
+
     if (Tr8n.Utils.isArray(object))
       return this.getTokenValueFromArrayParam(object, language, options);
 

@@ -43,6 +43,7 @@ Tr8n.Application = function(attrs) {
     this.languages.push(new Tr8n.Language(Tr8n.Utils.extend(lang, {application: this})));
   }
 
+  this.default_locale = Tr8n.config.default_locale;
   this.languages_by_locale = {};
 };
 
@@ -65,7 +66,6 @@ Tr8n.Application.prototype = {
     this.languages_by_locale[language.locale] = language;
   },
 
-
   /**
    * getLanguage
    *
@@ -76,8 +76,16 @@ Tr8n.Application.prototype = {
    * @param {string} locale - locale for which to get a language
    */
   getLanguage: function(locale) {
-    return this.languages_by_locale[locale || Tr8n.config.default_locale];
-  }
+    return this.languages_by_locale[locale || this.default_locale];
+  },
 
+  isFeatureEnabled: function(name) {
+    return (this.features && this.features[name]);
+  },
+
+  submitMissingTranslationKeys: function() {
+    console.log("Submitting missing translation keys...");
+    // TODO: finish it up
+  }
 };
 

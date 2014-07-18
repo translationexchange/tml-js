@@ -5,7 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-var tr8n = require('./../../lib/tr8n');
+var tr8n = require('./../../lib/tr8n.express.js');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -16,14 +16,23 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-app.use(favicon());
+app.use(favicon(__dirname + "/public/images/favicon.ico"));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(tr8n.init("ksdfljafdlaksjdflkjas", "sdfasdkfjasldkf"));
+app.use(tr8n.init("default", "91ec952694f17cf3d", {
+  cache: {
+    enabled: true,
+    adapter: "redis",
+    host: "localhost",
+    port: 6379,
+    version: 1,
+    timeout: 3600
+  }
+}));
 
 app.use('/', routes);
 app.use('/users', users);
