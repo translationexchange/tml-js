@@ -1,11 +1,12 @@
-var Tr8n = require("../../lib/tr8n");
-var assert = require("assert");
-var helper = require("./../test_helper");
+var MethodToken = require("../../lib/tokens/method.js");
 
-describe('Tr8n.Tokens.Method', function(){
+var assert = require("assert");
+
+
+describe('Tokens.Method', function(){
   describe('creation', function(){
     it('should correctly create a token', function() {
-      var token = new Tr8n.Tokens.Method("{user.name}");
+      var token = new MethodToken("{user.name}");
       assert.deepEqual("Michael", token.getTokenValue({user: {name: "Michael"}}));
     });
   });

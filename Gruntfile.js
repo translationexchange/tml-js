@@ -145,7 +145,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-jsdoc');
 
 //  grunt.registerTask('test', ['jshint', 'mocha']);
-  grunt.registerTask('test', ['concat', 'comments', 'clean', 'blanket', 'copy', 'mochaTest']);
+  grunt.registerTask('test', ['blanket', 'copy', 'mochaTest']);
   grunt.registerTask('doc', ['jsdoc']);
   // Default task(s).
   grunt.registerTask('default', ['concat', 'uglify']);

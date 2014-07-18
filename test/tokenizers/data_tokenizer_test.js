@@ -1,4 +1,4 @@
-var Tr8n = require("../../lib/tr8n");
+var DataTokenizer = require("../../lib/tokenizers/data.js");
 var assert = require("assert");
 
 describe('Tokenizers.Data', function(){

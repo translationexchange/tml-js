@@ -1,12 +1,12 @@
-var Tr8n = require("../lib/tr8n");
+var LanguageContext = require("../lib/language_context.js");
 var helper = require("./test_helper");
 var assert = require("assert");
 
-describe('Tr8n.LanguageContext', function(){
+describe('LanguageContext', function(){
   describe('creation', function(){
     it('should correctly create a context', function() {
       helper.fixtures.load("contexts/ru/number", function(data) {
-        var context = new Tr8n.LanguageContext(data);
+        var context = new LanguageContext(data);
         assert.ok(context.isAppliedToToken("num"));
 
         assert.ok(context.getFallbackRule() != null);
@@ -21,7 +21,7 @@ describe('Tr8n.LanguageContext', function(){
       });
 
       helper.fixtures.load("contexts/ru/gender", function(data) {
-        var context = new Tr8n.LanguageContext(data);
+        var context = new LanguageContext(data);
         assert.ok(context.isAppliedToToken("user"));
 
         assert.deepEqual(["@gender"], context.variables);

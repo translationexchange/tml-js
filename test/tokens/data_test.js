@@ -1,60 +1,62 @@
-var Tr8n = require("../../lib/tr8n");
+var Language = require("../../lib/language.js");
+var DataToken = require("../../lib/tokens/data.js");
+
 var assert = require("assert");
 var helper = require("./../test_helper");
 
-describe('Tr8n.Tokens.Data', function(){
+describe('Tokens.Data', function(){
   describe('creation', function(){
     it('should correctly create a token', function() {
-      var token = new Tr8n.Tokens.Data("{user}");
+      var token = new DataToken("{user}");
 
       assert.deepEqual("{user}", token.full_name);
       assert.deepEqual("user", token.short_name);
       assert.deepEqual([], token.context_keys);
       assert.deepEqual([], token.case_keys);
 
-      token = new Tr8n.Tokens.Data("{ user }");
+      token = new DataToken("{ user }");
       assert.deepEqual("{ user }", token.full_name);
       assert.deepEqual("user", token.short_name);
       assert.deepEqual([], token.context_keys);
       assert.deepEqual([], token.case_keys);
 
-      token = new Tr8n.Tokens.Data("{user:gender}");
+      token = new DataToken("{user:gender}");
       assert.deepEqual("{user:gender}", token.full_name);
       assert.deepEqual("user", token.short_name);
       assert.deepEqual(["gender"], token.context_keys);
       assert.deepEqual([], token.case_keys);
 
-      token = new Tr8n.Tokens.Data("{user : gender}");
+      token = new DataToken("{user : gender}");
       assert.deepEqual("{user : gender}", token.full_name);
       assert.deepEqual("user", token.short_name);
       assert.deepEqual(["gender"], token.context_keys);
       assert.deepEqual([], token.case_keys);
 
-      token = new Tr8n.Tokens.Data("{user :: gen}");
+      token = new DataToken("{user :: gen}");
       assert.deepEqual("{user :: gen}", token.full_name);
       assert.deepEqual("user", token.short_name);
       assert.deepEqual([], token.context_keys);
       assert.deepEqual(["gen"], token.case_keys);
 
-      token = new Tr8n.Tokens.Data("{user::gen}");
+      token = new DataToken("{user::gen}");
       assert.deepEqual("{user::gen}", token.full_name);
       assert.deepEqual("user", token.short_name);
       assert.deepEqual([], token.context_keys);
       assert.deepEqual(["gen"], token.case_keys);
 
-      token = new Tr8n.Tokens.Data("{user:gender::gen}");
+      token = new DataToken("{user:gender::gen}");
       assert.deepEqual("{user:gender::gen}", token.full_name);
       assert.deepEqual("user", token.short_name);
       assert.deepEqual(["gender"], token.context_keys);
       assert.deepEqual(["gen"], token.case_keys);
 
-      token = new Tr8n.Tokens.Data("{count:number::ordinal::ord}");
+      token = new DataToken("{count:number::ordinal::ord}");
       assert.deepEqual("{count:number::ordinal::ord}", token.full_name);
       assert.deepEqual("count", token.short_name);
       assert.deepEqual(["number"], token.context_keys);
       assert.deepEqual(["ordinal", "ord"], token.case_keys);
 
-      token = new Tr8n.Tokens.Data("{count : number ::ordinal :: ord}");
+      token = new DataToken("{count : number ::ordinal :: ord}");
       assert.deepEqual("{count : number ::ordinal :: ord}", token.full_name);
       assert.deepEqual("count", token.short_name);
       assert.deepEqual(["number"], token.context_keys);
@@ -66,7 +68,7 @@ describe('Tr8n.Tokens.Data', function(){
   describe('get token value', function(){
     it('should return object value', function() {
 
-      var token = new Tr8n.Tokens.Data("{user}");
+      var token = new DataToken("{user}");
       var user = {name: "Michael", gender: "male", toString: function() { return this.name; }};
 
       assert.deepEqual("{user}", token.getTokenValue());
@@ -90,7 +92,7 @@ describe('Tr8n.Tokens.Data', function(){
   describe('get token object', function(){
     it('should return object', function() {
 
-      var token = new Tr8n.Tokens.Data("{user}");
+      var token = new DataToken("{user}");
       var user = {name: "Michael", gender: "male", toString: function() { return this.name; }};
 
       assert.deepEqual(user, token.getTokenObject({user: user}));
@@ -102,7 +104,7 @@ describe('Tr8n.Tokens.Data', function(){
   describe('sanitize', function(){
     it('should sanitize object value', function() {
 
-      var token = new Tr8n.Tokens.Data("{user}");
+      var token = new DataToken("{user}");
       var user = {name: "Michael", gender: "male", toString: function() { return this.name; }};
 
       assert.deepEqual("&lt;a&gt;Michael&lt;/a&gt;", token.sanitize("<a>Michael</a>"));
@@ -114,9 +116,9 @@ describe('Tr8n.Tokens.Data', function(){
   describe('get token value from array', function(){
     it('should return object', function() {
       helper.fixtures.load("languages/en-US", function(data) {
-        var language = new Tr8n.Language(data);
+        var language = new Language(data);
 
-        var token = new Tr8n.Tokens.Data("{users}");
+        var token = new DataToken("{users}");
         var users = [];
         [
           ["Michael", "male"],
@@ -184,14 +186,14 @@ describe('Tr8n.Tokens.Data', function(){
   describe('language cases', function(){
     it('should apply them correctly', function() {
       helper.fixtures.load("languages/en-US", function(data) {
-        var language = new Tr8n.Language(data);
+        var language = new Language(data);
 
-        var token = new Tr8n.Tokens.Data("{user::pos}");
+        var token = new DataToken("{user::pos}");
         var user = {name: "Michael", gender: "male", toString: function() { return this.name; }};
 
         assert.deepEqual("Michael's", token.getTokenValue({user: user}, language));
 
-        token = new Tr8n.Tokens.Data("{count::ord}");
+        token = new DataToken("{count::ord}");
         assert.deepEqual("5th", token.getTokenValue({count: 5}, language));
       });
     });

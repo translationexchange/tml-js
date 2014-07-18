@@ -1,12 +1,12 @@
-var Tr8n = require("../lib/tr8n");
+var LanguageCase = require("../lib/language_case.js");
 var helper = require("./test_helper");
 var assert = require("assert");
 
-describe('Tr8n.LanguageCase', function(){
+describe('LanguageCase', function(){
   describe('creation', function(){
     it('should correctly create a case', function() {
       helper.fixtures.load("cases/en-US/plural", function(data) {
-        var lcase = new Tr8n.LanguageCase(data);
+        var lcase = new LanguageCase(data);
         lcase.getConfig();
 
         var rule = lcase.findMatchingRule("move");

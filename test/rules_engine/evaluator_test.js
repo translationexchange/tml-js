@@ -1,4 +1,6 @@
-var Tr8n = require("../../lib/tr8n");
+//var Tr8n = require("../../lib/tr8n");
+
+var Evaluator = require("../../lib/rules_engine/evaluator.js");
 var assert = require("assert");
 
 describe('RulesEngine.Evaluator', function(){
@@ -6,7 +8,7 @@ describe('RulesEngine.Evaluator', function(){
   describe('evaluating', function(){
     it('should generate correct arrays', function(){
 
-      var e = new Tr8n.RulesEngine.Evaluator();
+      var e = new Evaluator();
       
       e.evaluate(["label", "greeting", "hello world"]);
       assert.deepEqual({"greeting": "hello world"}, e.vars);
@@ -35,7 +37,7 @@ describe('RulesEngine.Evaluator', function(){
 
   describe('setting variables', function(){
     it('should set and get vars', function(){
-      var e = new Tr8n.RulesEngine.Evaluator();
+      var e = new Evaluator();
 
       e.setVars({a: "a", "@b": "b"});
       assert.deepEqual({a: "a", "@b": "b"}, e.getVars());
@@ -48,7 +50,7 @@ describe('RulesEngine.Evaluator', function(){
   describe('evaluating extensions', function(){
     it('should generate correct arrays', function(){
 
-      var e = new Tr8n.RulesEngine.Evaluator();
+      var e = new Evaluator();
       assert.deepEqual(e.evaluate(["=", 1,1]), true);
       assert.deepEqual(e.evaluate(["=", 2,1]), false);
 

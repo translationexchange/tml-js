@@ -1,38 +1,41 @@
-var Tr8n = require("../lib/tr8n");
-var helper = require("./test_helper");
+var TranslationKey  = require("../lib/translation_key.js");
+var Translation     = require("../lib/translation.js");
+var Language        = require("../lib/language.js");
+var helper          = require("./test_helper");
+
 var assert = require("assert");
 
-describe('Tr8n.TranslationKey', function(){
+describe('TranslationKey', function(){
   describe('creation', function(){
     it('should correctly create a key', function() {
       helper.fixtures.load("languages/en-US", function(data) {
-        var language = new Tr8n.Language(data);
+        var language = new Language(data);
 
-        var tkey = new Tr8n.TranslationKey({
+        var tkey = new TranslationKey({
           label: "Hello World"
         });
 
         assert.equal("Hello World", tkey.translate(language));
 
-        tkey = new Tr8n.TranslationKey({
+        tkey = new TranslationKey({
           label: "Hello {user}"
         });
 
         assert.equal("Hello Michael", tkey.translate(language, {user: "Michael"}));
 
-        tkey = new Tr8n.TranslationKey({
+        tkey = new TranslationKey({
           label: "Hello {user.name}"
         });
 
         assert.equal("Hello Michael", tkey.translate(language, {user: {name: "Michael"}}));
 
-        tkey = new Tr8n.TranslationKey({
+        tkey = new TranslationKey({
           label: "Hello {user.name}, your emails is {user.email}"
         });
 
         assert.equal("Hello Michael, your emails is michael@test.com", tkey.translate(language, {user: {name: "Michael", email: "michael@test.com"}}));
 
-        tkey = new Tr8n.TranslationKey({
+        tkey = new TranslationKey({
           label: "Hello [bold: World]"
         });
 
@@ -40,19 +43,19 @@ describe('Tr8n.TranslationKey', function(){
         assert.equal("Hello <strong>World</strong>", tkey.translate(language));
 
 
-        tkey = new Tr8n.TranslationKey({
+        tkey = new TranslationKey({
           label: "You have [bold: {count} messages]"
         });
 
         assert.equal("You have <strong>5 messages</strong>", tkey.translate(language, {count: 5}));
 
-        tkey = new Tr8n.TranslationKey({
+        tkey = new TranslationKey({
           label: "You have [bold: {count || message}]"
         });
 
         assert.equal("You have <strong>5 messages</strong>", tkey.translate(language, {count: 5}));
 
-        tkey = new Tr8n.TranslationKey({
+        tkey = new TranslationKey({
           label: "[link: You] have [bold: {count || message, messages}]"
         });
 
@@ -67,13 +70,13 @@ describe('Tr8n.TranslationKey', function(){
       helper.models.languages(["en-US", "ru"], function(languages) {
 //        console.log(languages);
 
-        var tkey = new Tr8n.TranslationKey({
+        var tkey = new TranslationKey({
           label: "Hello World",
           locale: "en-US",
           language: languages["en-US"]
         });
 
-        var translation = new Tr8n.Translation({
+        var translation = new Translation({
           label: "Привет Мир",
           locale: "ru",
           language: languages["ru"]
@@ -85,7 +88,7 @@ describe('Tr8n.TranslationKey', function(){
         assert.equal("Привет Мир", tkey.translate(languages["ru"]));
 
 
-        tkey = new Tr8n.TranslationKey({
+        tkey = new TranslationKey({
           label: "Hello [bold: World]",
           locale: "en-US",
           language: languages["en-US"]
@@ -93,7 +96,7 @@ describe('Tr8n.TranslationKey', function(){
 
         assert.equal("Hello <strong>World</strong>", tkey.translate(languages["ru"]));
 
-        tkey.addTranslation(new Tr8n.Translation({
+        tkey.addTranslation(new Translation({
           label: "Привет [bold: Мир]",
           locale: "ru",
           language: languages["ru"]
@@ -102,7 +105,7 @@ describe('Tr8n.TranslationKey', function(){
         assert.equal("Привет <strong>Мир</strong>", tkey.translate(languages["ru"]));
 
 
-        tkey = new Tr8n.TranslationKey({
+        tkey = new TranslationKey({
           label: "You have {count || message}",
           locale: "en-US",
           language: languages["en-US"]
@@ -111,7 +114,7 @@ describe('Tr8n.TranslationKey', function(){
         assert.equal("You have 1 message", tkey.translate(languages["ru"], {count: 1}));
         assert.equal("You have 5 messages", tkey.translate(languages["ru"], {count: 5}));
 
-        tkey.addTranslation(new Tr8n.Translation({
+        tkey.addTranslation(new Translation({
           label: "У вас есть {count || one: сообщение, few: сообщения, other: сообщений}",
           locale: "ru",
           language: languages["ru"]
@@ -123,7 +126,7 @@ describe('Tr8n.TranslationKey', function(){
 
         tkey.resetTranslations();
 
-        tkey.addTranslation(new Tr8n.Translation({
+        tkey.addTranslation(new Translation({
           label: "У вас есть {count || сообщение, сообщения, сообщений}",
           locale: "ru",
           language: languages["ru"]
@@ -133,7 +136,7 @@ describe('Tr8n.TranslationKey', function(){
         assert.equal("У вас есть 2 сообщения", tkey.translate(languages["ru"], {count: 2}));
         assert.equal("У вас есть 5 сообщений", tkey.translate(languages["ru"], {count: 5}));
 
-        tkey = new Tr8n.TranslationKey({
+        tkey = new TranslationKey({
           label: "{user} has [bold: {count || message}] in {user | his, her} inbox.",
           locale: "en-US",
           language: languages["en-US"]
@@ -141,7 +144,7 @@ describe('Tr8n.TranslationKey', function(){
 
         assert.equal("Michael has <strong>1 message</strong> in his inbox.", tkey.translate(languages["ru"], {user: {gender: "male", value: "Michael"}, count: 1}));
 
-        tkey.addTranslation(new Tr8n.Translation({
+        tkey.addTranslation(new Translation({
           label: "У {user::gen} есть [bold: {count || сообщение, сообщения, сообщений}] в почтовом ящике.",
           locale: "ru",
           language: languages["ru"]

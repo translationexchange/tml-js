@@ -1,11 +1,11 @@
-var Tr8n = require("../lib/tr8n");
+var LanguageCaseRule = require("../lib/language_case_rule.js");
 var helper = require("./test_helper");
 var assert = require("assert");
 
-describe('Tr8n.LanguageCaseRule', function(){
+describe('LanguageCaseRule', function(){
   describe('creation', function(){
     it('should correctly create a case', function() {
-      var rule = new Tr8n.LanguageCaseRule({
+      var rule = new LanguageCaseRule({
         "description":"Irregular word",
         "conditions":"(= 'move' @value)",
         "conditions_expression":[
@@ -28,7 +28,7 @@ describe('Tr8n.LanguageCaseRule', function(){
 
       assert.ok(!rule.evaluate("moves"));
 
-      rule = new Tr8n.LanguageCaseRule({
+      rule = new LanguageCaseRule({
         "description":"Irregular word",
         "conditions":"(&& (= 'male' @gender) (= 'Michael' @name))",
         "operations":"(quote 'Hello Michael')"
@@ -37,7 +37,7 @@ describe('Tr8n.LanguageCaseRule', function(){
       assert.deepEqual(["&&",["=","male","@gender"],["=","Michael","@name"]], rule.getConditionsExpression());
       assert.deepEqual(["quote","Hello Michael"], rule.getOperationsExpression());
 
-      rule = new Tr8n.LanguageCaseRule({
+      rule = new LanguageCaseRule({
         "description":"Irregular word"
       });
 

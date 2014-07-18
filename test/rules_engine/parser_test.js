@@ -1,10 +1,10 @@
-var Tr8n = require("../../lib/tr8n");
+var Parser = require("../../lib/rules_engine/parser.js");
 var assert = require("assert");
 
 describe('RulesEngine.Parser', function(){
   describe('parsing', function(){
     it('should generate correct arrays', function(){
-      var parser = new Tr8n.RulesEngine.Parser("(+ 1 1)");
+      var parser = new Parser("(+ 1 1)");
       assert.deepEqual([ '(', '+', '1', '1', ')' ], parser.tokens);
       assert.deepEqual([ '+', 1, 1 ], parser.parse());
 
@@ -24,7 +24,7 @@ describe('RulesEngine.Parser', function(){
 
       Object.keys(examples).forEach(function (key) {
 //          console.log(key);
-          var parser = new Tr8n.RulesEngine.Parser(key);
+          var parser = new Parser(key);
           assert.deepEqual(examples[key], parser.parse());
       });
       

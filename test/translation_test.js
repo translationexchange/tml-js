@@ -1,14 +1,15 @@
-var Tr8n = require("../lib/tr8n");
+var Translation = require("../lib/translation.js");
 var helper = require("./test_helper");
+
 var assert = require("assert");
 
-describe('Tr8n.Translation', function(){
+describe('Translation', function(){
   describe('creation', function(){
     it('should correctly create a key', function() {
       helper.models.languages(["en-US", "ru"], function(languages) {
 //        console.log(languages);
 
-        var translation = new Tr8n.Translation({
+        var translation = new Translation({
           label: "Hello {user}",
           language: languages["en-US"]
         });
@@ -16,7 +17,7 @@ describe('Tr8n.Translation', function(){
         assert.ok(!translation.hasContextRules());
         assert.ok(translation.isValidTranslation({user: {gender: "male"}}));
 
-        translation = new Tr8n.Translation({
+        translation = new Translation({
           label: "Hello {user}", context: {user: {gender: "male"}},
           language: languages["en-US"]
         });

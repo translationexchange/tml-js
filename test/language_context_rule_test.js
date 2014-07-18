@@ -1,28 +1,29 @@
-var Tr8n = require("../lib/tr8n");
+var LanguageContextRule = require("../lib/language_context_rule.js");
+
 var assert = require("assert");
 
-describe('Tr8n.LanguageContextRule', function(){
+describe('LanguageContextRule', function(){
   describe('creation', function(){
     it('test fallback', function() {
-      var rule = new Tr8n.LanguageContextRule({keyword: "other"});
+      var rule = new LanguageContextRule({keyword: "other"});
       assert.ok(rule.isFallback());
 
-      rule = new Tr8n.LanguageContextRule({conditions: "(= 1 @var)"});
+      rule = new LanguageContextRule({conditions: "(= 1 @var)"});
       assert.deepEqual(["=",1,"@var"], rule.getConditionsExpression());
 
-      rule = new Tr8n.LanguageContextRule({conditions: "(= 1 @var)", conditions_expression: ["=",1,"@var"]});
+      rule = new LanguageContextRule({conditions: "(= 1 @var)", conditions_expression: ["=",1,"@var"]});
       assert.deepEqual(["=",1,"@var"], rule.getConditionsExpression());
     });
   });
   describe('evaluation', function(){
     it('test fallback', function() {
-      var rule = new Tr8n.LanguageContextRule({keyword: "other"});
+      var rule = new LanguageContextRule({keyword: "other"});
       assert.ok(rule.evaluate());
 
-      rule = new Tr8n.LanguageContextRule({conditions: "(= 1 @var)"});
+      rule = new LanguageContextRule({conditions: "(= 1 @var)"});
       assert.ok(rule.evaluate({"@var": "1"}));
 
-      rule = new Tr8n.LanguageContextRule({conditions: "(= (+ @n 10) 15)"});
+      rule = new LanguageContextRule({conditions: "(= (+ @n 10) 15)"});
       assert.ok(rule.evaluate({"@n": 5}));
     });
   });
