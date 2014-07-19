@@ -5,7 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-var tr8n = require('./../../lib/tr8n.express.js');
+var tr8n = require('./../../lib/extensions/express.js');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');

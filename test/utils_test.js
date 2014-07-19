@@ -37,14 +37,11 @@ describe('Utils', function(){
   });
 
 
-  describe("extend", function() {
-    it("should use extend", function() {
-      assert.ok(utils.extend);
-      var o = {prop: 10};
-      o = utils.extend(o, { prop: 20 }, { prop: 30, name: "Foo" }, { prop: 40, address: "Bar" });
-      assert.ok(o.name);
-      assert.equal(o.address, 'Bar')
-      assert.equal(o.prop,40);
+  describe("decodeAndVerifyParams", function() {
+    it("should correctly parse out data", function() {
+      
+      var cookie = "bTdpV01KaG1jN0VMVDlhNlhZTWYzQitKcnozTzRFdlVxc2xhYzZBVm0xbz0K"
+      var data = utils.decodeAndVerifyParams();
     });
   });
 

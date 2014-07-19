@@ -26,7 +26,7 @@ module.exports = function(grunt) {
       },
       basic: {
         src: [
-          'vendor/*.js', 'src/namespace.js', 'src/utils.js',
+          'vendor/*.js','src/utils.js',
           'src/api/*.js', 'src/cache/*.js', 'src/configuration.js', 'src/logger.js',
           'src/tokens/data.js', 'src/tokens/method.js', 'src/tokens/piped.js',
           'src/rules_engine/*.js', 'src/tokenizers/**/*.js', 'src/decorators/*.js',
@@ -40,7 +40,7 @@ module.exports = function(grunt) {
       },
       express: {
         src: [
-            'vendor/*.js', 'src/namespace.js', 'src/utils.js',
+            'vendor/*.js', 'src/utils.js',
             'src/api/*.js', 'src/cache/*.js', 'src/configuration.js', 'src/logger.js',
             'src/tokens/data.js', 'src/tokens/method.js', 'src/tokens/piped.js',
             'src/rules_engine/*.js', 'src/tokenizers/**/*.js', 'src/decorators/*.js',
