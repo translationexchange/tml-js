@@ -53,7 +53,7 @@ module.exports = function(grunt) {
       }
     },
     jshint: {
-      files: ['Gruntfile.js', 'lib/<%= pkg.name %>.js'],
+      files: ['Gruntfile.js', 'lib/**/*.js'],
       options: {
         // options here to override JSHint defaults
         globals: {
@@ -113,14 +113,13 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-blanket');
   grunt.loadNpmTasks('grunt-jsdoc');
 
-  
-
 //  grunt.registerTask('test', ['jshint', 'mocha']);
 
   grunt.registerTask('test', ['blanket', 'copy', 'mochaTest']);
   grunt.registerTask('doc', ['jsdoc']);
   grunt.registerTask('build', ['test','browserify','uglify']);
+
   // Default task(s).
-  grunt.registerTask('default', ['test']);
+  grunt.registerTask('default', ['jshint', 'test']);
 
 };
