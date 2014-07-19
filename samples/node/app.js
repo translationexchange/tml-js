@@ -23,7 +23,7 @@ app.use(bodyParser.urlencoded());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(tr8n.init("default", "91ec952694f17cf3d", {
+app.use(tr8n.init("4a70fec459854794e", "680a8479c8387ebc1", {
   cache: {
     enabled: true,
     adapter: "redis",
