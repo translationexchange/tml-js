@@ -149,6 +149,6 @@ module.exports = function(grunt) {
   grunt.registerTask('test', ['blanket', 'copy', 'mochaTest']);
   grunt.registerTask('doc', ['jsdoc']);
   // Default task(s).
-  grunt.registerTask('default', ['concat', 'uglify']);
+  //grunt.registerTask('default', ['concat', 'uglify']);
 
 };
