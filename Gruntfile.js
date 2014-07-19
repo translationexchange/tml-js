@@ -20,52 +20,13 @@ module.exports = function(grunt) {
         dest: 'coverage/lib/'
       }
     },
-    concat: {
-      options: {
-        separator: ';'
-      },
-      basic: {
-        src: [
-          'vendor/*.js','src/utils.js',
-          'src/api/*.js', 'src/cache/*.js', 'src/configuration.js', 'src/logger.js',
-          'src/tokens/data.js', 'src/tokens/method.js', 'src/tokens/piped.js',
-          'src/rules_engine/*.js', 'src/tokenizers/**/*.js', 'src/decorators/*.js',
-          'src/application.js', 'src/source.js', 'src/api_client.js',
-          'src/translation_key.js', 'src/translation.js', 'src/translator.js',
-          'src/language.js', 'src/language_case.js', 'src/language_case_rule.js',
-          'src/language_context.js', 'src/language_context_rule.js',
-          'src/tr8n.js'
-        ],
-        dest: 'lib/<%= pkg.name %>.js'
-      },
-      express: {
-        src: [
-            'vendor/*.js', 'src/utils.js',
-            'src/api/*.js', 'src/cache/*.js', 'src/configuration.js', 'src/logger.js',
-            'src/tokens/data.js', 'src/tokens/method.js', 'src/tokens/piped.js',
-            'src/rules_engine/*.js', 'src/tokenizers/**/*.js', 'src/decorators/*.js',
-            'src/application.js', 'src/source.js', 'src/api_client.js',
-            'src/translation_key.js', 'src/translation.js', 'src/translator.js',
-            'src/language.js', 'src/language_case.js', 'src/language_case_rule.js',
-            'src/language_context.js', 'src/language_context_rule.js',
-            'src/extensions/express.js'
-        ],
-        dest: 'lib/<%= pkg.name %>.express.js'
-      },
-      helpers: {
-        src: [
-          'src/helpers/*.js'
-        ],
-        dest: 'lib/<%= pkg.name %>.helpers.js'
-      }
-    },
     comments: {
       your_target: {
         options: {
           singleline: true,
           multiline: true
         },
-        src: [ 'lib/<%= pkg.name %>.js']
+        src: [ 'dist/<%= pkg.name %>.js']
       }
     },
     mochaTest: {
@@ -103,14 +64,22 @@ module.exports = function(grunt) {
         }
       }
     },
+    browserify: {
+      dist: {
+        src: ['lib/extensions/browser.js'],
+        dest: 'dist/<%= pkg.name %>.js',
+        options: {
+          exclude: ['request']
+        }
+      }
+    },
     uglify: {
       options: {
         banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
       },
       dist: {
         files: {
-          'lib/<%= pkg.name %>.min.js': ['<%= concat.basic.dest %>'],
-          'lib/<%= pkg.name %>.express.min.js': ['<%= concat.express.dest %>']
+          'dist/<%= pkg.name %>.min.js': ['<%= browserify.dist.dest %>']
         }
       }
     },
@@ -128,14 +97,14 @@ module.exports = function(grunt) {
         tasks: ['concat', 'comments', 'clean', 'blanket', 'copy', 'mochaTest'] //NOTE the :run flag
       }
     }
+
   });
 
   // Load the plugin that provides the "uglify" task.
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-contrib-concat');
-  grunt.loadNpmTasks('grunt-mocha-test');
   grunt.loadNpmTasks('grunt-stripcomments');
+  grunt.loadNpmTasks('grunt-browserify');
 
   grunt.loadNpmTasks('grunt-mocha-test');
   grunt.loadNpmTasks('grunt-contrib-clean');
@@ -144,11 +113,14 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-blanket');
   grunt.loadNpmTasks('grunt-jsdoc');
 
+  
+
 //  grunt.registerTask('test', ['jshint', 'mocha']);
 
   grunt.registerTask('test', ['blanket', 'copy', 'mochaTest']);
   grunt.registerTask('doc', ['jsdoc']);
+  grunt.registerTask('build', ['test','browserify','uglify']);
   // Default task(s).
-  //grunt.registerTask('default', ['concat', 'uglify']);
+  grunt.registerTask('default', ['test']);
 
 };
