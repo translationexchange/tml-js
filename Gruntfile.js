@@ -120,6 +120,6 @@ module.exports = function(grunt) {
   grunt.registerTask('build', ['test','browserify','uglify']);
 
   // Default task(s).
-  grunt.registerTask('default', ['jshint', 'test']);
+  grunt.registerTask('default', ['test']);
 
 };

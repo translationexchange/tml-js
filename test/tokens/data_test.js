@@ -174,7 +174,7 @@ describe('Tokens.Data', function(){
           }], language));
 
 
-        assert.deepEqual('Michael, Tom, Anna, Peter<span id="tr8n_other_link_72a06b5c9851a0ef57c71c1fbea186d0"> and <a href="#" class="tr8n_other_list_link" onClick="document.getElementById(\'tr8n_other_link_key\').style.display=\'none\'; document.getElementById(\'tr8n_other_elements_key\').style.display=\'inline\'; return false;">2 others</a></span><span id="tr8n_other_elements_72a06b5c9851a0ef57c71c1fbea186d0" style="display:none">, Kate and Olga <a href="#" class="tr8n_other_less_link" style="font-size:smaller;white-space:nowrap" onClick="document.getElementById(\'tr8n_other_link_key\').style.display=\'inline\'; document.getElementById(\'tr8n_other_elements_key\').style.display=\'none\'; return false;">&amp;laquo; less</a></span>',
+        assert.deepEqual('Michael, Tom, Anna, Peter<span id="tr8n_other_link_72a06b5c9851a0ef57c71c1fbea186d0"> and <a href="#" class="tr8n_other_list_link" onClick="document.getElementById(\'tr8n_other_link_key\').style.display=\'none\'; document.getElementById(\'tr8n_other_elements_key\').style.display=\'inline\'; return false;">2 others</a></span><span id="tr8n_other_elements_72a06b5c9851a0ef57c71c1fbea186d0" style="display:none">, Kate and Olga <a href="#" class="tr8n_other_less_link" style="font-size:smaller;white-space:nowrap" onClick="document.getElementById(\'tr8n_other_link_key\').style.display=\'inline\'; document.getElementById(\'tr8n_other_elements_key\').style.display=\'none\'; return false;">&laquo; less</a></span>',
           token.getTokenValueFromArray([users, "@name", {
             expandable: true
           }], language));
