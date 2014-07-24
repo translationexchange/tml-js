@@ -69,7 +69,7 @@ module.exports = function(grunt) {
         src: ['lib/extensions/browser.js'],
         dest: 'dist/<%= pkg.name %>.js',
         options: {
-          exclude: ['request']
+          
         }
       }
     },

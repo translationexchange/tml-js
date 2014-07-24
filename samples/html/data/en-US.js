@@ -1,5 +1,5 @@
 Tr8n.cache(function(data) {
-  data.languages["en-US"] = {
+  data["language_en-US"] = {
     "locale":"en-US",
     "name":"English (US)",
     "english_name":"English (U.S.)",

@@ -1,5 +1,5 @@
 Tr8n.cache(function(data) {
-  data.sources["test"] = {
+  data["test_ru"] = {
     "source": "test",
     "name": "test",
     "key": "test",
