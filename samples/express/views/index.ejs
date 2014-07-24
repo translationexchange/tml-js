@@ -43,41 +43,6 @@ var restaurants = [
 
 <% }); %>
 
-<% if (false) { %>
-<script>
-  Tr8n.configure(function(config) {
-    config.cache = {
-      application: {
-        languages: {
-          "en-US": ""
-        },
-        sources: {
-          "index": {
-            translation_keys: {
-              "dfgsdgsdfsdgsdfgsdfg": {
-                label: "You have {count || message}",
-                description: "description",
-                translations: {
-//                  "ru": [
-//                    {label: "You have {count || message, messages, message}"}
-//                  ]
-                  "ru": [
-                    {label: "You have {count} message", context: {count: {number: "one"}}},
-                    {label: "You have {count} message", context: {count: {number: "few"}}},
-                    {label: "You have {count} message", context: {count: {number: "other"}}},
-                    {label: "{actor} sent {target} {count} message", context: {count: {number: "other"}, actor: {gender: "male"}}}
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    };
-  });
-</script>
-<% } %>
-
 <div class="container">
 
     <div class="content">
