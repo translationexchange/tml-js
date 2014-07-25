@@ -5,8 +5,6 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-var tr8n = require('./../../lib/extensions/express.js');
-
 var routes = require('./routes/index');
 
 var app = express();
@@ -21,17 +19,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
-app.use(tr8n.init("4a70fec459854794e", "680a8479c8387ebc1", {
-  cache: {
-    enabled: true,
-    adapter: "redis",
-    host: "localhost",
-    port: 6379,
-    version: 1,
-    timeout: 3600
-  }
-}));
 
 app.use('/', routes);
 
