@@ -76,7 +76,7 @@ var API_PATH = "/tr8n/api/";
 
 var ApiClient = function(app) {
   this.application = app;
-  this.cache = config.getCache()
+  this.cache = config.getCache();
 
   this.request = require("./api/request");
 };
@@ -132,6 +132,7 @@ ApiClient.prototype = {
     utils.extend(params, {key: this.application.key});
 
     var url = this.application.getHost() + API_PATH + path;
+    var self = this;
 
     var request_callback = function(error, response, body) {
       var t1 = new Date();
@@ -146,19 +147,16 @@ ApiClient.prototype = {
     };
 
     if (options.method == "post") {
-      this.request.post(url, {form: params}, request_callback);
+      self.request.post(url, {form: params}, request_callback);
 //      this.getAccessToken(function(error, token_info) {
 //        utils.extend(params, {access_token: token_info.access_token});
 //        request.post(url, {form: params}, request_callback);
 //      }.bind(this));
     } else {
-
-      // TODO: do not use cache when inline translations are enabled
-
       if (options.cache_key && this.cache) {
         this.cache.fetch(options.cache_key, function(cache_callback) {
           logger.log("api " + options.method + " " + url, params);
-          this.request.get(url, {qs: params}, function(error, response, body) {
+          self.request.get(url, {qs: params}, function(error, response, body) {
             var t1 = new Date();
             logger.log("api took " + (t1-t0) + " mls");
             if (!error && response.statusCode == 200) {
@@ -176,7 +174,7 @@ ApiClient.prototype = {
         });
       } else {
         logger.log("api " + options.method + " " + url, params);
-        this.request.get(url, {qs: params}, request_callback);
+        self.request.get(url, {qs: params}, request_callback);
       }
     }
   }
@@ -1205,15 +1203,15 @@ module.exports = HTMLDecorator;
 
 },{}],10:[function(require,module,exports){
 // entry point for browserify
-window.Tr8n = require('../tr8n');
+window.Tr8nSDK = require('../tr8n');
 
 window.tr = function(label, description, tokens, options) {
-  options = Tr8n.utils.extend({}, options, {
-    current_locale: Tr8n.config.current_locale,
-    current_source: Tr8n.config.current_source,
-    current_translator: Tr8n.config.current_translator
+  options = Tr8nSDK.utils.extend({}, options, {
+    current_locale: Tr8nSDK.config.current_locale,
+    current_source: Tr8nSDK.config.current_source,
+    current_translator: Tr8nSDK.config.current_translator
   });
-  return Tr8n.translate(label, description, tokens, options);
+  return Tr8nSDK.translate(label, description, tokens, options);
 };
 },{"../tr8n":25}],11:[function(require,module,exports){
 /**
@@ -3631,8 +3629,7 @@ module.exports = {
     } else {
       css = doc.createElement('link'); css.setAttribute('type', 'text/css');
       css.setAttribute('rel', 'stylesheet'); css.setAttribute('media', 'screen');
-      if (value.indexOf('//') != -1) css.setAttribute('href', value);
-      else css.setAttribute('href', '" + app.getHost() + "' + value);
+      css.setAttribute('href', value);
     }
     doc.getElementsByTagName('head')[0].appendChild(css);
     return css;
@@ -3641,8 +3638,7 @@ module.exports = {
   addJS: function(doc, id, src, onload) {
     var script = doc.createElement('script');
     script.setAttribute('id', id); script.setAttribute('type', 'application/javascript');
-    if (src.indexOf('//') != -1)  script.setAttribute('src', src);
-    else script.setAttribute('src', '" + app.getHost() + "' + src);
+    script.setAttribute('src', src);
     script.setAttribute('charset', 'UTF-8');
     if (onload) script.onload = onload;
     doc.getElementsByTagName('head')[0].appendChild(script);

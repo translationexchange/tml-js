@@ -1,4 +1,4 @@
-Tr8n.cache(function(data) {
+Tr8nSDK.cache(function(data) {
   data["test_ru"] = {
     "source": "test",
     "name": "test",

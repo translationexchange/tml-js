@@ -1,4 +1,4 @@
-Tr8n.cache(function(data) {
+Tr8nSDK.cache(function(data) {
   data.application = {
     "key":"default",
     "name":"Sample",
