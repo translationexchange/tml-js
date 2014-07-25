@@ -1,5 +1,5 @@
 Tr8n.cache(function(data) {
-  data.application = {
+  data["application"] = {
     "key":"default",
     "name":"Sample",
     "default_locale":"en-US",
