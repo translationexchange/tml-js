@@ -5,4 +5,5 @@ coverage
 doc
 coverage.html
 samples/node/.idea
-samples/node/node_modules
+samples/express/node_modules
+samples/undescore/node_modules
