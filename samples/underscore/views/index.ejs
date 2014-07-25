@@ -13,13 +13,31 @@
   <script src="/javascripts/jquery.min.js" type="text/javascript"></script>
   <script src="/javascripts/bootstrap.min.js"></script>
   <script src="/javascripts/underscore.min.js"></script>
+  <script src="/javascripts/tr8n.js"></script>
+
+  <script>
+    Tr8n.init("default", "asdfasdf", {
+      default_locale: "en-US",
+      current_locale: "ru",
+      current_source: "test",
+      cache: {
+        adapter: "inline",
+        data: {}
+      }
+    });
+  </script>
+
+  <script src="cache/application.js"></script>
+  <script src="cache/ru.js"></script>
+  <script src="cache/en-US.js"></script>
+  <script src="cache/index.js"></script>
 
   <script>
     (function() {
       $.ajax({
         url: "/templates/index.jst"
       }).done(function(data) {
-        $(document.body).html(data);
+        $(document.body).html(_.template(data));
       }).fail(function(jqXHR, textStatus, errorThrown) {
         $(document.body).html(errorThrown);
       });
@@ -29,11 +47,6 @@
 </head>
 
 <body>
-
-
-
-
-
 
 </body>
 </html>
