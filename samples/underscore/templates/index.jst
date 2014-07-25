@@ -102,8 +102,9 @@ var restaurants = [
                 <h5 class="text-primary"><%= tr("Restaurants") %></h5>
 
                 <%
-                for (var i=0; i<restaurants.length; i++) {
-                restaurant = restaurants[i];
+                    var count = 0;
+                    _.each(restaurants, function(restaurant) {
+                        count = count + 1;
                 %>
                 <div class="media">
                     <a class="pull-left" href="#">
@@ -111,7 +112,7 @@ var restaurants = [
                     </a>
                     <div class="media-body">
                         <strong>
-                            <%= i+1 %>.
+                            <%= count %>.
                             <a href=""><%= restaurant.name %></a>
                         </strong>
 
@@ -130,7 +131,7 @@ var restaurants = [
                         </div>
                     </div>
                 </div>
-                <% } %>
+                <% }); %>
 
             </div>
 
@@ -167,8 +168,10 @@ var restaurants = [
                             <img src="images/1-stars.png" title="5 out of 5 stars"/>
                             <small class="text-muted"><%= tr("{count || Review}", {count: 234}) %></small>
                         </div>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima, architecto, laboriosam doloribus sequi tenetur maxime magni porro sunt facilis officia deserunt blanditiis vitae consectetur rerum alias dolorem et dignissimos...
-                            <a href="#"><%= tr("Read More") %></a></p>
+                        <p>
+                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Minima, architecto, laboriosam doloribus sequi tenetur maxime magni porro sunt facilis officia deserunt blanditiis vitae consectetur rerum alias dolorem et dignissimos...
+                            <a href="#"><%= tr("Read More") %></a>
+                        </p>
                     </div>
                 </div>
 
