@@ -160,6 +160,7 @@ ApiClient.prototype = {
       if (options.cache_key && this.cache) {
         console.log("searching cache for: ", options.cache_key)
         this.cache.fetch(options.cache_key, function(cache_callback) {
+          console.log("cache value not found for: ", options.cache_key, " using default")
 
           logger.log("api " + options.method + " " + url, params);
           this.request.get(url, {qs: params}, function(error, response, body) {
@@ -773,6 +774,7 @@ Inline.prototype = utils.extend(new Base(), {
     setTimeout(function(){
       console.log("fetch inline cache", key, this.cache[key])
       var val = this.cache[key] || (typeof(def) == "function" ? def() : def) || null;
+      console.log("value found for: ", key)
       if(callback) return callback(null, JSON.stringify(this.cache[key]));
     }.bind(this), 1) //ugh
   },
@@ -1293,9 +1295,12 @@ Language.prototype = {
     if (options.current_source && this.application) {
       console.log(123)
       var source = this.application.getSource(options.current_source);
+      console.log("source: ", source)
       var cached_key = source ? source.getTranslationKey(translation_key.key) : null;
+      console.log("cached key: ", cached_key)
       if (cached_key) translation_key = cached_key;
       else {
+        console.log("missing")
         this.application.registerMissingTranslationKey(options.current_source, translation_key);
         var local_key = this.application.getTranslationKey(translation_key.key);
         if (local_key) translation_key = local_key;
@@ -2084,6 +2089,7 @@ var Source = function(attrs) {
 Source.prototype = {
 
   getTranslationKey: function(key) {
+    console.log(key)
     return this.translation_keys[key];
   }
 
@@ -3558,6 +3564,7 @@ module.exports = {
   },
   
   generateKey: function(label, description) {
+    description = description || "";
     return crypto.createHash("md5").update(label + ";;;" + description).digest("hex");
     //return MD5(label + ";;;" + description);
   },
