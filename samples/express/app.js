@@ -22,7 +22,19 @@ app.use(bodyParser.urlencoded());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(tr8n.init("4a70fec459854794e", "680a8479c8387ebc1", {
+//app.use(tr8n.init("4a70fec459854794e", "680a8479c8387ebc1", {
+//  cache: {
+//    enabled: true,
+//    adapter: "redis",
+//    host: "localhost",
+//    port: 6379,
+//    version: 1,
+//    timeout: 3600
+//  }
+//}));
+
+app.use(tr8n.init("680d6c3913971ac32", "35510cb65d5144673", {
+  host: "http://localhost:3000",
   cache: {
     enabled: true,
     adapter: "redis",
@@ -32,6 +44,9 @@ app.use(tr8n.init("4a70fec459854794e", "680a8479c8387ebc1", {
     timeout: 3600
   }
 }));
+
+
+
 
 app.use('/', routes);
 

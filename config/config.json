@@ -1,0 +1,12 @@
+{
+  "config": {
+    "cache": {
+      "enabled": true,
+      "adapter": "redis",
+      "host": "localhost",
+      "port": 6379,
+      "version": 1,
+      "timeout": 3600
+    }
+  }
+}
