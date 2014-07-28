@@ -1044,6 +1044,12 @@ Language.prototype = {
   },
 
   translate: function(label, description, tokens, options) {
+    if (typeof description !== "string") {
+      options = tokens || {};
+      tokens  = description || {};
+      description = "";
+    }
+
     var translation_key = new TranslationKey({
       label: label,
       description: description,

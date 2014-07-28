@@ -19,15 +19,30 @@
     Tr8nSDK.init("default", "asdfasdf", {
       default_locale: "en-US",
       current_locale: "ru",
-      current_source: "test",
+      current_source: "index",
       host: "https://translationexchange.com",
       cache: {
         adapter: "inline",
         data: {}
       }
     });
+  </script>
 
+  <script src="data/application.js"></script>
+  <script src="data/ru.js"></script>
+  <script src="data/en-US.js"></script>
+  <script src="data/index.js"></script>
+
+  <script>
     (function() {
+      $.ajax({
+        url: "/templates/index.jst"
+      }).done(function(data) {
+        $(document.body).html(_.template(data));
+      }).fail(function(jqXHR, textStatus, errorThrown) {
+        $(document.body).html(errorThrown);
+      });
+
       if (window.addEventListener) window.addEventListener('load', tr8n_init, false);
       else if (window.attachEvent) window.attachEvent('onload', tr8n_init);
       window.setTimeout(function() {tr8n_init();}, 1000);
@@ -49,31 +64,18 @@
           if (Tr8nSDK.application.isFeatureEnabled("shortcuts")) {
             var keys = Object.keys(Tr8nSDK.application.shortcuts || {});
             for (var i=0; i<keys.length; i++) {
-               shortcut.add(keys[i], function() {
-                   eval(Tr8nSDK.application.shortcuts[keys[i]]);
-               });
+//              console.log(keys[i]);
+              var shortcut_function = Tr8nSDK.application.shortcuts[keys[i]];
+//              console.log(shortcut_function);
+              shortcut.add(keys[i], function(key) {
+//                alert(key);
+//                alert(shortcut_function);
+              });
             }
           }
         })
       }
 
-    })();
-  </script>
-
-  <script src="cache/application.js"></script>
-  <script src="cache/ru.js"></script>
-  <script src="cache/en-US.js"></script>
-  <script src="cache/index.js"></script>
-
-  <script>
-    (function() {
-      $.ajax({
-        url: "/templates/index1.jst"
-      }).done(function(data) {
-        $(document.body).html(_.template(data));
-      }).fail(function(jqXHR, textStatus, errorThrown) {
-        $(document.body).html(errorThrown);
-      });
     })();
   </script>
 
