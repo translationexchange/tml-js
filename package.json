@@ -36,9 +36,8 @@
   "dependencies": {
     "async": "^0.9.0",
     "commander": "2.0.0",
-    "memcache": "^0.3.0",
-    "redis": "^0.11.0",
-    "hiredis": "*"
+    "memcached": "^0.2.8",
+    "redis": "^0.11.0"
   },
   "devDependencies": {
     "async": "~0.9.0",

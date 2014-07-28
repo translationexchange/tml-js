@@ -1,6 +1,4 @@
-Tr8nSDK.cache(function(data) {
-  data["application"] = {
-    "key":"default",
+Tr8nSDK.application.extend({
     "name":"Sample",
     "default_locale":"en-US",
     "languages":[
@@ -71,6 +69,5 @@ Tr8nSDK.cache(function(data) {
       "Alt+Shift+B":"Tr8n.Utils.redirectTo('/tr8n/app/forum')",
       "Alt+Shift+G":"Tr8n.Utils.redirectTo('/tr8n/app/glossary')"
     }
-  };
 });
 

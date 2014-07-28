@@ -183,7 +183,7 @@ ApiClient.prototype = {
 
 module.exports = ApiClient;
 
-},{"./api/request":1,"./configuration":8,"./logger":16,"./utils":28}],3:[function(require,module,exports){
+},{"./api/request":1,"./configuration":5,"./logger":13,"./utils":26}],3:[function(require,module,exports){
 (function (__dirname){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
@@ -253,6 +253,14 @@ Application.prototype = {
     return this.host || DEFAULT_HOST;
   },
 
+  extend: function(data) {
+    utils.extend(this, data);
+  },
+
+  isKeyRegistrationEnabled: function() {
+    return (this.secret != null);
+  },
+
   /**
    * addLanguage
    *
@@ -261,7 +269,8 @@ Application.prototype = {
    */
   addLanguage: function(language) {
     language.application = this;
-    this.languages_by_locale[language.locale] = language;
+    this.languages_by_locale[language.locale] = new Language(language);
+    return this.getLanguage(language.locale);
   },
 
   /**
@@ -278,8 +287,9 @@ Application.prototype = {
   },
 
   addSource: function(source) {
-    this.sources_by_key[source.source] = source;
-    return source;
+    source.application = this;
+    this.sources_by_key[source.source] = new Source(source);
+    return this.getSource(source.source);
   },
 
   getSource: function(key) {
@@ -304,24 +314,33 @@ Application.prototype = {
     var self = this;
 
     // load application
-    self.getApiClient().get("application", {definition: true}, {cache_key: "application"}, function (error, data) {
+    self.getApiClient().get("application", {definition: true}, {cache_key: self.key}, function (error, data) {
       if (error) {
         console.log(err);
         throw err;
       }
-      utils.extend(this, data);
+
+      self.extend(data);
 
       if (options.locales) {
+        // init languages
         self.loadLanguages(options.locales, options, function() {
           if (options.sources) {
-            self.loadSources(options.sources, options.current_locale, options, function() {
-              callback(null);
+            // init main source
+            self.loadSources(options.sources, options.current_locale, options, function(sources) {
+              // init all sub-sources
+              if (sources.length > 0 && sources[0].sources) {
+                // console.log("Loading subsources: " + sources[0].sources);
+                self.loadSources(sources[0].sources, options.current_locale, options, function (sources) {
+                  callback(null);
+                });
+              } else callback(null);
             });
           } else callback(null);
         });
       } else callback(null);
 
-    }.bind(this));
+    });
   },
 
   loadLanguages: function(locales, options, languages_callback) {
@@ -337,7 +356,7 @@ Application.prototype = {
 
     locales.forEach(function(locale) {
       data[locale] = function(callback) {
-        self.getApiClient().get("language", {locale: locale, definition: true}, {cache_key: "language_" + locale}, function(error, data) {
+        self.getApiClient().get("language", {locale: locale, definition: true}, {cache_key: locale + "/language"}, function(error, data) {
           if (error) {
             callback(error, null);
             return;
@@ -384,7 +403,7 @@ Application.prototype = {
             throw err;
           }
 
-          callback(null, new Language(utils.extend(data, {application: self})));
+          callback(null, data);
         });
       };
     });
@@ -404,7 +423,7 @@ Application.prototype = {
   },
 
   getSourceKey: function(source, locale) {
-    return source + "_" + locale;
+    return locale + "/[" + source.replace("/", "-") + "]";
   },
 
   loadSources: function(sources, locale, options, sources_callback) {
@@ -420,15 +439,15 @@ Application.prototype = {
 
     sources.forEach(function(source) {
       data[source] = function(callback) {
-        console.log("loading " + source + " for locale " + locale);
+//        console.log("loading " + source + " for locale " + locale);
         var api_options = {};
         if (!options.translator || !options.translator.inline) api_options.cache_key = self.getSourceKey(source, locale);
-        self.getApiClient().get("source", {source: source, locale: locale, translations: true}, api_options, function(error, data) {
+        self.getApiClient().get("source", {source:source, locale:locale, translations:true, subsources:true}, api_options, function(error, data) {
           if (error) {
             callback(error, null);
             return;
           }
-          callback(null, new Source(utils.extend(data, {application: self})));
+          callback(null, data);
         });
       };
     });
@@ -439,22 +458,30 @@ Application.prototype = {
         throw err;
       }
 
+      var sources = [];
       Object.keys(results).forEach(function(key) {
+        sources.push(results[key]);
         self.addSource(results[key]);
       });
 
-      sources_callback();
+      sources_callback(sources);
     });
   },
 
   registerMissingTranslationKey: function(source_key, translation_key) {
-//    console.log("Registering missing translation key: " + source_key + " " + translation_key.label);
+    if (!this.isKeyRegistrationEnabled()) return;
+
+    console.log("Registering missing translation key: " + source_key + " " + translation_key.label);
+    if (!this.missing_keys_by_source)
+      this.missing_keys_by_source = {};
     if (!this.missing_keys_by_source[source_key])
       this.missing_keys_by_source[source_key] = [];
     this.missing_keys_by_source[source_key][translation_key.key] = translation_key;
   },
 
   submitMissingTranslationKeys: function(callback) {
+    if (!this.isKeyRegistrationEnabled()) return;
+
     if (!this.missing_keys_by_source) {
       callback(false);
       return;
@@ -490,14 +517,15 @@ Application.prototype = {
 
     var self = this;
     this.getApiClient().post("source/register_keys", {source_keys: JSON.stringify(params)}, function() {
-      var cache_adapter = require("./cache");
-      var cache = new cache_adapter();
-
       self.missing_keys_by_source = null;
       utils.keys(self.languages_by_locale).forEach(function(locale) {
         source_keys.forEach(function(source_key) {
           // delete from cache source_key + locale
-          cache.del(self.getSourceKey(source_key, locale), function(){});
+          source_key = source_key.split(config.source_separator);
+          source_key.forEach(function(source) {
+            // TODO: may not need to remove all sources in path from the cache
+            config.getCache().del(self.getSourceKey(source, locale), function(){});
+          });
         });
       });
 
@@ -535,7 +563,7 @@ Application.prototype = {
 module.exports = Application;
 
 }).call(this,"/..")
-},{"./api_client":2,"./cache":4,"./configuration":8,"./language":11,"./source":19,"./utils":28,"async":29,"fs":30}],4:[function(require,module,exports){
+},{"./api_client":2,"./configuration":5,"./language":8,"./source":16,"./utils":26,"async":27,"fs":28}],4:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -567,19 +595,12 @@ module.exports = Application;
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-
-
 var Cache = function(options) {
   this.adapter = null;
 
   if (options && options.enabled) {
-    if (options.adapter == "redis") {
-      var adapter_class = require("./cache_adapters/redis");
-      this.adapter = new adapter_class(options);
-    } else if (options.adapter == "inline") {
-      var adapter_class = require("./cache_adapters/inline");
-      this.adapter = new adapter_class(options);
-    }
+    var adapter_class = require("./cache_adapters/" + options.adapter);
+    this.adapter = new adapter_class(options);
   }
 
 };
@@ -604,301 +625,27 @@ Cache.prototype = {
   exists: function(key, callback) {
     if (!this.adapter) callback(null);
     this.adapter.exists(key, callback);
+  },
+
+  getVersion: function(callback) {
+    if (!this.adapter) callback(null);
+    this.adapter.getVersion(callback);
+  },
+
+  resetVersion: function() {
+    if (!this.adapter) return;
+    this.adapter.resetVersion();
+  },
+
+  incrementVersion: function(callback) {
+    if (!this.adapter) callback(null);
+    this.adapter.incrementVersion(callback);
   }
 
 };
 
 module.exports = Cache;
-},{"./cache_adapters/inline":6,"./cache_adapters/redis":7}],5:[function(require,module,exports){
-/**
- * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
- *
- *  _______                  _       _   _             ______          _
- * |__   __|                | |     | | (_)           |  ____|        | |
- *    | |_ __ __ _ _ __  ___| | __ _| |_ _  ___  _ __ | |__  __  _____| |__   __ _ _ __   __ _  ___
- *    | | '__/ _` | '_ \/ __| |/ _` | __| |/ _ \| '_ \|  __| \ \/ / __| '_ \ / _` | '_ \ / _` |/ _ \
- *    | | | | (_| | | | \__ \ | (_| | |_| | (_) | | | | |____ >  < (__| | | | (_| | | | | (_| |  __/
- *    |_|_|  \__,_|_| |_|___/_|\__,_|\__|_|\___/|_| |_|______/_/\_\___|_| |_|\__,_|_| |_|\__, |\___|
- *                                                                                        __/ |
- *                                                                                       |___/
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-
-var logger    = require('../logger');
-
-var VERSION_KEY  = '__tr8n_version__';
-var KEY_PREFIX   = 'tr8n_v';
-
-
-var Base = function() {
-
-};
-
-Base.prototype = {
-
-  read_only         : true,
-  cached_by_source  : true,
-  name              : "",
-
-  initialize: function(config) {
-    this.config = config || {};
-    this.cache = this.create();
-    this.getVersion();
-  },
-
-  create: function(){
-
-  },
-
-  fetch: function() {
-    // should be overwritten
-  },
-
-  store: function(key, value){
-    // should be overwritten
-  },
-
-  del: function(key) {
-    // should be overwritten
-  },
-
-  exists: function(key) {
-    // should be overwritten
-  },
-
-  warn: function(msg) {
-    logger.log(this.name + " - " + msg);
-  },
-
-  info: function(msg) {
-    logger.log(this.name + " - " + msg);
-  },
-
-  getVersion: function(callback) {
-    if (!this.version) {
-      this.fetch(VERSION_KEY, 1, function(value) {
-        this.version = value;
-        if(callback) callback(this.version)
-      }.bind(this))
-    }
-    if(callback) callback(this.version)
-  },
-
-  getVersionedKey: function(key) {
-    if (key == VERSION_KEY) return key;
-    return KEY_PREFIX + this.version + "_" + key;
-  }
-
-};
-
-module.exports = Base;
-},{"../logger":16}],6:[function(require,module,exports){
-/**
- * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
- *
- *  _______                  _       _   _             ______          _
- * |__   __|                | |     | | (_)           |  ____|        | |
- *    | |_ __ __ _ _ __  ___| | __ _| |_ _  ___  _ __ | |__  __  _____| |__   __ _ _ __   __ _  ___
- *    | | '__/ _` | '_ \/ __| |/ _` | __| |/ _ \| '_ \|  __| \ \/ / __| '_ \ / _` | '_ \ / _` |/ _ \
- *    | | | | (_| | | | \__ \ | (_| | |_| | (_) | | | | |____ >  < (__| | | | (_| | | | | (_| |  __/
- *    |_|_|  \__,_|_| |_|___/_|\__,_|\__|_|\___/|_| |_|______/_/\_\___|_| |_|\__,_|_| |_|\__, |\___|
- *                                                                                        __/ |
- *                                                                                       |___/
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-
-var utils   = require('../utils');
-var Base    = require('./base');
-
-var Inline = function(config) {
-  this.initialize(config);
-};
-
-Inline.prototype = utils.extend(new Base(), {
-
-  name: "inline",
-  read_only: false,
-
-  create: function() {
-    return this.config.data;
-  },
-
-  fetch: function(key, def, callback) {
-    var data = this.config.data[key];
-    callback = callback || new Function;
-    this.cache.get(this.getVersionedKey(key), function(err, data) {
-      if (data) {
-        this.info("cache hit " + key + ": " + data);
-        callback(null, data);
-      } else {
-        this.info("cache miss " + key);
-        if (utils.isFunction(def)) {
-          def(function(err, data) {
-            if (data) {
-//              console.log(data);
-              this.store(key, data, function () {
-                callback(null, data);
-              });
-            } else callback("no data", null);
-          }.bind(this));
-        } else if (def) {
-          this.store(key, def, function(data) {
-            callback(null, data);
-          });
-        }
-      }
-    }.bind(this));
-  },
-
-  store: function(key, value, callback) {
-    this.info("cache store " + key + " " + value);
-    return this.cache.set(this.getVersionedKey(key), value, callback);
-  },
-
-  del: function(key, callback) {
-    this.info("cache del " + key);
-    this.cache.del(this.getVersionedKey(key), callback);
-  },
-
-  exists: function(key, callback){
-    this.cache.get(this.getVersionedKey(key), function(err, data) {
-      if (callback) callback(!(err || !data));
-    });
-  }
-
-});
-
-module.exports = Redis;
-},{"../utils":28,"./base":5}],7:[function(require,module,exports){
-/**
- * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
- *
- *  _______                  _       _   _             ______          _
- * |__   __|                | |     | | (_)           |  ____|        | |
- *    | |_ __ __ _ _ __  ___| | __ _| |_ _  ___  _ __ | |__  __  _____| |__   __ _ _ __   __ _  ___
- *    | | '__/ _` | '_ \/ __| |/ _` | __| |/ _ \| '_ \|  __| \ \/ / __| '_ \ / _` | '_ \ / _` |/ _ \
- *    | | | | (_| | | | \__ \ | (_| | |_| | (_) | | | | |____ >  < (__| | | | (_| | | | | (_| |  __/
- *    |_|_|  \__,_|_| |_|___/_|\__,_|\__|_|\___/|_| |_|______/_/\_\___|_| |_|\__,_|_| |_|\__, |\___|
- *                                                                                        __/ |
- *                                                                                       |___/
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-
-var redis   = require("redis");
-
-var utils   = require('../utils');
-var Base    = require('./base');
-
-var Redis = function(config) {
-  this.initialize(config);
-};
-
-Redis.prototype = utils.extend(new Base(), {
-
-  name: "redis",
-  read_only: false,
-
-  create: function() {
-    return redis.createClient(this.config.port, this.config.host, this.config.options || {});
-  },
-
-  fetch: function(key, def, callback) {
-    callback = callback || new Function;
-    this.cache.get(this.getVersionedKey(key), function(err, data) {
-      if (data) {
-        this.info("cache hit " + key + ": " + data);
-        callback(null, data);
-      } else {
-        this.info("cache miss " + key);
-        if (utils.isFunction(def)) {
-          def(function(err, data) {
-            if (data) {
-//              console.log(data);
-              this.store(key, data, function () {
-                callback(null, data);
-              });
-            } else callback("no data", null);
-          }.bind(this));
-        } else if (def) {
-          this.store(key, def, function(data) {
-            callback(null, data);
-          });
-        }
-      }
-    }.bind(this));
-  },
-
-  store: function(key, value, callback) {
-    this.info("cache store " + key + " " + value);
-    return this.cache.set(this.getVersionedKey(key), value, callback);
-  },
-
-  del: function(key, callback) {
-    this.info("cache del " + key);
-    this.cache.del(this.getVersionedKey(key), callback);
-  },
-
-  exists: function(key, callback){
-    this.cache.get(this.getVersionedKey(key), function(err, data) {
-      if (callback) callback(!(err || !data));
-    });
-  }
-
-});
-
-module.exports = Redis;
-},{"../utils":28,"./base":5,"redis":55}],8:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -938,6 +685,7 @@ var Configuration = function() {
   this.initContextRules();
   this.enabled = true;
   this.default_locale = "en-US";
+  this.source_separator = "@:@";
 //  this.api_client_class = Tr8n.Api.Request;
 };
 
@@ -948,7 +696,7 @@ Configuration.prototype = {
       this.cacheAdapter = new Cache(this.cache); 
       return this.cacheAdapter;
     }
-    return false
+    return false;
   },
 
   getCache: function() {
@@ -1122,14 +870,13 @@ Configuration.prototype = {
   isEnabled: function() {
     return this.enabled;
   }
-
 };
 
 module.exports = new Configuration;
 
 
 
-},{"./cache":4}],9:[function(require,module,exports){
+},{"./cache":4}],6:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -1201,7 +948,7 @@ module.exports = HTMLDecorator;
 
 
 
-},{}],10:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 // entry point for browserify
 window.Tr8nSDK = require('../tr8n');
 
@@ -1213,7 +960,7 @@ window.tr = function(label, description, tokens, options) {
   });
   return Tr8nSDK.translate(label, description, tokens, options);
 };
-},{"../tr8n":25}],11:[function(require,module,exports){
+},{"../tr8n":22}],8:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -1304,23 +1051,44 @@ Language.prototype = {
     });
 
     if (options.current_source && this.application) {
-      var source = this.application.getSource(options.current_source);
+      var source_path = this.getSourcePath(options);
+      var current_source = source_path[source_path.length-1];
+//      console.log("Source: " + current_source + " key: " + label + " (" +  translation_key.key + ")");
+      var source = this.application.getSource(current_source);
+//      console.log(source);
       var cached_key = source ? source.getTranslationKey(translation_key.key) : null;
-      if (cached_key) translation_key = cached_key;
+      if (cached_key)
+        translation_key = cached_key;
       else {
-        this.application.registerMissingTranslationKey(options.current_source, translation_key);
+        this.application.registerMissingTranslationKey(source_path.join(config.source_separator), translation_key);
         var local_key = this.application.getTranslationKey(translation_key.key);
         if (local_key) translation_key = local_key;
       }
     }
 
     return translation_key.translate(this, tokens, options);
+  },
+
+  getSourcePath: function(options) {
+    if (!options.block_options)
+      return [options.current_source];
+
+    var source_path = [];
+
+    for(var i=0; i<options.block_options.length; i++) {
+      var opts = options.block_options[i];
+      if (opts.source) source_path.push(opts.source);
+    }
+
+    source_path = source_path.reverse();
+    source_path.unshift(options.current_source);
+    return source_path;
   }
 };
 
 module.exports = Language;
 
-},{"./configuration":8,"./language_case":12,"./language_context":14,"./translation_key":27,"./utils":28}],12:[function(require,module,exports){
+},{"./configuration":5,"./language_case":9,"./language_context":11,"./translation_key":24,"./utils":26}],9:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -1446,7 +1214,7 @@ LanguageCase.prototype = {
 module.exports = LanguageCase;
 
 
-},{"./configuration":8,"./language_case_rule":13,"./utils":28}],13:[function(require,module,exports){
+},{"./configuration":5,"./language_case_rule":10,"./utils":26}],10:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -1545,7 +1313,7 @@ LanguageCaseRule.prototype = {
 
 module.exports = LanguageCaseRule;
 
-},{"./rules_engine/evaluator":17,"./rules_engine/parser":18,"./utils":28}],14:[function(require,module,exports){
+},{"./rules_engine/evaluator":14,"./rules_engine/parser":15,"./utils":26}],11:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -1664,7 +1432,7 @@ LanguageContext.prototype = {
 };
 
 module.exports = LanguageContext;
-},{"./configuration":8,"./language_context_rule":15,"./utils":28}],15:[function(require,module,exports){
+},{"./configuration":5,"./language_context_rule":12,"./utils":26}],12:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -1735,7 +1503,7 @@ LanguageContextRule.prototype = {
 };
 
 module.exports = LanguageContextRule;
-},{"./rules_engine/evaluator":17,"./rules_engine/parser":18,"./utils":28}],16:[function(require,module,exports){
+},{"./rules_engine/evaluator":14,"./rules_engine/parser":15,"./utils":26}],13:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -1783,7 +1551,7 @@ var Logger = {
 };
 
 module.exports = Logger;
-},{"./utils":28}],17:[function(require,module,exports){
+},{"./utils":26}],14:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -1975,7 +1743,7 @@ Evaluator.prototype = {
 
 module.exports = Evaluator;
 
-},{}],18:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -2037,7 +1805,7 @@ Parser.prototype = {
 };
 
 module.exports = Parser;
-},{}],19:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -2102,7 +1870,7 @@ Source.prototype = {
 };
 
 module.exports = Source;
-},{"./configuration":8,"./translation_key":27,"./utils":28}],20:[function(require,module,exports){
+},{"./configuration":5,"./translation_key":24,"./utils":26}],17:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -2191,7 +1959,7 @@ DataTokenizer.prototype = {
 };
 
 module.exports = DataTokenizer;
-},{"../configuration":8,"../tokens/data":22,"../tokens/method":23,"../tokens/piped":24}],21:[function(require,module,exports){
+},{"../configuration":5,"../tokens/data":19,"../tokens/method":20,"../tokens/piped":21}],18:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -2369,7 +2137,7 @@ DecorationTokenizer.prototype = {
 
 
 module.exports = DecorationTokenizer;
-},{"../configuration":8,"../utils":28}],22:[function(require,module,exports){
+},{"../configuration":5,"../utils":26}],19:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -2732,7 +2500,7 @@ DataToken.prototype = {
 };
 
 module.exports = DataToken;
-},{"../configuration":8,"../logger":16,"../utils":28}],23:[function(require,module,exports){
+},{"../configuration":5,"../logger":13,"../utils":26}],20:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -2805,7 +2573,7 @@ MethodToken.prototype.substitute = function(label, tokens, language, options) {
 module.exports = MethodToken;
 
 
-},{"../utils":28,"./data":22}],24:[function(require,module,exports){
+},{"../utils":26,"./data":19}],21:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -3061,7 +2829,7 @@ PipedToken.prototype.substitute = function(label, tokens, language, options) {
 module.exports = PipedToken;
 
 
-},{"../utils":28,"./data":22}],25:[function(require,module,exports){
+},{"../utils":26,"./data":19}],22:[function(require,module,exports){
 
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
@@ -3137,11 +2905,34 @@ var utils       = require('./utils');
 var config      = require('./configuration');
 
 var Application = require('./application');
+var Language = require('./language');
+var LanguageContext = require('./language_context');
+var LanguageContextRule = require('./language_context_rule');
+var LanguageCase = require('./language_case');
+var LanguageCaseRule = require('./language_case_rule');
+var TranslationKey = require('./translation_key');
+var Translation = require('./translation');
+var Translator = require('./translator');
+var Source = require('./source');
 
 var Tr8n = {
 
+  Application: Application,
+  Language: Language,
+  LanguageContext: LanguageContext,
+  LanguageContextRule: LanguageContextRule,
+  LanguageCase: LanguageCase,
+  LanguageCaseRule: LanguageCaseRule,
+  TranslationKey: TranslationKey,
+  Translation: Translation,
+  Translator: Translator,
+  Source: Source,
+
   utils: utils,
   config: config,
+
+  // TODO: we cannot keep app instance across requests - sources are based on languages
+  // each request may have a different language
 
   init: function(key, secret, options, callback) {
     utils.extend(config, options);
@@ -3176,7 +2967,7 @@ module.exports = Tr8n;
 
 
 
-},{"./application":3,"./configuration":8,"./utils":28}],26:[function(require,module,exports){
+},{"./application":3,"./configuration":5,"./language":8,"./language_case":9,"./language_case_rule":10,"./language_context":11,"./language_context_rule":12,"./source":16,"./translation":23,"./translation_key":24,"./translator":25,"./utils":26}],23:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -3266,7 +3057,7 @@ module.exports = Translation;
 
 
 
-},{"./tokens/data":22,"./utils":28}],27:[function(require,module,exports){
+},{"./tokens/data":19,"./utils":26}],24:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -3457,7 +3248,53 @@ TranslationKey.prototype = {
 module.exports = TranslationKey;
 
 
-},{"./configuration":8,"./decorators/html":9,"./tokenizers/data":20,"./tokenizers/decoration":21,"./translation":26,"./utils":28}],28:[function(require,module,exports){
+},{"./configuration":5,"./decorators/html":6,"./tokenizers/data":17,"./tokenizers/decoration":18,"./translation":23,"./utils":26}],25:[function(require,module,exports){
+/**
+ * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
+ *
+ *  _______                  _       _   _             ______          _
+ * |__   __|                | |     | | (_)           |  ____|        | |
+ *    | |_ __ __ _ _ __  ___| | __ _| |_ _  ___  _ __ | |__  __  _____| |__   __ _ _ __   __ _  ___
+ *    | | '__/ _` | '_ \/ __| |/ _` | __| |/ _ \| '_ \|  __| \ \/ / __| '_ \ / _` | '_ \ / _` |/ _ \
+ *    | | | | (_| | | | \__ \ | (_| | |_| | (_) | | | | |____ >  < (__| | | | (_| | | | | (_| |  __/
+ *    |_|_|  \__,_|_| |_|___/_|\__,_|\__|_|\___/|_| |_|______/_/\_\___|_| |_|\__,_|_| |_|\__, |\___|
+ *                                                                                        __/ |
+ *                                                                                       |___/
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+var utils = require('./utils');
+
+/**
+ * Translator
+ *
+ * @constructor
+ * @param {object} attrs - options
+ */
+var Translator = function(attrs) {
+  utils.extend(this, attrs);
+};
+
+module.exports = Translator;
+
+},{"./utils":26}],26:[function(require,module,exports){
 (function (Buffer){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
@@ -3555,6 +3392,7 @@ module.exports = {
   },
   
   generateKey: function(label, description) {
+    description = description || "";
     return crypto.createHash("md5").update(label + ";;;" + description).digest("hex");
     //return MD5(label + ";;;" + description);
   },
@@ -3602,7 +3440,8 @@ module.exports = {
   },
 
   normalizeSource: function(url) {
-    return url;
+    var parts = url.split("?");
+    return parts[0];
   },
 
   extend: function(destination, source) {   
@@ -3652,7 +3491,7 @@ module.exports = {
 
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":31,"crypto":37}],29:[function(require,module,exports){
+},{"buffer":29,"crypto":35}],27:[function(require,module,exports){
 (function (process){
 /*!
  * async
@@ -4779,9 +4618,9 @@ module.exports = {
 }());
 
 }).call(this,require("FWaASH"))
-},{"FWaASH":50}],30:[function(require,module,exports){
+},{"FWaASH":46}],28:[function(require,module,exports){
 
-},{}],31:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 /*!
  * The buffer module from node.js, for the browser.
  *
@@ -5939,7 +5778,7 @@ function assert (test, message) {
   if (!test) throw new Error(message || 'Failed assertion')
 }
 
-},{"base64-js":32,"ieee754":33}],32:[function(require,module,exports){
+},{"base64-js":30,"ieee754":31}],30:[function(require,module,exports){
 var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 ;(function (exports) {
@@ -6061,7 +5900,7 @@ var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 	exports.fromByteArray = uint8ToBase64
 }(typeof exports === 'undefined' ? (this.base64js = {}) : exports))
 
-},{}],33:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 exports.read = function(buffer, offset, isLE, mLen, nBytes) {
   var e, m,
       eLen = nBytes * 8 - mLen - 1,
@@ -6147,7 +5986,7 @@ exports.write = function(buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128;
 };
 
-},{}],34:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 (function (Buffer){
 var createHash = require('sha.js')
 
@@ -6181,7 +6020,7 @@ module.exports = function (alg) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"./md5":38,"buffer":31,"ripemd160":39,"sha.js":41}],35:[function(require,module,exports){
+},{"./md5":36,"buffer":29,"ripemd160":37,"sha.js":39}],33:[function(require,module,exports){
 (function (Buffer){
 var createHash = require('./create-hash')
 
@@ -6226,7 +6065,7 @@ Hmac.prototype.digest = function (enc) {
 
 
 }).call(this,require("buffer").Buffer)
-},{"./create-hash":34,"buffer":31}],36:[function(require,module,exports){
+},{"./create-hash":32,"buffer":29}],34:[function(require,module,exports){
 (function (Buffer){
 var intSize = 4;
 var zeroBuffer = new Buffer(intSize); zeroBuffer.fill(0);
@@ -6264,7 +6103,7 @@ function hash(buf, fn, hashSize, bigEndian) {
 module.exports = { hash: hash };
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":31}],37:[function(require,module,exports){
+},{"buffer":29}],35:[function(require,module,exports){
 (function (Buffer){
 var rng = require('./rng')
 
@@ -6322,7 +6161,7 @@ each(['createCredentials'
 })
 
 }).call(this,require("buffer").Buffer)
-},{"./create-hash":34,"./create-hmac":35,"./pbkdf2":45,"./rng":46,"buffer":31}],38:[function(require,module,exports){
+},{"./create-hash":32,"./create-hmac":33,"./pbkdf2":43,"./rng":44,"buffer":29}],36:[function(require,module,exports){
 /*
  * A JavaScript implementation of the RSA Data Security, Inc. MD5 Message
  * Digest Algorithm, as defined in RFC 1321.
@@ -6479,7 +6318,7 @@ module.exports = function md5(buf) {
   return helpers.hash(buf, core_md5, 16);
 };
 
-},{"./helpers":36}],39:[function(require,module,exports){
+},{"./helpers":34}],37:[function(require,module,exports){
 (function (Buffer){
 
 module.exports = ripemd160
@@ -6688,7 +6527,7 @@ function ripemd160(message) {
 
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":31}],40:[function(require,module,exports){
+},{"buffer":29}],38:[function(require,module,exports){
 var u = require('./util')
 var write = u.write
 var fill = u.zeroFill
@@ -6788,7 +6627,7 @@ module.exports = function (Buffer) {
   return Hash
 }
 
-},{"./util":44}],41:[function(require,module,exports){
+},{"./util":42}],39:[function(require,module,exports){
 var exports = module.exports = function (alg) {
   var Alg = exports[alg]
   if(!Alg) throw new Error(alg + ' is not supported (we accept pull requests)')
@@ -6802,7 +6641,7 @@ exports.sha =
 exports.sha1 = require('./sha1')(Buffer, Hash)
 exports.sha256 = require('./sha256')(Buffer, Hash)
 
-},{"./hash":40,"./sha1":42,"./sha256":43,"buffer":31}],42:[function(require,module,exports){
+},{"./hash":38,"./sha1":40,"./sha256":41,"buffer":29}],40:[function(require,module,exports){
 /*
  * A JavaScript implementation of the Secure Hash Algorithm, SHA-1, as defined
  * in FIPS PUB 180-1
@@ -6963,7 +6802,7 @@ module.exports = function (Buffer, Hash) {
   return Sha1
 }
 
-},{"util":52}],43:[function(require,module,exports){
+},{"util":48}],41:[function(require,module,exports){
 
 /**
  * A JavaScript implementation of the Secure Hash Algorithm, SHA-256, as defined
@@ -7128,7 +6967,7 @@ module.exports = function (Buffer, Hash) {
 
 }
 
-},{"./util":44,"util":52}],44:[function(require,module,exports){
+},{"./util":42,"util":48}],42:[function(require,module,exports){
 exports.write = write
 exports.zeroFill = zeroFill
 
@@ -7166,7 +7005,7 @@ function zeroFill(buf, from) {
 }
 
 
-},{}],45:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 (function (Buffer){
 // JavaScript PBKDF2 Implementation
 // Based on http://git.io/qsv2zw
@@ -7252,7 +7091,7 @@ module.exports = function (createHmac, exports) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":31}],46:[function(require,module,exports){
+},{"buffer":29}],44:[function(require,module,exports){
 (function (Buffer){
 // Original code adapted from Robert Kieffer.
 // details at https://github.com/broofa/node-uuid
@@ -7289,312 +7128,7 @@ module.exports = function (createHmac, exports) {
 }())
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":31}],47:[function(require,module,exports){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-function EventEmitter() {
-  this._events = this._events || {};
-  this._maxListeners = this._maxListeners || undefined;
-}
-module.exports = EventEmitter;
-
-// Backwards-compat with node 0.10.x
-EventEmitter.EventEmitter = EventEmitter;
-
-EventEmitter.prototype._events = undefined;
-EventEmitter.prototype._maxListeners = undefined;
-
-// By default EventEmitters will print a warning if more than 10 listeners are
-// added to it. This is a useful default which helps finding memory leaks.
-EventEmitter.defaultMaxListeners = 10;
-
-// Obviously not all Emitters should be limited to 10. This function allows
-// that to be increased. Set to zero for unlimited.
-EventEmitter.prototype.setMaxListeners = function(n) {
-  if (!isNumber(n) || n < 0 || isNaN(n))
-    throw TypeError('n must be a positive number');
-  this._maxListeners = n;
-  return this;
-};
-
-EventEmitter.prototype.emit = function(type) {
-  var er, handler, len, args, i, listeners;
-
-  if (!this._events)
-    this._events = {};
-
-  // If there is no 'error' event listener then throw.
-  if (type === 'error') {
-    if (!this._events.error ||
-        (isObject(this._events.error) && !this._events.error.length)) {
-      er = arguments[1];
-      if (er instanceof Error) {
-        throw er; // Unhandled 'error' event
-      } else {
-        throw TypeError('Uncaught, unspecified "error" event.');
-      }
-      return false;
-    }
-  }
-
-  handler = this._events[type];
-
-  if (isUndefined(handler))
-    return false;
-
-  if (isFunction(handler)) {
-    switch (arguments.length) {
-      // fast cases
-      case 1:
-        handler.call(this);
-        break;
-      case 2:
-        handler.call(this, arguments[1]);
-        break;
-      case 3:
-        handler.call(this, arguments[1], arguments[2]);
-        break;
-      // slower
-      default:
-        len = arguments.length;
-        args = new Array(len - 1);
-        for (i = 1; i < len; i++)
-          args[i - 1] = arguments[i];
-        handler.apply(this, args);
-    }
-  } else if (isObject(handler)) {
-    len = arguments.length;
-    args = new Array(len - 1);
-    for (i = 1; i < len; i++)
-      args[i - 1] = arguments[i];
-
-    listeners = handler.slice();
-    len = listeners.length;
-    for (i = 0; i < len; i++)
-      listeners[i].apply(this, args);
-  }
-
-  return true;
-};
-
-EventEmitter.prototype.addListener = function(type, listener) {
-  var m;
-
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
-
-  if (!this._events)
-    this._events = {};
-
-  // To avoid recursion in the case that type === "newListener"! Before
-  // adding it to the listeners, first emit "newListener".
-  if (this._events.newListener)
-    this.emit('newListener', type,
-              isFunction(listener.listener) ?
-              listener.listener : listener);
-
-  if (!this._events[type])
-    // Optimize the case of one listener. Don't need the extra array object.
-    this._events[type] = listener;
-  else if (isObject(this._events[type]))
-    // If we've already got an array, just append.
-    this._events[type].push(listener);
-  else
-    // Adding the second element, need to change to array.
-    this._events[type] = [this._events[type], listener];
-
-  // Check for listener leak
-  if (isObject(this._events[type]) && !this._events[type].warned) {
-    var m;
-    if (!isUndefined(this._maxListeners)) {
-      m = this._maxListeners;
-    } else {
-      m = EventEmitter.defaultMaxListeners;
-    }
-
-    if (m && m > 0 && this._events[type].length > m) {
-      this._events[type].warned = true;
-      console.error('(node) warning: possible EventEmitter memory ' +
-                    'leak detected. %d listeners added. ' +
-                    'Use emitter.setMaxListeners() to increase limit.',
-                    this._events[type].length);
-      if (typeof console.trace === 'function') {
-        // not supported in IE 10
-        console.trace();
-      }
-    }
-  }
-
-  return this;
-};
-
-EventEmitter.prototype.on = EventEmitter.prototype.addListener;
-
-EventEmitter.prototype.once = function(type, listener) {
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
-
-  var fired = false;
-
-  function g() {
-    this.removeListener(type, g);
-
-    if (!fired) {
-      fired = true;
-      listener.apply(this, arguments);
-    }
-  }
-
-  g.listener = listener;
-  this.on(type, g);
-
-  return this;
-};
-
-// emits a 'removeListener' event iff the listener was removed
-EventEmitter.prototype.removeListener = function(type, listener) {
-  var list, position, length, i;
-
-  if (!isFunction(listener))
-    throw TypeError('listener must be a function');
-
-  if (!this._events || !this._events[type])
-    return this;
-
-  list = this._events[type];
-  length = list.length;
-  position = -1;
-
-  if (list === listener ||
-      (isFunction(list.listener) && list.listener === listener)) {
-    delete this._events[type];
-    if (this._events.removeListener)
-      this.emit('removeListener', type, listener);
-
-  } else if (isObject(list)) {
-    for (i = length; i-- > 0;) {
-      if (list[i] === listener ||
-          (list[i].listener && list[i].listener === listener)) {
-        position = i;
-        break;
-      }
-    }
-
-    if (position < 0)
-      return this;
-
-    if (list.length === 1) {
-      list.length = 0;
-      delete this._events[type];
-    } else {
-      list.splice(position, 1);
-    }
-
-    if (this._events.removeListener)
-      this.emit('removeListener', type, listener);
-  }
-
-  return this;
-};
-
-EventEmitter.prototype.removeAllListeners = function(type) {
-  var key, listeners;
-
-  if (!this._events)
-    return this;
-
-  // not listening for removeListener, no need to emit
-  if (!this._events.removeListener) {
-    if (arguments.length === 0)
-      this._events = {};
-    else if (this._events[type])
-      delete this._events[type];
-    return this;
-  }
-
-  // emit removeListener for all listeners on all events
-  if (arguments.length === 0) {
-    for (key in this._events) {
-      if (key === 'removeListener') continue;
-      this.removeAllListeners(key);
-    }
-    this.removeAllListeners('removeListener');
-    this._events = {};
-    return this;
-  }
-
-  listeners = this._events[type];
-
-  if (isFunction(listeners)) {
-    this.removeListener(type, listeners);
-  } else {
-    // LIFO order
-    while (listeners.length)
-      this.removeListener(type, listeners[listeners.length - 1]);
-  }
-  delete this._events[type];
-
-  return this;
-};
-
-EventEmitter.prototype.listeners = function(type) {
-  var ret;
-  if (!this._events || !this._events[type])
-    ret = [];
-  else if (isFunction(this._events[type]))
-    ret = [this._events[type]];
-  else
-    ret = this._events[type].slice();
-  return ret;
-};
-
-EventEmitter.listenerCount = function(emitter, type) {
-  var ret;
-  if (!emitter._events || !emitter._events[type])
-    ret = 0;
-  else if (isFunction(emitter._events[type]))
-    ret = 1;
-  else
-    ret = emitter._events[type].length;
-  return ret;
-};
-
-function isFunction(arg) {
-  return typeof arg === 'function';
-}
-
-function isNumber(arg) {
-  return typeof arg === 'number';
-}
-
-function isObject(arg) {
-  return typeof arg === 'object' && arg !== null;
-}
-
-function isUndefined(arg) {
-  return arg === void 0;
-}
-
-},{}],48:[function(require,module,exports){
+},{"buffer":29}],45:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -7619,235 +7153,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],49:[function(require,module,exports){
-(function (process){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-// resolves . and .. elements in a path array with directory names there
-// must be no slashes, empty elements, or device names (c:\) in the array
-// (so also no leading and trailing slashes - it does not distinguish
-// relative and absolute paths)
-function normalizeArray(parts, allowAboveRoot) {
-  // if the path tries to go above the root, `up` ends up > 0
-  var up = 0;
-  for (var i = parts.length - 1; i >= 0; i--) {
-    var last = parts[i];
-    if (last === '.') {
-      parts.splice(i, 1);
-    } else if (last === '..') {
-      parts.splice(i, 1);
-      up++;
-    } else if (up) {
-      parts.splice(i, 1);
-      up--;
-    }
-  }
-
-  // if the path is allowed to go above the root, restore leading ..s
-  if (allowAboveRoot) {
-    for (; up--; up) {
-      parts.unshift('..');
-    }
-  }
-
-  return parts;
-}
-
-// Split a filename into [root, dir, basename, ext], unix version
-// 'root' is just a slash, or nothing.
-var splitPathRe =
-    /^(\/?|)([\s\S]*?)((?:\.{1,2}|[^\/]+?|)(\.[^.\/]*|))(?:[\/]*)$/;
-var splitPath = function(filename) {
-  return splitPathRe.exec(filename).slice(1);
-};
-
-// path.resolve([from ...], to)
-// posix version
-exports.resolve = function() {
-  var resolvedPath = '',
-      resolvedAbsolute = false;
-
-  for (var i = arguments.length - 1; i >= -1 && !resolvedAbsolute; i--) {
-    var path = (i >= 0) ? arguments[i] : process.cwd();
-
-    // Skip empty and invalid entries
-    if (typeof path !== 'string') {
-      throw new TypeError('Arguments to path.resolve must be strings');
-    } else if (!path) {
-      continue;
-    }
-
-    resolvedPath = path + '/' + resolvedPath;
-    resolvedAbsolute = path.charAt(0) === '/';
-  }
-
-  // At this point the path should be resolved to a full absolute path, but
-  // handle relative paths to be safe (might happen when process.cwd() fails)
-
-  // Normalize the path
-  resolvedPath = normalizeArray(filter(resolvedPath.split('/'), function(p) {
-    return !!p;
-  }), !resolvedAbsolute).join('/');
-
-  return ((resolvedAbsolute ? '/' : '') + resolvedPath) || '.';
-};
-
-// path.normalize(path)
-// posix version
-exports.normalize = function(path) {
-  var isAbsolute = exports.isAbsolute(path),
-      trailingSlash = substr(path, -1) === '/';
-
-  // Normalize the path
-  path = normalizeArray(filter(path.split('/'), function(p) {
-    return !!p;
-  }), !isAbsolute).join('/');
-
-  if (!path && !isAbsolute) {
-    path = '.';
-  }
-  if (path && trailingSlash) {
-    path += '/';
-  }
-
-  return (isAbsolute ? '/' : '') + path;
-};
-
-// posix version
-exports.isAbsolute = function(path) {
-  return path.charAt(0) === '/';
-};
-
-// posix version
-exports.join = function() {
-  var paths = Array.prototype.slice.call(arguments, 0);
-  return exports.normalize(filter(paths, function(p, index) {
-    if (typeof p !== 'string') {
-      throw new TypeError('Arguments to path.join must be strings');
-    }
-    return p;
-  }).join('/'));
-};
-
-
-// path.relative(from, to)
-// posix version
-exports.relative = function(from, to) {
-  from = exports.resolve(from).substr(1);
-  to = exports.resolve(to).substr(1);
-
-  function trim(arr) {
-    var start = 0;
-    for (; start < arr.length; start++) {
-      if (arr[start] !== '') break;
-    }
-
-    var end = arr.length - 1;
-    for (; end >= 0; end--) {
-      if (arr[end] !== '') break;
-    }
-
-    if (start > end) return [];
-    return arr.slice(start, end - start + 1);
-  }
-
-  var fromParts = trim(from.split('/'));
-  var toParts = trim(to.split('/'));
-
-  var length = Math.min(fromParts.length, toParts.length);
-  var samePartsLength = length;
-  for (var i = 0; i < length; i++) {
-    if (fromParts[i] !== toParts[i]) {
-      samePartsLength = i;
-      break;
-    }
-  }
-
-  var outputParts = [];
-  for (var i = samePartsLength; i < fromParts.length; i++) {
-    outputParts.push('..');
-  }
-
-  outputParts = outputParts.concat(toParts.slice(samePartsLength));
-
-  return outputParts.join('/');
-};
-
-exports.sep = '/';
-exports.delimiter = ':';
-
-exports.dirname = function(path) {
-  var result = splitPath(path),
-      root = result[0],
-      dir = result[1];
-
-  if (!root && !dir) {
-    // No dirname whatsoever
-    return '.';
-  }
-
-  if (dir) {
-    // It has a dirname, strip trailing slash
-    dir = dir.substr(0, dir.length - 1);
-  }
-
-  return root + dir;
-};
-
-
-exports.basename = function(path, ext) {
-  var f = splitPath(path)[2];
-  // TODO: make this comparison case-insensitive on windows?
-  if (ext && f.substr(-1 * ext.length) === ext) {
-    f = f.substr(0, f.length - ext.length);
-  }
-  return f;
-};
-
-
-exports.extname = function(path) {
-  return splitPath(path)[3];
-};
-
-function filter (xs, f) {
-    if (xs.filter) return xs.filter(f);
-    var res = [];
-    for (var i = 0; i < xs.length; i++) {
-        if (f(xs[i], i, xs)) res.push(xs[i]);
-    }
-    return res;
-}
-
-// String.prototype.substr - negative index don't work in IE8
-var substr = 'ab'.substr(-1) === 'b'
-    ? function (str, start, len) { return str.substr(start, len) }
-    : function (str, start, len) {
-        if (start < 0) start = str.length + start;
-        return str.substr(start, len);
-    }
-;
-
-}).call(this,require("FWaASH"))
-},{"FWaASH":50}],50:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -7912,14 +7218,14 @@ process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 
-},{}],51:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],52:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -8509,2068 +7815,4 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require("FWaASH"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":51,"FWaASH":50,"inherits":48}],53:[function(require,module,exports){
-var net = require("net"),
-    hiredis = require('bindings')('hiredis.node');
-
-exports.Reader = hiredis.Reader;
-exports.createConnection = function(port, host) {
-    var s = net.createConnection(port || 6379, host);
-    var r = new hiredis.Reader();
-    var _write = s.write;
-
-    s.write = function() {
-        var i, args = arguments;
-        _write.call(s, "*" + args.length + "\r\n");
-        for (i = 0; i < args.length; i++) {
-            var arg = args[i];
-            _write.call(s, "$" + arg.length + "\r\n" + arg + "\r\n");
-        }
-    }
-
-    s.on("data", function(data) {
-        var reply;
-        r.feed(data);
-        try {
-            while((reply = r.get()) !== undefined)
-                s.emit("reply", reply);
-        } catch(err) {
-            r = null;
-            s.emit("error", err);
-            s.destroy();
-        }
-    });
-
-    return s;
-}
-
-
-},{"bindings":54,"net":30}],54:[function(require,module,exports){
-(function (process,__filename){
-
-/**
- * Module dependencies.
- */
-
-var fs = require('fs')
-  , path = require('path')
-  , join = path.join
-  , dirname = path.dirname
-  , exists = fs.existsSync || path.existsSync
-  , defaults = {
-        arrow: process.env.NODE_BINDINGS_ARROW || ' → '
-      , compiled: process.env.NODE_BINDINGS_COMPILED_DIR || 'compiled'
-      , platform: process.platform
-      , arch: process.arch
-      , version: process.versions.node
-      , bindings: 'bindings.node'
-      , try: [
-          // node-gyp's linked version in the "build" dir
-          [ 'module_root', 'build', 'bindings' ]
-          // node-waf and gyp_addon (a.k.a node-gyp)
-        , [ 'module_root', 'build', 'Debug', 'bindings' ]
-        , [ 'module_root', 'build', 'Release', 'bindings' ]
-          // Debug files, for development (legacy behavior, remove for node v0.9)
-        , [ 'module_root', 'out', 'Debug', 'bindings' ]
-        , [ 'module_root', 'Debug', 'bindings' ]
-          // Release files, but manually compiled (legacy behavior, remove for node v0.9)
-        , [ 'module_root', 'out', 'Release', 'bindings' ]
-        , [ 'module_root', 'Release', 'bindings' ]
-          // Legacy from node-waf, node <= 0.4.x
-        , [ 'module_root', 'build', 'default', 'bindings' ]
-          // Production "Release" buildtype binary (meh...)
-        , [ 'module_root', 'compiled', 'version', 'platform', 'arch', 'bindings' ]
-        ]
-    }
-
-/**
- * The main `bindings()` function loads the compiled bindings for a given module.
- * It uses V8's Error API to determine the parent filename that this function is
- * being invoked from, which is then used to find the root directory.
- */
-
-function bindings (opts) {
-
-  // Argument surgery
-  if (typeof opts == 'string') {
-    opts = { bindings: opts }
-  } else if (!opts) {
-    opts = {}
-  }
-  opts.__proto__ = defaults
-
-  // Get the module root
-  if (!opts.module_root) {
-    opts.module_root = exports.getRoot(exports.getFileName())
-  }
-
-  // Ensure the given bindings name ends with .node
-  if (path.extname(opts.bindings) != '.node') {
-    opts.bindings += '.node'
-  }
-
-  var tries = []
-    , i = 0
-    , l = opts.try.length
-    , n
-    , b
-    , err
-
-  for (; i<l; i++) {
-    n = join.apply(null, opts.try[i].map(function (p) {
-      return opts[p] || p
-    }))
-    tries.push(n)
-    try {
-      b = opts.path ? require.resolve(n) : require(n)
-      if (!opts.path) {
-        b.path = n
-      }
-      return b
-    } catch (e) {
-      if (!/not find/i.test(e.message)) {
-        throw e
-      }
-    }
-  }
-
-  err = new Error('Could not locate the bindings file. Tried:\n'
-    + tries.map(function (a) { return opts.arrow + a }).join('\n'))
-  err.tries = tries
-  throw err
-}
-module.exports = exports = bindings
-
-
-/**
- * Gets the filename of the JavaScript file that invokes this function.
- * Used to help find the root directory of a module.
- * Optionally accepts an filename argument to skip when searching for the invoking filename
- */
-
-exports.getFileName = function getFileName (calling_file) {
-  var origPST = Error.prepareStackTrace
-    , origSTL = Error.stackTraceLimit
-    , dummy = {}
-    , fileName
-
-  Error.stackTraceLimit = 10
-
-  Error.prepareStackTrace = function (e, st) {
-    for (var i=0, l=st.length; i<l; i++) {
-      fileName = st[i].getFileName()
-      if (fileName !== __filename) {
-        if (calling_file) {
-            if (fileName !== calling_file) {
-              return
-            }
-        } else {
-          return
-        }
-      }
-    }
-  }
-
-  // run the 'prepareStackTrace' function above
-  Error.captureStackTrace(dummy)
-  dummy.stack
-
-  // cleanup
-  Error.prepareStackTrace = origPST
-  Error.stackTraceLimit = origSTL
-
-  return fileName
-}
-
-/**
- * Gets the root directory of a module, given an arbitrary filename
- * somewhere in the module tree. The "root directory" is the directory
- * containing the `package.json` file.
- *
- *   In:  /home/nate/node-native-module/lib/index.js
- *   Out: /home/nate/node-native-module
- */
-
-exports.getRoot = function getRoot (file) {
-  var dir = dirname(file)
-    , prev
-  while (true) {
-    if (dir === '.') {
-      // Avoids an infinite loop in rare cases, like the REPL
-      dir = process.cwd()
-    }
-    if (exists(join(dir, 'package.json')) || exists(join(dir, 'node_modules'))) {
-      // Found the 'package.json' file or 'node_modules' dir; we're done
-      return dir
-    }
-    if (prev === dir) {
-      // Got to the top
-      throw new Error('Could not find module root given file: "' + file
-                    + '". Do you have a `package.json` file? ')
-    }
-    // Try the parent dir next
-    prev = dir
-    dir = join(dir, '..')
-  }
-}
-
-}).call(this,require("FWaASH"),"/../../node_modules/hiredis/node_modules/bindings/bindings.js")
-},{"FWaASH":50,"fs":30,"path":49}],55:[function(require,module,exports){
-(function (process,Buffer){
-/*global Buffer require exports console setTimeout */
-
-var net = require("net"),
-    util = require("./lib/util"),
-    Queue = require("./lib/queue"),
-    to_array = require("./lib/to_array"),
-    events = require("events"),
-    crypto = require("crypto"),
-    parsers = [], commands,
-    connection_id = 0,
-    default_port = 6379,
-    default_host = "127.0.0.1";
-
-// can set this to true to enable for all connections
-exports.debug_mode = false;
-
-var arraySlice = Array.prototype.slice
-function trace() {
-    if (!exports.debug_mode) return;
-    console.log.apply(null, arraySlice.call(arguments))
-}
-
-// hiredis might not be installed
-try {
-    require("./lib/parser/hiredis");
-    parsers.push(require("./lib/parser/hiredis"));
-} catch (err) {
-    if (exports.debug_mode) {
-        console.warn("hiredis parser not installed.");
-    }
-}
-
-parsers.push(require("./lib/parser/javascript"));
-
-function RedisClient(stream, options) {
-    this.stream = stream;
-    this.options = options = options || {};
-
-    this.connection_id = ++connection_id;
-    this.connected = false;
-    this.ready = false;
-    this.connections = 0;
-    if (this.options.socket_nodelay === undefined) {
-        this.options.socket_nodelay = true;
-    }
-    if (this.options.socket_keepalive === undefined) {
-        this.options.socket_keepalive = true;
-    }
-    this.should_buffer = false;
-    this.command_queue_high_water = this.options.command_queue_high_water || 1000;
-    this.command_queue_low_water = this.options.command_queue_low_water || 0;
-    this.max_attempts = null;
-    if (options.max_attempts && !isNaN(options.max_attempts) && options.max_attempts > 0) {
-        this.max_attempts = +options.max_attempts;
-    }
-    this.command_queue = new Queue(); // holds sent commands to de-pipeline them
-    this.offline_queue = new Queue(); // holds commands issued but not able to be sent
-    this.commands_sent = 0;
-    this.connect_timeout = false;
-    if (options.connect_timeout && !isNaN(options.connect_timeout) && options.connect_timeout > 0) {
-        this.connect_timeout = +options.connect_timeout;
-    }
-    this.enable_offline_queue = true;
-    if (typeof this.options.enable_offline_queue === "boolean") {
-        this.enable_offline_queue = this.options.enable_offline_queue;
-    }
-    this.retry_max_delay = null;
-    if (options.retry_max_delay !== undefined && !isNaN(options.retry_max_delay) && options.retry_max_delay > 0) {
-        this.retry_max_delay = options.retry_max_delay;
-    }
-
-    this.initialize_retry_vars();
-    this.pub_sub_mode = false;
-    this.subscription_set = {};
-    this.monitoring = false;
-    this.closing = false;
-    this.server_info = {};
-    this.auth_pass = null;
-    if (options.auth_pass !== undefined) {
-        this.auth_pass = options.auth_pass;
-    }
-    this.parser_module = null;
-    this.selected_db = null;	// save the selected db here, used when reconnecting
-
-    this.old_state = null;
-
-    this.install_stream_listeners();
-
-    events.EventEmitter.call(this);
-}
-util.inherits(RedisClient, events.EventEmitter);
-exports.RedisClient = RedisClient;
-
-RedisClient.prototype.install_stream_listeners = function() {
-    var self = this;
-
-    this.stream.on("connect", function () {
-        self.on_connect();
-    });
-
-    this.stream.on("data", function (buffer_from_socket) {
-        self.on_data(buffer_from_socket);
-    });
-
-    this.stream.on("error", function (msg) {
-        self.on_error(msg.message);
-    });
-
-    this.stream.on("close", function () {
-        self.connection_gone("close");
-    });
-
-    this.stream.on("end", function () {
-        self.connection_gone("end");
-    });
-
-    this.stream.on("drain", function () {
-        self.should_buffer = false;
-        self.emit("drain");
-    });
-};
-
-RedisClient.prototype.initialize_retry_vars = function () {
-    this.retry_timer = null;
-    this.retry_totaltime = 0;
-    this.retry_delay = 150;
-    this.retry_backoff = 1.7;
-    this.attempts = 1;
-};
-
-RedisClient.prototype.unref = function () {
-    trace("User requesting to unref the connection");
-    if (this.connected) {
-        trace("unref'ing the socket connection");
-        this.stream.unref();
-    }
-    else {
-        trace("Not connected yet, will unref later");
-        this.once("connect", function () {
-            this.unref();
-        })
-    }
-};
-
-// flush offline_queue and command_queue, erroring any items with a callback first
-RedisClient.prototype.flush_and_error = function (message) {
-    var command_obj, error;
-
-    error = new Error(message);
-
-    while (this.offline_queue.length > 0) {
-        command_obj = this.offline_queue.shift();
-        if (typeof command_obj.callback === "function") {
-            try {
-                command_obj.callback(error);
-            } catch (callback_err) {
-                process.nextTick(function () {
-                    throw callback_err;
-                });
-            }
-        }
-    }
-    this.offline_queue = new Queue();
-
-    while (this.command_queue.length > 0) {
-        command_obj = this.command_queue.shift();
-        if (typeof command_obj.callback === "function") {
-            try {
-                command_obj.callback(error);
-            } catch (callback_err) {
-                process.nextTick(function () {
-                    throw callback_err;
-                });
-            }
-        }
-    }
-    this.command_queue = new Queue();
-};
-
-RedisClient.prototype.on_error = function (msg) {
-    var message = "Redis connection to " + this.host + ":" + this.port + " failed - " + msg;
-
-    if (this.closing) {
-        return;
-    }
-
-    if (exports.debug_mode) {
-        console.warn(message);
-    }
-
-    this.flush_and_error(message);
-
-    this.connected = false;
-    this.ready = false;
-
-    this.emit("error", new Error(message));
-    // "error" events get turned into exceptions if they aren't listened for.  If the user handled this error
-    // then we should try to reconnect.
-    this.connection_gone("error");
-};
-
-RedisClient.prototype.do_auth = function () {
-    var self = this;
-
-    if (exports.debug_mode) {
-        console.log("Sending auth to " + self.host + ":" + self.port + " id " + self.connection_id);
-    }
-    self.send_anyway = true;
-    self.send_command("auth", [this.auth_pass], function (err, res) {
-        if (err) {
-            if (err.toString().match("LOADING")) {
-                // if redis is still loading the db, it will not authenticate and everything else will fail
-                console.log("Redis still loading, trying to authenticate later");
-                setTimeout(function () {
-                    self.do_auth();
-                }, 2000); // TODO - magic number alert
-                return;
-            } else if (err.toString().match("no password is set")) {
-                console.log("Warning: Redis server does not require a password, but a password was supplied.")
-                err = null;
-                res = "OK";
-            } else {
-                return self.emit("error", new Error("Auth error: " + err.message));
-            }
-        }
-        if (res.toString() !== "OK") {
-            return self.emit("error", new Error("Auth failed: " + res.toString()));
-        }
-        if (exports.debug_mode) {
-            console.log("Auth succeeded " + self.host + ":" + self.port + " id " + self.connection_id);
-        }
-        if (self.auth_callback) {
-            self.auth_callback(err, res);
-            self.auth_callback = null;
-        }
-
-        // now we are really connected
-        self.emit("connect");
-        self.initialize_retry_vars();
-
-        if (self.options.no_ready_check) {
-            self.on_ready();
-        } else {
-            self.ready_check();
-        }
-    });
-    self.send_anyway = false;
-};
-
-RedisClient.prototype.on_connect = function () {
-    if (exports.debug_mode) {
-        console.log("Stream connected " + this.host + ":" + this.port + " id " + this.connection_id);
-    }
-
-    this.connected = true;
-    this.ready = false;
-    this.connections += 1;
-    this.command_queue = new Queue();
-    this.emitted_end = false;
-    if (this.options.socket_nodelay) {
-        this.stream.setNoDelay();
-    }
-    this.stream.setKeepAlive(this.options.socket_keepalive);
-    this.stream.setTimeout(0);
-
-    this.init_parser();
-
-    if (this.auth_pass) {
-        this.do_auth();
-    } else {
-        this.emit("connect");
-        this.initialize_retry_vars();
-
-        if (this.options.no_ready_check) {
-            this.on_ready();
-        } else {
-            this.ready_check();
-        }
-    }
-};
-
-RedisClient.prototype.init_parser = function () {
-    var self = this;
-
-    if (this.options.parser) {
-        if (! parsers.some(function (parser) {
-            if (parser.name === self.options.parser) {
-                self.parser_module = parser;
-                if (exports.debug_mode) {
-                    console.log("Using parser module: " + self.parser_module.name);
-                }
-                return true;
-            }
-        })) {
-            throw new Error("Couldn't find named parser " + self.options.parser + " on this system");
-        }
-    } else {
-        if (exports.debug_mode) {
-            console.log("Using default parser module: " + parsers[0].name);
-        }
-        this.parser_module = parsers[0];
-    }
-
-    this.parser_module.debug_mode = exports.debug_mode;
-
-    // return_buffers sends back Buffers from parser to callback. detect_buffers sends back Buffers from parser, but
-    // converts to Strings if the input arguments are not Buffers.
-    this.reply_parser = new this.parser_module.Parser({
-        return_buffers: self.options.return_buffers || self.options.detect_buffers || false
-    });
-
-    // "reply error" is an error sent back by Redis
-    this.reply_parser.on("reply error", function (reply) {
-        if (reply instanceof Error) {
-            self.return_error(reply);
-        } else {
-            self.return_error(new Error(reply));
-        }
-    });
-    this.reply_parser.on("reply", function (reply) {
-        self.return_reply(reply);
-    });
-    // "error" is bad.  Somehow the parser got confused.  It'll try to reset and continue.
-    this.reply_parser.on("error", function (err) {
-        self.emit("error", new Error("Redis reply parser error: " + err.stack));
-    });
-};
-
-RedisClient.prototype.on_ready = function () {
-    var self = this;
-
-    this.ready = true;
-
-    if (this.old_state !== null) {
-        this.monitoring = this.old_state.monitoring;
-        this.pub_sub_mode = this.old_state.pub_sub_mode;
-        this.selected_db = this.old_state.selected_db;
-        this.old_state = null;
-    }
-
-    // magically restore any modal commands from a previous connection
-    if (this.selected_db !== null) {
-        // this trick works if and only if the following send_command
-        // never goes into the offline queue
-        var pub_sub_mode = this.pub_sub_mode;
-        this.pub_sub_mode = false;
-        this.send_command('select', [this.selected_db]);
-        this.pub_sub_mode = pub_sub_mode;
-    }
-    if (this.pub_sub_mode === true) {
-        // only emit "ready" when all subscriptions were made again
-        var callback_count = 0;
-        var callback = function () {
-            callback_count--;
-            if (callback_count === 0) {
-                self.emit("ready");
-            }
-        };
-        Object.keys(this.subscription_set).forEach(function (key) {
-            var parts = key.split(" ");
-            if (exports.debug_mode) {
-                console.warn("sending pub/sub on_ready " + parts[0] + ", " + parts[1]);
-            }
-            callback_count++;
-            self.send_command(parts[0] + "scribe", [parts[1]], callback);
-        });
-        return;
-    } else if (this.monitoring) {
-        this.send_command("monitor");
-    } else {
-        this.send_offline_queue();
-    }
-    this.emit("ready");
-};
-
-RedisClient.prototype.on_info_cmd = function (err, res) {
-    var self = this, obj = {}, lines, retry_time;
-
-    if (err) {
-        return self.emit("error", new Error("Ready check failed: " + err.message));
-    }
-
-    lines = res.toString().split("\r\n");
-
-    lines.forEach(function (line) {
-        var parts = line.split(':');
-        if (parts[1]) {
-            obj[parts[0]] = parts[1];
-        }
-    });
-
-    obj.versions = [];
-    if( obj.redis_version ){
-        obj.redis_version.split('.').forEach(function (num) {
-            obj.versions.push(+num);
-        });
-    }
-
-    // expose info key/vals to users
-    this.server_info = obj;
-
-    if (!obj.loading || (obj.loading && obj.loading === "0")) {
-        if (exports.debug_mode) {
-            console.log("Redis server ready.");
-        }
-        this.on_ready();
-    } else {
-        retry_time = obj.loading_eta_seconds * 1000;
-        if (retry_time > 1000) {
-            retry_time = 1000;
-        }
-        if (exports.debug_mode) {
-            console.log("Redis server still loading, trying again in " + retry_time);
-        }
-        setTimeout(function () {
-            self.ready_check();
-        }, retry_time);
-    }
-};
-
-RedisClient.prototype.ready_check = function () {
-    var self = this;
-
-    if (exports.debug_mode) {
-        console.log("checking server ready state...");
-    }
-
-    this.send_anyway = true;  // secret flag to send_command to send something even if not "ready"
-    this.info(function (err, res) {
-        self.on_info_cmd(err, res);
-    });
-    this.send_anyway = false;
-};
-
-RedisClient.prototype.send_offline_queue = function () {
-    var command_obj, buffered_writes = 0;
-
-    while (this.offline_queue.length > 0) {
-        command_obj = this.offline_queue.shift();
-        if (exports.debug_mode) {
-            console.log("Sending offline command: " + command_obj.command);
-        }
-        buffered_writes += !this.send_command(command_obj.command, command_obj.args, command_obj.callback);
-    }
-    this.offline_queue = new Queue();
-    // Even though items were shifted off, Queue backing store still uses memory until next add, so just get a new Queue
-
-    if (!buffered_writes) {
-        this.should_buffer = false;
-        this.emit("drain");
-    }
-};
-
-RedisClient.prototype.connection_gone = function (why) {
-    var self = this;
-
-    // If a retry is already in progress, just let that happen
-    if (this.retry_timer) {
-        return;
-    }
-
-    if (exports.debug_mode) {
-        console.warn("Redis connection is gone from " + why + " event.");
-    }
-    this.connected = false;
-    this.ready = false;
-
-    if (this.old_state === null) {
-        var state = {
-            monitoring: this.monitoring,
-            pub_sub_mode: this.pub_sub_mode,
-            selected_db: this.selected_db
-        };
-        this.old_state = state;
-        this.monitoring = false;
-        this.pub_sub_mode = false;
-        this.selected_db = null;
-    }
-
-    // since we are collapsing end and close, users don't expect to be called twice
-    if (! this.emitted_end) {
-        this.emit("end");
-        this.emitted_end = true;
-    }
-
-    this.flush_and_error("Redis connection gone from " + why + " event.");
-
-    // If this is a requested shutdown, then don't retry
-    if (this.closing) {
-        this.retry_timer = null;
-        if (exports.debug_mode) {
-            console.warn("connection ended from quit command, not retrying.");
-        }
-        return;
-    }
-
-    var nextDelay = Math.floor(this.retry_delay * this.retry_backoff);
-    if (this.retry_max_delay !== null && nextDelay > this.retry_max_delay) {
-        this.retry_delay = this.retry_max_delay;
-    } else {
-        this.retry_delay = nextDelay;
-    }
-
-    if (exports.debug_mode) {
-        console.log("Retry connection in " + this.retry_delay + " ms");
-    }
-
-    if (this.max_attempts && this.attempts >= this.max_attempts) {
-        this.retry_timer = null;
-        // TODO - some people need a "Redis is Broken mode" for future commands that errors immediately, and others
-        // want the program to exit.  Right now, we just log, which doesn't really help in either case.
-        console.error("node_redis: Couldn't get Redis connection after " + this.max_attempts + " attempts.");
-        return;
-    }
-
-    this.attempts += 1;
-    this.emit("reconnecting", {
-        delay: self.retry_delay,
-        attempt: self.attempts
-    });
-    this.retry_timer = setTimeout(function () {
-        if (exports.debug_mode) {
-            console.log("Retrying connection...");
-        }
-
-        self.retry_totaltime += self.retry_delay;
-
-        if (self.connect_timeout && self.retry_totaltime >= self.connect_timeout) {
-            self.retry_timer = null;
-            // TODO - engage Redis is Broken mode for future commands, or whatever
-            console.error("node_redis: Couldn't get Redis connection after " + self.retry_totaltime + "ms.");
-            return;
-        }
-
-        self.stream = net.createConnection(self.port, self.host);
-        self.install_stream_listeners();
-        self.retry_timer = null;
-    }, this.retry_delay);
-};
-
-RedisClient.prototype.on_data = function (data) {
-    if (exports.debug_mode) {
-        console.log("net read " + this.host + ":" + this.port + " id " + this.connection_id + ": " + data.toString());
-    }
-
-    try {
-        this.reply_parser.execute(data);
-    } catch (err) {
-        // This is an unexpected parser problem, an exception that came from the parser code itself.
-        // Parser should emit "error" events if it notices things are out of whack.
-        // Callbacks that throw exceptions will land in return_reply(), below.
-        // TODO - it might be nice to have a different "error" event for different types of errors
-        this.emit("error", err);
-    }
-};
-
-RedisClient.prototype.return_error = function (err) {
-    var command_obj = this.command_queue.shift(), queue_len = this.command_queue.getLength();
-
-    if (this.pub_sub_mode === false && queue_len === 0) {
-        this.command_queue = new Queue();
-        this.emit("idle");
-    }
-    if (this.should_buffer && queue_len <= this.command_queue_low_water) {
-        this.emit("drain");
-        this.should_buffer = false;
-    }
-
-    if (command_obj && typeof command_obj.callback === "function") {
-        try {
-            command_obj.callback(err);
-        } catch (callback_err) {
-            // if a callback throws an exception, re-throw it on a new stack so the parser can keep going
-            process.nextTick(function () {
-                throw callback_err;
-            });
-        }
-    } else {
-        console.log("node_redis: no callback to send error: " + err.message);
-        // this will probably not make it anywhere useful, but we might as well throw
-        process.nextTick(function () {
-            throw err;
-        });
-    }
-};
-
-// if a callback throws an exception, re-throw it on a new stack so the parser can keep going.
-// if a domain is active, emit the error on the domain, which will serve the same function.
-// put this try/catch in its own function because V8 doesn't optimize this well yet.
-function try_callback(callback, reply) {
-    try {
-        callback(null, reply);
-    } catch (err) {
-        if (process.domain) {
-            var currDomain = process.domain;
-            currDomain.emit('error', err);
-            if (process.domain === currDomain) {
-                currDomain.exit();
-            }
-        } else {
-            process.nextTick(function () {
-                throw err;
-            });
-        }
-    }
-}
-
-// hgetall converts its replies to an Object.  If the reply is empty, null is returned.
-function reply_to_object(reply) {
-    var obj = {}, j, jl, key, val;
-
-    if (reply.length === 0) {
-        return null;
-    }
-
-    for (j = 0, jl = reply.length; j < jl; j += 2) {
-        key = reply[j].toString('binary');
-        val = reply[j + 1];
-        obj[key] = val;
-    }
-
-    return obj;
-}
-
-function reply_to_strings(reply) {
-    var i;
-
-    if (Buffer.isBuffer(reply)) {
-        return reply.toString();
-    }
-
-    if (Array.isArray(reply)) {
-        for (i = 0; i < reply.length; i++) {
-            if (reply[i] !== null && reply[i] !== undefined) {
-                reply[i] = reply[i].toString();
-            }
-        }
-        return reply;
-    }
-
-    return reply;
-}
-
-RedisClient.prototype.return_reply = function (reply) {
-    var command_obj, len, type, timestamp, argindex, args, queue_len;
-
-    // If the "reply" here is actually a message received asynchronously due to a
-    // pubsub subscription, don't pop the command queue as we'll only be consuming
-    // the head command prematurely.
-    if (Array.isArray(reply) && reply.length > 0 && reply[0]) {
-        type = reply[0].toString();
-    }
-
-    if (this.pub_sub_mode && (type == 'message' || type == 'pmessage')) {
-        trace("received pubsub message");
-    }
-    else {
-        command_obj = this.command_queue.shift();
-    }
-
-    queue_len = this.command_queue.getLength();
-
-    if (this.pub_sub_mode === false && queue_len === 0) {
-        this.command_queue = new Queue();  // explicitly reclaim storage from old Queue
-        this.emit("idle");
-    }
-    if (this.should_buffer && queue_len <= this.command_queue_low_water) {
-        this.emit("drain");
-        this.should_buffer = false;
-    }
-
-    if (command_obj && !command_obj.sub_command) {
-        if (typeof command_obj.callback === "function") {
-            if (this.options.detect_buffers && command_obj.buffer_args === false) {
-                // If detect_buffers option was specified, then the reply from the parser will be Buffers.
-                // If this command did not use Buffer arguments, then convert the reply to Strings here.
-                reply = reply_to_strings(reply);
-            }
-
-            // TODO - confusing and error-prone that hgetall is special cased in two places
-            if (reply && 'hgetall' === command_obj.command.toLowerCase()) {
-                reply = reply_to_object(reply);
-            }
-
-            try_callback(command_obj.callback, reply);
-        } else if (exports.debug_mode) {
-            console.log("no callback for reply: " + (reply && reply.toString && reply.toString()));
-        }
-    } else if (this.pub_sub_mode || (command_obj && command_obj.sub_command)) {
-        if (Array.isArray(reply)) {
-            type = reply[0].toString();
-
-            if (type === "message") {
-                this.emit("message", reply[1].toString(), reply[2]); // channel, message
-            } else if (type === "pmessage") {
-                this.emit("pmessage", reply[1].toString(), reply[2].toString(), reply[3]); // pattern, channel, message
-            } else if (type === "subscribe" || type === "unsubscribe" || type === "psubscribe" || type === "punsubscribe") {
-                if (reply[2] === 0) {
-                    this.pub_sub_mode = false;
-                    if (this.debug_mode) {
-                        console.log("All subscriptions removed, exiting pub/sub mode");
-                    }
-                } else {
-                    this.pub_sub_mode = true;
-                }
-                // subscribe commands take an optional callback and also emit an event, but only the first response is included in the callback
-                // TODO - document this or fix it so it works in a more obvious way
-                // reply[1] can be null
-                var reply1String = (reply[1] === null) ? null : reply[1].toString();
-                if (command_obj && typeof command_obj.callback === "function") {
-                    try_callback(command_obj.callback, reply1String);
-                }
-                this.emit(type, reply1String, reply[2]); // channel, count
-            } else {
-                throw new Error("subscriptions are active but got unknown reply type " + type);
-            }
-        } else if (! this.closing) {
-            throw new Error("subscriptions are active but got an invalid reply: " + reply);
-        }
-    } else if (this.monitoring) {
-        len = reply.indexOf(" ");
-        timestamp = reply.slice(0, len);
-        argindex = reply.indexOf('"');
-        args = reply.slice(argindex + 1, -1).split('" "').map(function (elem) {
-            return elem.replace(/\\"/g, '"');
-        });
-        this.emit("monitor", timestamp, args);
-    } else {
-        throw new Error("node_redis command queue state error. If you can reproduce this, please report it.");
-    }
-};
-
-// This Command constructor is ever so slightly faster than using an object literal, but more importantly, using
-// a named constructor helps it show up meaningfully in the V8 CPU profiler and in heap snapshots.
-function Command(command, args, sub_command, buffer_args, callback) {
-    this.command = command;
-    this.args = args;
-    this.sub_command = sub_command;
-    this.buffer_args = buffer_args;
-    this.callback = callback;
-}
-
-RedisClient.prototype.send_command = function (command, args, callback) {
-    var arg, command_obj, i, il, elem_count, buffer_args, stream = this.stream, command_str = "", buffered_writes = 0, last_arg_type, lcaseCommand;
-
-    if (typeof command !== "string") {
-        throw new Error("First argument to send_command must be the command name string, not " + typeof command);
-    }
-
-    if (Array.isArray(args)) {
-        if (typeof callback === "function") {
-            // probably the fastest way:
-            //     client.command([arg1, arg2], cb);  (straight passthrough)
-            //         send_command(command, [arg1, arg2], cb);
-        } else if (! callback) {
-            // most people find this variable argument length form more convenient, but it uses arguments, which is slower
-            //     client.command(arg1, arg2, cb);   (wraps up arguments into an array)
-            //       send_command(command, [arg1, arg2, cb]);
-            //     client.command(arg1, arg2);   (callback is optional)
-            //       send_command(command, [arg1, arg2]);
-            //     client.command(arg1, arg2, undefined);   (callback is undefined)
-            //       send_command(command, [arg1, arg2, undefined]);
-            last_arg_type = typeof args[args.length - 1];
-            if (last_arg_type === "function" || last_arg_type === "undefined") {
-                callback = args.pop();
-            }
-        } else {
-            throw new Error("send_command: last argument must be a callback or undefined");
-        }
-    } else {
-        throw new Error("send_command: second argument must be an array");
-    }
-
-    if (callback && process.domain) callback = process.domain.bind(callback);
-
-    // if the last argument is an array and command is sadd or srem, expand it out:
-    //     client.sadd(arg1, [arg2, arg3, arg4], cb);
-    //  converts to:
-    //     client.sadd(arg1, arg2, arg3, arg4, cb);
-    lcaseCommand = command.toLowerCase();
-    if ((lcaseCommand === 'sadd' || lcaseCommand === 'srem') && args.length > 0 && Array.isArray(args[args.length - 1])) {
-        args = args.slice(0, -1).concat(args[args.length - 1]);
-    }
-
-    // if the value is undefined or null and command is set or setx, need not to send message to redis
-    if (command === 'set' || command === 'setex') {
-        if(args[args.length - 1] === undefined || args[args.length - 1] === null) {
-            var err = new Error('send_command: ' + command + ' value must not be undefined or null');
-            return callback && callback(err);
-        }
-    }
-
-    buffer_args = false;
-    for (i = 0, il = args.length, arg; i < il; i += 1) {
-        if (Buffer.isBuffer(args[i])) {
-            buffer_args = true;
-        }
-    }
-
-    command_obj = new Command(command, args, false, buffer_args, callback);
-
-    if ((!this.ready && !this.send_anyway) || !stream.writable) {
-        if (exports.debug_mode) {
-            if (!stream.writable) {
-                console.log("send command: stream is not writeable.");
-            }
-        }
-
-        if (this.enable_offline_queue) {
-            if (exports.debug_mode) {
-                console.log("Queueing " + command + " for next server connection.");
-            }
-            this.offline_queue.push(command_obj);
-            this.should_buffer = true;
-        } else {
-            var not_writeable_error = new Error('send_command: stream not writeable. enable_offline_queue is false');
-            if (command_obj.callback) {
-                command_obj.callback(not_writeable_error);
-            } else {
-                throw not_writeable_error;
-            }
-        }
-
-        return false;
-    }
-
-    if (command === "subscribe" || command === "psubscribe" || command === "unsubscribe" || command === "punsubscribe") {
-        this.pub_sub_command(command_obj);
-    } else if (command === "monitor") {
-        this.monitoring = true;
-    } else if (command === "quit") {
-        this.closing = true;
-    } else if (this.pub_sub_mode === true) {
-        throw new Error("Connection in subscriber mode, only subscriber commands may be used");
-    }
-    this.command_queue.push(command_obj);
-    this.commands_sent += 1;
-
-    elem_count = args.length + 1;
-
-    // Always use "Multi bulk commands", but if passed any Buffer args, then do multiple writes, one for each arg.
-    // This means that using Buffers in commands is going to be slower, so use Strings if you don't already have a Buffer.
-
-    command_str = "*" + elem_count + "\r\n$" + command.length + "\r\n" + command + "\r\n";
-
-    if (! buffer_args) { // Build up a string and send entire command in one write
-        for (i = 0, il = args.length, arg; i < il; i += 1) {
-            arg = args[i];
-            if (typeof arg !== "string") {
-                arg = String(arg);
-            }
-            command_str += "$" + Buffer.byteLength(arg) + "\r\n" + arg + "\r\n";
-        }
-        if (exports.debug_mode) {
-            console.log("send " + this.host + ":" + this.port + " id " + this.connection_id + ": " + command_str);
-        }
-        buffered_writes += !stream.write(command_str);
-    } else {
-        if (exports.debug_mode) {
-            console.log("send command (" + command_str + ") has Buffer arguments");
-        }
-        buffered_writes += !stream.write(command_str);
-
-        for (i = 0, il = args.length, arg; i < il; i += 1) {
-            arg = args[i];
-            if (!(Buffer.isBuffer(arg) || arg instanceof String)) {
-                arg = String(arg);
-            }
-
-            if (Buffer.isBuffer(arg)) {
-                if (arg.length === 0) {
-                    if (exports.debug_mode) {
-                        console.log("send_command: using empty string for 0 length buffer");
-                    }
-                    buffered_writes += !stream.write("$0\r\n\r\n");
-                } else {
-                    buffered_writes += !stream.write("$" + arg.length + "\r\n");
-                    buffered_writes += !stream.write(arg);
-                    buffered_writes += !stream.write("\r\n");
-                    if (exports.debug_mode) {
-                        console.log("send_command: buffer send " + arg.length + " bytes");
-                    }
-                }
-            } else {
-                if (exports.debug_mode) {
-                    console.log("send_command: string send " + Buffer.byteLength(arg) + " bytes: " + arg);
-                }
-                buffered_writes += !stream.write("$" + Buffer.byteLength(arg) + "\r\n" + arg + "\r\n");
-            }
-        }
-    }
-    if (exports.debug_mode) {
-        console.log("send_command buffered_writes: " + buffered_writes, " should_buffer: " + this.should_buffer);
-    }
-    if (buffered_writes || this.command_queue.getLength() >= this.command_queue_high_water) {
-        this.should_buffer = true;
-    }
-    return !this.should_buffer;
-};
-
-RedisClient.prototype.pub_sub_command = function (command_obj) {
-    var i, key, command, args;
-
-    if (this.pub_sub_mode === false && exports.debug_mode) {
-        console.log("Entering pub/sub mode from " + command_obj.command);
-    }
-    this.pub_sub_mode = true;
-    command_obj.sub_command = true;
-
-    command = command_obj.command;
-    args = command_obj.args;
-    if (command === "subscribe" || command === "psubscribe") {
-        if (command === "subscribe") {
-            key = "sub";
-        } else {
-            key = "psub";
-        }
-        for (i = 0; i < args.length; i++) {
-            this.subscription_set[key + " " + args[i]] = true;
-        }
-    } else {
-        if (command === "unsubscribe") {
-            key = "sub";
-        } else {
-            key = "psub";
-        }
-        for (i = 0; i < args.length; i++) {
-            delete this.subscription_set[key + " " + args[i]];
-        }
-    }
-};
-
-RedisClient.prototype.end = function () {
-    this.stream._events = {};
-
-    //clear retry_timer
-    if(this.retry_timer){
-        clearTimeout(this.retry_timer);
-        this.retry_timer=null;
-    }
-    this.stream.on("error", function(){});
-
-    this.connected = false;
-    this.ready = false;
-    this.closing = true;
-    return this.stream.destroySoon();
-};
-
-function Multi(client, args) {
-    this._client = client;
-    this.queue = [["MULTI"]];
-    if (Array.isArray(args)) {
-        this.queue = this.queue.concat(args);
-    }
-}
-
-exports.Multi = Multi;
-
-// take 2 arrays and return the union of their elements
-function set_union(seta, setb) {
-    var obj = {};
-
-    seta.forEach(function (val) {
-        obj[val] = true;
-    });
-    setb.forEach(function (val) {
-        obj[val] = true;
-    });
-    return Object.keys(obj);
-}
-
-// This static list of commands is updated from time to time.  ./lib/commands.js can be updated with generate_commands.js
-commands = set_union(["get", "set", "setnx", "setex", "append", "strlen", "del", "exists", "setbit", "getbit", "setrange", "getrange", "substr",
-    "incr", "decr", "mget", "rpush", "lpush", "rpushx", "lpushx", "linsert", "rpop", "lpop", "brpop", "brpoplpush", "blpop", "llen", "lindex",
-    "lset", "lrange", "ltrim", "lrem", "rpoplpush", "sadd", "srem", "smove", "sismember", "scard", "spop", "srandmember", "sinter", "sinterstore",
-    "sunion", "sunionstore", "sdiff", "sdiffstore", "smembers", "zadd", "zincrby", "zrem", "zremrangebyscore", "zremrangebyrank", "zunionstore",
-    "zinterstore", "zrange", "zrangebyscore", "zrevrangebyscore", "zcount", "zrevrange", "zcard", "zscore", "zrank", "zrevrank", "hset", "hsetnx",
-    "hget", "hmset", "hmget", "hincrby", "hdel", "hlen", "hkeys", "hvals", "hgetall", "hexists", "incrby", "decrby", "getset", "mset", "msetnx",
-    "randomkey", "select", "move", "rename", "renamenx", "expire", "expireat", "keys", "dbsize", "auth", "ping", "echo", "save", "bgsave",
-    "bgrewriteaof", "shutdown", "lastsave", "type", "multi", "exec", "discard", "sync", "flushdb", "flushall", "sort", "info", "monitor", "ttl",
-    "persist", "slaveof", "debug", "config", "subscribe", "unsubscribe", "psubscribe", "punsubscribe", "publish", "watch", "unwatch", "cluster",
-    "restore", "migrate", "dump", "object", "client", "eval", "evalsha"], require("./lib/commands"));
-
-commands.forEach(function (fullCommand) {
-    var command = fullCommand.split(' ')[0];
-
-    RedisClient.prototype[command] = function (args, callback) {
-        if (Array.isArray(args) && typeof callback === "function") {
-            return this.send_command(command, args, callback);
-        } else {
-            return this.send_command(command, to_array(arguments));
-        }
-    };
-    RedisClient.prototype[command.toUpperCase()] = RedisClient.prototype[command];
-
-    Multi.prototype[command] = function () {
-        this.queue.push([command].concat(to_array(arguments)));
-        return this;
-    };
-    Multi.prototype[command.toUpperCase()] = Multi.prototype[command];
-});
-
-// store db in this.select_db to restore it on reconnect
-RedisClient.prototype.select = function (db, callback) {
-    var self = this;
-
-    this.send_command('select', [db], function (err, res) {
-        if (err === null) {
-            self.selected_db = db;
-        }
-        if (typeof(callback) === 'function') {
-            callback(err, res);
-        } else if (err) {
-            self.emit('error', err);
-        }
-    });
-};
-RedisClient.prototype.SELECT = RedisClient.prototype.select;
-
-// Stash auth for connect and reconnect.  Send immediately if already connected.
-RedisClient.prototype.auth = function () {
-    var args = to_array(arguments);
-    this.auth_pass = args[0];
-    this.auth_callback = args[1];
-    if (exports.debug_mode) {
-        console.log("Saving auth as " + this.auth_pass);
-    }
-
-    if (this.connected) {
-        this.send_command("auth", args);
-    }
-};
-RedisClient.prototype.AUTH = RedisClient.prototype.auth;
-
-RedisClient.prototype.hmget = function (arg1, arg2, arg3) {
-    if (Array.isArray(arg2) && typeof arg3 === "function") {
-        return this.send_command("hmget", [arg1].concat(arg2), arg3);
-    } else if (Array.isArray(arg1) && typeof arg2 === "function") {
-        return this.send_command("hmget", arg1, arg2);
-    } else {
-        return this.send_command("hmget", to_array(arguments));
-    }
-};
-RedisClient.prototype.HMGET = RedisClient.prototype.hmget;
-
-RedisClient.prototype.hmset = function (args, callback) {
-    var tmp_args, tmp_keys, i, il, key;
-
-    if (Array.isArray(args) && typeof callback === "function") {
-        return this.send_command("hmset", args, callback);
-    }
-
-    args = to_array(arguments);
-    if (typeof args[args.length - 1] === "function") {
-        callback = args[args.length - 1];
-        args.length -= 1;
-    } else {
-        callback = null;
-    }
-
-    if (args.length === 2 && (typeof args[0] === "string" || typeof args[0] === "number") && typeof args[1] === "object") {
-        // User does: client.hmset(key, {key1: val1, key2: val2})
-        // assuming key is a string, i.e. email address
-
-        // if key is a number, i.e. timestamp, convert to string
-        if (typeof args[0] === "number") {
-            args[0] = args[0].toString();
-        }
-
-        tmp_args = [ args[0] ];
-        tmp_keys = Object.keys(args[1]);
-        for (i = 0, il = tmp_keys.length; i < il ; i++) {
-            key = tmp_keys[i];
-            tmp_args.push(key);
-            tmp_args.push(args[1][key]);
-        }
-        args = tmp_args;
-    }
-
-    return this.send_command("hmset", args, callback);
-};
-RedisClient.prototype.HMSET = RedisClient.prototype.hmset;
-
-Multi.prototype.hmset = function () {
-    var args = to_array(arguments), tmp_args;
-    if (args.length >= 2 && typeof args[0] === "string" && typeof args[1] === "object") {
-        tmp_args = [ "hmset", args[0] ];
-        Object.keys(args[1]).map(function (key) {
-            tmp_args.push(key);
-            tmp_args.push(args[1][key]);
-        });
-        if (args[2]) {
-            tmp_args.push(args[2]);
-        }
-        args = tmp_args;
-    } else {
-        args.unshift("hmset");
-    }
-
-    this.queue.push(args);
-    return this;
-};
-Multi.prototype.HMSET = Multi.prototype.hmset;
-
-Multi.prototype.exec = function (callback) {
-    var self = this;
-    var errors = [];
-    // drain queue, callback will catch "QUEUED" or error
-    // TODO - get rid of all of these anonymous functions which are elegant but slow
-    this.queue.forEach(function (args, index) {
-        var command = args[0], obj;
-        if (typeof args[args.length - 1] === "function") {
-            args = args.slice(1, -1);
-        } else {
-            args = args.slice(1);
-        }
-        if (args.length === 1 && Array.isArray(args[0])) {
-            args = args[0];
-        }
-        if (command.toLowerCase() === 'hmset' && typeof args[1] === 'object') {
-            obj = args.pop();
-            Object.keys(obj).forEach(function (key) {
-                args.push(key);
-                args.push(obj[key]);
-            });
-        }
-        this._client.send_command(command, args, function (err, reply) {
-            if (err) {
-                var cur = self.queue[index];
-                if (typeof cur[cur.length - 1] === "function") {
-                    cur[cur.length - 1](err);
-                } else {
-                    errors.push(new Error(err));
-                }
-            }
-        });
-    }, this);
-
-    // TODO - make this callback part of Multi.prototype instead of creating it each time
-    return this._client.send_command("EXEC", [], function (err, replies) {
-        if (err) {
-            if (callback) {
-                errors.push(new Error(err));
-                callback(errors);
-                return;
-            } else {
-                throw new Error(err);
-            }
-        }
-
-        var i, il, reply, args;
-
-        if (replies) {
-            for (i = 1, il = self.queue.length; i < il; i += 1) {
-                reply = replies[i - 1];
-                args = self.queue[i];
-
-                // TODO - confusing and error-prone that hgetall is special cased in two places
-                if (reply && args[0].toLowerCase() === "hgetall") {
-                    replies[i - 1] = reply = reply_to_object(reply);
-                }
-
-                if (typeof args[args.length - 1] === "function") {
-                    args[args.length - 1](null, reply);
-                }
-            }
-        }
-
-        if (callback) {
-            callback(null, replies);
-        }
-    });
-};
-Multi.prototype.EXEC = Multi.prototype.exec;
-
-RedisClient.prototype.multi = function (args) {
-    return new Multi(this, args);
-};
-RedisClient.prototype.MULTI = function (args) {
-    return new Multi(this, args);
-};
-
-
-// stash original eval method
-var eval_orig = RedisClient.prototype.eval;
-// hook eval with an attempt to evalsha for cached scripts
-RedisClient.prototype.eval = RedisClient.prototype.EVAL = function () {
-    var self = this,
-        args = to_array(arguments),
-        callback;
-
-    if (typeof args[args.length - 1] === "function") {
-        callback = args.pop();
-    }
-
-    if (Array.isArray(args[0])) {
-        args = args[0];
-    }
-
-    // replace script source with sha value
-    var source = args[0];
-    args[0] = crypto.createHash("sha1").update(source).digest("hex");
-
-    self.evalsha(args, function (err, reply) {
-        if (err && /NOSCRIPT/.test(err.message)) {
-            args[0] = source;
-            eval_orig.call(self, args, callback);
-
-        } else if (callback) {
-            callback(err, reply);
-        }
-    });
-};
-
-
-exports.createClient = function (port_arg, host_arg, options) {
-
-	var cnxFamily;
-	
-	if (options && options.family) {
-		cnxFamily = (options.family == 'IPv6' ? 6 : 4);
-	}
-	
-    var cnxOptions = {
-        'port' : port_arg || default_port,
-        'host' : host_arg || default_host,
-        'family' : cnxFamily || '4'
-    };
-
-    var  redis_client, net_client;
-
-    net_client = net.createConnection(cnxOptions);
-
-    redis_client = new RedisClient(net_client, options);
-
-    redis_client.port = cnxOptions.port;
-    redis_client.host = cnxOptions.host;
-
-    return redis_client;
-};
-
-exports.print = function (err, reply) {
-    if (err) {
-        console.log("Error: " + err);
-    } else {
-        console.log("Reply: " + reply);
-    }
-};
-
-}).call(this,require("FWaASH"),require("buffer").Buffer)
-},{"./lib/commands":56,"./lib/parser/hiredis":57,"./lib/parser/javascript":58,"./lib/queue":59,"./lib/to_array":60,"./lib/util":61,"FWaASH":50,"buffer":31,"crypto":37,"events":47,"net":30}],56:[function(require,module,exports){
-// This file was generated by ./generate_commands.js on Wed Apr 23 2014 14:51:21 GMT-0700 (PDT)
-module.exports = [
-    "append",
-    "auth",
-    "bgrewriteaof",
-    "bgsave",
-    "bitcount",
-    "bitop",
-    "bitpos",
-    "blpop",
-    "brpop",
-    "brpoplpush",
-    "client kill",
-    "client list",
-    "client getname",
-    "client pause",
-    "client setname",
-    "config get",
-    "config rewrite",
-    "config set",
-    "config resetstat",
-    "dbsize",
-    "debug object",
-    "debug segfault",
-    "decr",
-    "decrby",
-    "del",
-    "discard",
-    "dump",
-    "echo",
-    "eval",
-    "evalsha",
-    "exec",
-    "exists",
-    "expire",
-    "expireat",
-    "flushall",
-    "flushdb",
-    "get",
-    "getbit",
-    "getrange",
-    "getset",
-    "hdel",
-    "hexists",
-    "hget",
-    "hgetall",
-    "hincrby",
-    "hincrbyfloat",
-    "hkeys",
-    "hlen",
-    "hmget",
-    "hmset",
-    "hset",
-    "hsetnx",
-    "hvals",
-    "incr",
-    "incrby",
-    "incrbyfloat",
-    "info",
-    "keys",
-    "lastsave",
-    "lindex",
-    "linsert",
-    "llen",
-    "lpop",
-    "lpush",
-    "lpushx",
-    "lrange",
-    "lrem",
-    "lset",
-    "ltrim",
-    "mget",
-    "migrate",
-    "monitor",
-    "move",
-    "mset",
-    "msetnx",
-    "multi",
-    "object",
-    "persist",
-    "pexpire",
-    "pexpireat",
-    "pfadd",
-    "pfcount",
-    "pfmerge",
-    "ping",
-    "psetex",
-    "psubscribe",
-    "pubsub",
-    "pttl",
-    "publish",
-    "punsubscribe",
-    "quit",
-    "randomkey",
-    "rename",
-    "renamenx",
-    "restore",
-    "rpop",
-    "rpoplpush",
-    "rpush",
-    "rpushx",
-    "sadd",
-    "save",
-    "scard",
-    "script exists",
-    "script flush",
-    "script kill",
-    "script load",
-    "sdiff",
-    "sdiffstore",
-    "select",
-    "set",
-    "setbit",
-    "setex",
-    "setnx",
-    "setrange",
-    "shutdown",
-    "sinter",
-    "sinterstore",
-    "sismember",
-    "slaveof",
-    "slowlog",
-    "smembers",
-    "smove",
-    "sort",
-    "spop",
-    "srandmember",
-    "srem",
-    "strlen",
-    "subscribe",
-    "sunion",
-    "sunionstore",
-    "sync",
-    "time",
-    "ttl",
-    "type",
-    "unsubscribe",
-    "unwatch",
-    "watch",
-    "zadd",
-    "zcard",
-    "zcount",
-    "zincrby",
-    "zinterstore",
-    "zlexcount",
-    "zrange",
-    "zrangebylex",
-    "zrangebyscore",
-    "zrank",
-    "zrem",
-    "zremrangebylex",
-    "zremrangebyrank",
-    "zremrangebyscore",
-    "zrevrange",
-    "zrevrangebyscore",
-    "zrevrank",
-    "zscore",
-    "zunionstore",
-    "scan",
-    "sscan",
-    "hscan",
-    "zscan"
-];
-
-},{}],57:[function(require,module,exports){
-var events = require("events"),
-    util = require("../util"),
-    hiredis = require("hiredis");
-
-exports.debug_mode = false;
-exports.name = "hiredis";
-
-function HiredisReplyParser(options) {
-    this.name = exports.name;
-    this.options = options || {};
-    this.reset();
-    events.EventEmitter.call(this);
-}
-
-util.inherits(HiredisReplyParser, events.EventEmitter);
-
-exports.Parser = HiredisReplyParser;
-
-HiredisReplyParser.prototype.reset = function () {
-    this.reader = new hiredis.Reader({
-        return_buffers: this.options.return_buffers || false
-    });
-};
-
-HiredisReplyParser.prototype.execute = function (data) {
-    var reply;
-    this.reader.feed(data);
-    while (true) {
-        try {
-            reply = this.reader.get();
-        } catch (err) {
-            this.emit("error", err);
-            break;
-        }
-
-        if (reply === undefined) {
-            break;
-        }
-
-        if (reply && reply.constructor === Error) {
-            this.emit("reply error", reply);
-        } else {
-            this.emit("reply", reply);
-        }
-    }
-};
-
-},{"../util":61,"events":47,"hiredis":53}],58:[function(require,module,exports){
-(function (Buffer){
-var events = require("events"),
-    util   = require("../util");
-
-function Packet(type, size) {
-    this.type = type;
-    this.size = +size;
-}
-
-exports.name = "javascript";
-exports.debug_mode = false;
-
-function ReplyParser(options) {
-    this.name = exports.name;
-    this.options = options || { };
-
-    this._buffer            = null;
-    this._offset            = 0;
-    this._encoding          = "utf-8";
-    this._debug_mode        = options.debug_mode;
-    this._reply_type        = null;
-}
-
-util.inherits(ReplyParser, events.EventEmitter);
-
-exports.Parser = ReplyParser;
-
-function IncompleteReadBuffer(message) {
-    this.name = "IncompleteReadBuffer";
-    this.message = message;
-}
-util.inherits(IncompleteReadBuffer, Error);
-
-// Buffer.toString() is quite slow for small strings
-function small_toString(buf, start, end) {
-    var tmp = "", i;
-
-    for (i = start; i < end; i++) {
-        tmp += String.fromCharCode(buf[i]);
-    }
-
-    return tmp;
-}
-
-ReplyParser.prototype._parseResult = function (type) {
-    var start, end, offset, packetHeader;
-
-    if (type === 43 || type === 45) { // + or -
-        // up to the delimiter
-        end = this._packetEndOffset() - 1;
-        start = this._offset;
-
-        // include the delimiter
-        this._offset = end + 2;
-
-        if (end > this._buffer.length) {
-            this._offset = start;
-            throw new IncompleteReadBuffer("Wait for more data.");
-        }
-
-        if (this.options.return_buffers) {
-            return this._buffer.slice(start, end);
-        } else {
-            if (end - start < 65536) { // completely arbitrary
-                return small_toString(this._buffer, start, end);
-            } else {
-                return this._buffer.toString(this._encoding, start, end);
-            }
-        }
-    } else if (type === 58) { // :
-        // up to the delimiter
-        end = this._packetEndOffset() - 1;
-        start = this._offset;
-
-        // include the delimiter
-        this._offset = end + 2;
-
-        if (end > this._buffer.length) {
-            this._offset = start;
-            throw new IncompleteReadBuffer("Wait for more data.");
-        }
-
-        if (this.options.return_buffers) {
-            return this._buffer.slice(start, end);
-        }
-
-        // return the coerced numeric value
-        return +small_toString(this._buffer, start, end);
-    } else if (type === 36) { // $
-        // set a rewind point, as the packet could be larger than the
-        // buffer in memory
-        offset = this._offset - 1;
-
-        packetHeader = new Packet(type, this.parseHeader());
-
-        // packets with a size of -1 are considered null
-        if (packetHeader.size === -1) {
-            return undefined;
-        }
-
-        end = this._offset + packetHeader.size;
-        start = this._offset;
-
-        // set the offset to after the delimiter
-        this._offset = end + 2;
-
-        if (end > this._buffer.length) {
-            this._offset = offset;
-            throw new IncompleteReadBuffer("Wait for more data.");
-        }
-
-        if (this.options.return_buffers) {
-            return this._buffer.slice(start, end);
-        } else {
-            return this._buffer.toString(this._encoding, start, end);
-        }
-    } else if (type === 42) { // *
-        offset = this._offset;
-        packetHeader = new Packet(type, this.parseHeader());
-
-        if (packetHeader.size < 0) {
-            return null;
-        }
-
-        if (packetHeader.size > this._bytesRemaining()) {
-            this._offset = offset - 1;
-            throw new IncompleteReadBuffer("Wait for more data.");
-        }
-
-        var reply = [ ];
-        var ntype, i, res;
-
-        offset = this._offset - 1;
-
-        for (i = 0; i < packetHeader.size; i++) {
-            ntype = this._buffer[this._offset++];
-
-            if (this._offset > this._buffer.length) {
-                throw new IncompleteReadBuffer("Wait for more data.");
-            }
-            res = this._parseResult(ntype);
-            if (res === undefined) {
-                res = null;
-            }
-            reply.push(res);
-        }
-
-        return reply;
-    }
-};
-
-ReplyParser.prototype.execute = function (buffer) {
-    this.append(buffer);
-
-    var type, ret, offset;
-
-    while (true) {
-        offset = this._offset;
-        try {
-            // at least 4 bytes: :1\r\n
-            if (this._bytesRemaining() < 4) {
-                break;
-            }
-
-            type = this._buffer[this._offset++];
-
-            if (type === 43) { // +
-                ret = this._parseResult(type);
-
-                if (ret === null) {
-                    break;
-                }
-
-                this.send_reply(ret);
-            } else  if (type === 45) { // -
-                ret = this._parseResult(type);
-
-                if (ret === null) {
-                    break;
-                }
-
-                this.send_error(ret);
-            } else if (type === 58) { // :
-                ret = this._parseResult(type);
-
-                if (ret === null) {
-                    break;
-                }
-
-                this.send_reply(ret);
-            } else if (type === 36) { // $
-                ret = this._parseResult(type);
-
-                if (ret === null) {
-                    break;
-                }
-
-                // check the state for what is the result of
-                // a -1, set it back up for a null reply
-                if (ret === undefined) {
-                    ret = null;
-                }
-
-                this.send_reply(ret);
-            } else if (type === 42) { // *
-                // set a rewind point. if a failure occurs,
-                // wait for the next execute()/append() and try again
-                offset = this._offset - 1;
-
-                ret = this._parseResult(type);
-
-                this.send_reply(ret);
-            }
-        } catch (err) {
-            // catch the error (not enough data), rewind, and wait
-            // for the next packet to appear
-            if (! (err instanceof IncompleteReadBuffer)) {
-              throw err;
-            }
-            this._offset = offset;
-            break;
-        }
-    }
-};
-
-ReplyParser.prototype.append = function (newBuffer) {
-    if (!newBuffer) {
-        return;
-    }
-
-    // first run
-    if (this._buffer === null) {
-        this._buffer = newBuffer;
-
-        return;
-    }
-
-    // out of data
-    if (this._offset >= this._buffer.length) {
-        this._buffer = newBuffer;
-        this._offset = 0;
-
-        return;
-    }
-
-    // very large packet
-    // check for concat, if we have it, use it
-    if (Buffer.concat !== undefined) {
-        this._buffer = Buffer.concat([this._buffer.slice(this._offset), newBuffer]);
-    } else {
-        var remaining = this._bytesRemaining(),
-            newLength = remaining + newBuffer.length,
-            tmpBuffer = new Buffer(newLength);
-
-        this._buffer.copy(tmpBuffer, 0, this._offset);
-        newBuffer.copy(tmpBuffer, remaining, 0);
-
-        this._buffer = tmpBuffer;
-    }
-
-    this._offset = 0;
-};
-
-ReplyParser.prototype.parseHeader = function () {
-    var end   = this._packetEndOffset(),
-        value = small_toString(this._buffer, this._offset, end - 1);
-
-    this._offset = end + 1;
-
-    return value;
-};
-
-ReplyParser.prototype._packetEndOffset = function () {
-    var offset = this._offset;
-
-    while (this._buffer[offset] !== 0x0d && this._buffer[offset + 1] !== 0x0a) {
-        offset++;
-
-        if (offset >= this._buffer.length) {
-            throw new IncompleteReadBuffer("didn't see LF after NL reading multi bulk count (" + offset + " => " + this._buffer.length + ", " + this._offset + ")");
-        }
-    }
-
-    offset++;
-    return offset;
-};
-
-ReplyParser.prototype._bytesRemaining = function () {
-    return (this._buffer.length - this._offset) < 0 ? 0 : (this._buffer.length - this._offset);
-};
-
-ReplyParser.prototype.parser_error = function (message) {
-    this.emit("error", message);
-};
-
-ReplyParser.prototype.send_error = function (reply) {
-    this.emit("reply error", reply);
-};
-
-ReplyParser.prototype.send_reply = function (reply) {
-    this.emit("reply", reply);
-};
-
-}).call(this,require("buffer").Buffer)
-},{"../util":61,"buffer":31,"events":47}],59:[function(require,module,exports){
-// Queue class adapted from Tim Caswell's pattern library
-// http://github.com/creationix/pattern/blob/master/lib/pattern/queue.js
-
-function Queue() {
-    this.tail = [];
-    this.head = [];
-    this.offset = 0;
-}
-
-Queue.prototype.shift = function () {
-    if (this.offset === this.head.length) {
-        var tmp = this.head;
-        tmp.length = 0;
-        this.head = this.tail;
-        this.tail = tmp;
-        this.offset = 0;
-        if (this.head.length === 0) {
-            return;
-        }
-    }
-    return this.head[this.offset++]; // sorry, JSLint
-};
-
-Queue.prototype.push = function (item) {
-    return this.tail.push(item);
-};
-
-Queue.prototype.forEach = function (fn, thisv) {
-    var array = this.head.slice(this.offset), i, il;
-
-    array.push.apply(array, this.tail);
-
-    if (thisv) {
-        for (i = 0, il = array.length; i < il; i += 1) {
-            fn.call(thisv, array[i], i, array);
-        }
-    } else {
-        for (i = 0, il = array.length; i < il; i += 1) {
-            fn(array[i], i, array);
-        }
-    }
-
-    return array;
-};
-
-Queue.prototype.getLength = function () {
-    return this.head.length - this.offset + this.tail.length;
-};
-    
-Object.defineProperty(Queue.prototype, "length", {
-    get: function () {
-        return this.getLength();
-    }
-});
-
-
-if (typeof module !== "undefined" && module.exports) {
-    module.exports = Queue;
-}
-
-},{}],60:[function(require,module,exports){
-function to_array(args) {
-    var len = args.length,
-        arr = new Array(len), i;
-
-    for (i = 0; i < len; i += 1) {
-        arr[i] = args[i];
-    }
-
-    return arr;
-}
-
-module.exports = to_array;
-
-},{}],61:[function(require,module,exports){
-// Support for very old versions of node where the module was called "sys".  At some point, we should abandon this.
-
-var util;
-
-try {
-    util = require("util");
-} catch (err) {
-    util = require("sys");
-}
-
-module.exports = util;
-
-},{"sys":52,"util":52}]},{},[10]);
+},{"./support/isBuffer":47,"FWaASH":46,"inherits":45}]},{},[7]);

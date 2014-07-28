@@ -37,16 +37,18 @@ app.use(tr8n.init("680d6c3913971ac32", "35510cb65d5144673", {
   host: "http://localhost:3000",
   cache: {
     enabled: true,
-    adapter: "redis",
-    host: "localhost",
-    port: 6379,
+//    adapter: "redis",
+//    host: "localhost",
+//    port: 6379,
+//    version: 1,
+//    timeout: 3600
+    adapter: "memcached",
+    hosts: {"localhost:11211": 1},
+    options: {},
     version: 1,
     timeout: 3600
   }
 }));
-
-
-
 
 app.use('/', routes);
 
