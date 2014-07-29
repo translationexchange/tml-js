@@ -23,6 +23,9 @@
 
   <script>
     tr8n_init("680d6c3913971ac32", null, function() {
+      console.log("Done init");
+      console.log(Tr8nSDK.application);
+
       $.ajax({
         url: "/templates/index.jst"
       }).done(function(data) {
