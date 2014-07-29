@@ -269,7 +269,7 @@ ApiClient.prototype = {
 
 module.exports = ApiClient;
 
-},{"./api/ajax":1,"./api/request":2,"./configuration":6,"./logger":14,"./utils":27}],4:[function(require,module,exports){
+},{"./api/ajax":1,"./api/request":2,"./configuration":8,"./logger":16,"./utils":29}],4:[function(require,module,exports){
 (function (__dirname){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
@@ -649,7 +649,7 @@ Application.prototype = {
 module.exports = Application;
 
 }).call(this,"/..")
-},{"./api_client":3,"./configuration":6,"./language":9,"./source":17,"./utils":27,"async":28,"fs":29}],5:[function(require,module,exports){
+},{"./api_client":3,"./configuration":8,"./language":11,"./source":19,"./utils":29,"async":30,"fs":31}],5:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -680,6 +680,9 @@ module.exports = Application;
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+
+var inline = require("./cache_adapters/inline")
+
 
 var Cache = function(options) {
   this.adapter = null;
@@ -731,7 +734,191 @@ Cache.prototype = {
 };
 
 module.exports = Cache;
-},{}],6:[function(require,module,exports){
+},{"./cache_adapters/inline":7}],6:[function(require,module,exports){
+/**
+ * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
+ *
+ *  _______                  _       _   _             ______          _
+ * |__   __|                | |     | | (_)           |  ____|        | |
+ *    | |_ __ __ _ _ __  ___| | __ _| |_ _  ___  _ __ | |__  __  _____| |__   __ _ _ __   __ _  ___
+ *    | | '__/ _` | '_ \/ __| |/ _` | __| |/ _ \| '_ \|  __| \ \/ / __| '_ \ / _` | '_ \ / _` |/ _ \
+ *    | | | | (_| | | | \__ \ | (_| | |_| | (_) | | | | |____ >  < (__| | | | (_| | | | | (_| |  __/
+ *    |_|_|  \__,_|_| |_|___/_|\__,_|\__|_|\___/|_| |_|______/_/\_\___|_| |_|\__,_|_| |_|\__, |\___|
+ *                                                                                        __/ |
+ *                                                                                       |___/
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+var logger    = require('../logger');
+
+var VERSION_KEY  = '__tr8n_version__';
+var KEY_PREFIX   = 'tr8n_v';
+
+
+var Base = function() {
+
+};
+
+Base.prototype = {
+
+  read_only         : true,
+  cached_by_source  : true,
+  name              : "",
+
+  initialize: function(config) {
+    this.config = config || {};
+    this.cache = this.create();
+  },
+
+  create: function(){
+
+  },
+
+  fetch: function() {
+    // should be overwritten
+  },
+
+  store: function(key, value){
+    // should be overwritten
+  },
+
+  del: function(key) {
+    // should be overwritten
+  },
+
+  exists: function(key) {
+    // should be overwritten
+  },
+
+  warn: function(msg) {
+    logger.log(this.name + " - " + msg);
+  },
+
+  info: function(msg) {
+    logger.log(this.name + " - " + msg);
+  },
+
+  incrementVersion: function(callback) {
+    this.getVersion(function(version) {
+      this.version = parseInt(version) + 1;
+      this.store(VERSION_KEY, this.version, function() {
+        if (callback) callback(this.version)
+      }.bind(this));
+    }.bind(this));
+  },
+
+  getVersion: function(callback) {
+    if (!this.version) {
+      this.fetch(VERSION_KEY, 1, function(err, data) {
+        this.version = data;
+        if (callback) callback(this.version)
+      }.bind(this));
+      return;
+    }
+    if(callback) callback(this.version)
+  },
+
+  resetVersion: function() {
+    this.version = null;
+  },
+
+  getVersionedKey: function(key) {
+    if (key == VERSION_KEY) return key;
+    return KEY_PREFIX + this.version + "_" + key;
+  }
+
+};
+
+module.exports = Base;
+},{"../logger":16}],7:[function(require,module,exports){
+/**
+ * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
+ *
+ *  _______                  _       _   _             ______          _
+ * |__   __|                | |     | | (_)           |  ____|        | |
+ *    | |_ __ __ _ _ __  ___| | __ _| |_ _  ___  _ __ | |__  __  _____| |__   __ _ _ __   __ _  ___
+ *    | | '__/ _` | '_ \/ __| |/ _` | __| |/ _ \| '_ \|  __| \ \/ / __| '_ \ / _` | '_ \ / _` |/ _ \
+ *    | | | | (_| | | | \__ \ | (_| | |_| | (_) | | | | |____ >  < (__| | | | (_| | | | | (_| |  __/
+ *    |_|_|  \__,_|_| |_|___/_|\__,_|\__|_|\___/|_| |_|______/_/\_\___|_| |_|\__,_|_| |_|\__, |\___|
+ *                                                                                        __/ |
+ *                                                                                       |___/
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+var utils   = require('../utils');
+var Base    = require('./base');
+
+var Inline = function(config) {
+  this.initialize(config);
+};
+
+Inline.prototype = utils.extend(new Base(), {
+
+  name: "inline",
+  read_only: false,
+
+  create: function() {
+    return Tr8nCache;
+  },
+
+  fetch: function(key, def, callback) {
+    var val = this.cache[key] || (typeof(def) == "function" ? def() : def) || null;
+    console.log("value found for: ", key)
+    if(callback) callback(null, JSON.stringify(this.cache[key]));
+  },
+
+  store: function(key, value, callback) {
+    this.info("cache store " + key + " " + value);
+    return this.cache.set(this.getVersionedKey(key), value, callback);
+  },
+
+  del: function(key, callback) {
+    this.info("cache del " + key);
+    this.cache.del(this.getVersionedKey(key), callback);
+  },
+
+  exists: function(key, callback){
+    if(callback) callback(!!this.cache[key]);
+  }
+
+});
+
+module.exports = Inline;
+},{"../utils":29,"./base":6}],8:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -962,7 +1149,7 @@ module.exports = new Configuration;
 
 
 
-},{"./cache":5}],7:[function(require,module,exports){
+},{"./cache":5}],9:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -1034,7 +1221,7 @@ module.exports = HTMLDecorator;
 
 
 
-},{}],8:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 // entry point for browserify
 window.Tr8nSDK = require('../tr8n');
 
@@ -1116,7 +1303,7 @@ window.tr = function(label, description, tokens, options) {
 
   return Tr8nSDK.translate(label, description, tokens, options);
 };
-},{"../tr8n":23}],9:[function(require,module,exports){
+},{"../tr8n":25}],11:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -1250,7 +1437,7 @@ Language.prototype = {
 
 module.exports = Language;
 
-},{"./configuration":6,"./language_case":10,"./language_context":12,"./translation_key":25,"./utils":27}],10:[function(require,module,exports){
+},{"./configuration":8,"./language_case":12,"./language_context":14,"./translation_key":27,"./utils":29}],12:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -1376,7 +1563,7 @@ LanguageCase.prototype = {
 module.exports = LanguageCase;
 
 
-},{"./configuration":6,"./language_case_rule":11,"./utils":27}],11:[function(require,module,exports){
+},{"./configuration":8,"./language_case_rule":13,"./utils":29}],13:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -1475,7 +1662,7 @@ LanguageCaseRule.prototype = {
 
 module.exports = LanguageCaseRule;
 
-},{"./rules_engine/evaluator":15,"./rules_engine/parser":16,"./utils":27}],12:[function(require,module,exports){
+},{"./rules_engine/evaluator":17,"./rules_engine/parser":18,"./utils":29}],14:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -1594,7 +1781,7 @@ LanguageContext.prototype = {
 };
 
 module.exports = LanguageContext;
-},{"./configuration":6,"./language_context_rule":13,"./utils":27}],13:[function(require,module,exports){
+},{"./configuration":8,"./language_context_rule":15,"./utils":29}],15:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -1665,7 +1852,7 @@ LanguageContextRule.prototype = {
 };
 
 module.exports = LanguageContextRule;
-},{"./rules_engine/evaluator":15,"./rules_engine/parser":16,"./utils":27}],14:[function(require,module,exports){
+},{"./rules_engine/evaluator":17,"./rules_engine/parser":18,"./utils":29}],16:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -1713,7 +1900,7 @@ var Logger = {
 };
 
 module.exports = Logger;
-},{"./utils":27}],15:[function(require,module,exports){
+},{"./utils":29}],17:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -1905,7 +2092,7 @@ Evaluator.prototype = {
 
 module.exports = Evaluator;
 
-},{}],16:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -1967,7 +2154,7 @@ Parser.prototype = {
 };
 
 module.exports = Parser;
-},{}],17:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -2032,7 +2219,7 @@ Source.prototype = {
 };
 
 module.exports = Source;
-},{"./configuration":6,"./translation_key":25,"./utils":27}],18:[function(require,module,exports){
+},{"./configuration":8,"./translation_key":27,"./utils":29}],20:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -2121,7 +2308,7 @@ DataTokenizer.prototype = {
 };
 
 module.exports = DataTokenizer;
-},{"../configuration":6,"../tokens/data":20,"../tokens/method":21,"../tokens/piped":22}],19:[function(require,module,exports){
+},{"../configuration":8,"../tokens/data":22,"../tokens/method":23,"../tokens/piped":24}],21:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -2299,7 +2486,7 @@ DecorationTokenizer.prototype = {
 
 
 module.exports = DecorationTokenizer;
-},{"../configuration":6,"../utils":27}],20:[function(require,module,exports){
+},{"../configuration":8,"../utils":29}],22:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -2662,7 +2849,7 @@ DataToken.prototype = {
 };
 
 module.exports = DataToken;
-},{"../configuration":6,"../logger":14,"../utils":27}],21:[function(require,module,exports){
+},{"../configuration":8,"../logger":16,"../utils":29}],23:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -2735,7 +2922,7 @@ MethodToken.prototype.substitute = function(label, tokens, language, options) {
 module.exports = MethodToken;
 
 
-},{"../utils":27,"./data":20}],22:[function(require,module,exports){
+},{"../utils":29,"./data":22}],24:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -2991,7 +3178,7 @@ PipedToken.prototype.substitute = function(label, tokens, language, options) {
 module.exports = PipedToken;
 
 
-},{"../utils":27,"./data":20}],23:[function(require,module,exports){
+},{"../utils":29,"./data":22}],25:[function(require,module,exports){
 
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
@@ -3128,7 +3315,7 @@ module.exports = Tr8n;
 
 
 
-},{"./application":4,"./configuration":6,"./language":9,"./language_case":10,"./language_case_rule":11,"./language_context":12,"./language_context_rule":13,"./source":17,"./translation":24,"./translation_key":25,"./translator":26,"./utils":27}],24:[function(require,module,exports){
+},{"./application":4,"./configuration":8,"./language":11,"./language_case":12,"./language_case_rule":13,"./language_context":14,"./language_context_rule":15,"./source":19,"./translation":26,"./translation_key":27,"./translator":28,"./utils":29}],26:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -3218,7 +3405,7 @@ module.exports = Translation;
 
 
 
-},{"./tokens/data":20,"./utils":27}],25:[function(require,module,exports){
+},{"./tokens/data":22,"./utils":29}],27:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -3409,7 +3596,7 @@ TranslationKey.prototype = {
 module.exports = TranslationKey;
 
 
-},{"./configuration":6,"./decorators/html":7,"./tokenizers/data":18,"./tokenizers/decoration":19,"./translation":24,"./utils":27}],26:[function(require,module,exports){
+},{"./configuration":8,"./decorators/html":9,"./tokenizers/data":20,"./tokenizers/decoration":21,"./translation":26,"./utils":29}],28:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -3455,7 +3642,7 @@ var Translator = function(attrs) {
 
 module.exports = Translator;
 
-},{"./utils":27}],27:[function(require,module,exports){
+},{"./utils":29}],29:[function(require,module,exports){
 (function (Buffer){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
@@ -3666,7 +3853,7 @@ module.exports = {
 
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":30,"crypto":36}],28:[function(require,module,exports){
+},{"buffer":32,"crypto":38}],30:[function(require,module,exports){
 (function (process){
 /*!
  * async
@@ -4793,9 +4980,9 @@ module.exports = {
 }());
 
 }).call(this,require("FWaASH"))
-},{"FWaASH":47}],29:[function(require,module,exports){
+},{"FWaASH":49}],31:[function(require,module,exports){
 
-},{}],30:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 /*!
  * The buffer module from node.js, for the browser.
  *
@@ -5953,7 +6140,7 @@ function assert (test, message) {
   if (!test) throw new Error(message || 'Failed assertion')
 }
 
-},{"base64-js":31,"ieee754":32}],31:[function(require,module,exports){
+},{"base64-js":33,"ieee754":34}],33:[function(require,module,exports){
 var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 ;(function (exports) {
@@ -6075,7 +6262,7 @@ var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 	exports.fromByteArray = uint8ToBase64
 }(typeof exports === 'undefined' ? (this.base64js = {}) : exports))
 
-},{}],32:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 exports.read = function(buffer, offset, isLE, mLen, nBytes) {
   var e, m,
       eLen = nBytes * 8 - mLen - 1,
@@ -6161,7 +6348,7 @@ exports.write = function(buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128;
 };
 
-},{}],33:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 (function (Buffer){
 var createHash = require('sha.js')
 
@@ -6195,7 +6382,7 @@ module.exports = function (alg) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"./md5":37,"buffer":30,"ripemd160":38,"sha.js":40}],34:[function(require,module,exports){
+},{"./md5":39,"buffer":32,"ripemd160":40,"sha.js":42}],36:[function(require,module,exports){
 (function (Buffer){
 var createHash = require('./create-hash')
 
@@ -6240,7 +6427,7 @@ Hmac.prototype.digest = function (enc) {
 
 
 }).call(this,require("buffer").Buffer)
-},{"./create-hash":33,"buffer":30}],35:[function(require,module,exports){
+},{"./create-hash":35,"buffer":32}],37:[function(require,module,exports){
 (function (Buffer){
 var intSize = 4;
 var zeroBuffer = new Buffer(intSize); zeroBuffer.fill(0);
@@ -6278,7 +6465,7 @@ function hash(buf, fn, hashSize, bigEndian) {
 module.exports = { hash: hash };
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":30}],36:[function(require,module,exports){
+},{"buffer":32}],38:[function(require,module,exports){
 (function (Buffer){
 var rng = require('./rng')
 
@@ -6336,7 +6523,7 @@ each(['createCredentials'
 })
 
 }).call(this,require("buffer").Buffer)
-},{"./create-hash":33,"./create-hmac":34,"./pbkdf2":44,"./rng":45,"buffer":30}],37:[function(require,module,exports){
+},{"./create-hash":35,"./create-hmac":36,"./pbkdf2":46,"./rng":47,"buffer":32}],39:[function(require,module,exports){
 /*
  * A JavaScript implementation of the RSA Data Security, Inc. MD5 Message
  * Digest Algorithm, as defined in RFC 1321.
@@ -6493,7 +6680,7 @@ module.exports = function md5(buf) {
   return helpers.hash(buf, core_md5, 16);
 };
 
-},{"./helpers":35}],38:[function(require,module,exports){
+},{"./helpers":37}],40:[function(require,module,exports){
 (function (Buffer){
 
 module.exports = ripemd160
@@ -6702,7 +6889,7 @@ function ripemd160(message) {
 
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":30}],39:[function(require,module,exports){
+},{"buffer":32}],41:[function(require,module,exports){
 var u = require('./util')
 var write = u.write
 var fill = u.zeroFill
@@ -6802,7 +6989,7 @@ module.exports = function (Buffer) {
   return Hash
 }
 
-},{"./util":43}],40:[function(require,module,exports){
+},{"./util":45}],42:[function(require,module,exports){
 var exports = module.exports = function (alg) {
   var Alg = exports[alg]
   if(!Alg) throw new Error(alg + ' is not supported (we accept pull requests)')
@@ -6816,7 +7003,7 @@ exports.sha =
 exports.sha1 = require('./sha1')(Buffer, Hash)
 exports.sha256 = require('./sha256')(Buffer, Hash)
 
-},{"./hash":39,"./sha1":41,"./sha256":42,"buffer":30}],41:[function(require,module,exports){
+},{"./hash":41,"./sha1":43,"./sha256":44,"buffer":32}],43:[function(require,module,exports){
 /*
  * A JavaScript implementation of the Secure Hash Algorithm, SHA-1, as defined
  * in FIPS PUB 180-1
@@ -6977,7 +7164,7 @@ module.exports = function (Buffer, Hash) {
   return Sha1
 }
 
-},{"util":49}],42:[function(require,module,exports){
+},{"util":51}],44:[function(require,module,exports){
 
 /**
  * A JavaScript implementation of the Secure Hash Algorithm, SHA-256, as defined
@@ -7142,7 +7329,7 @@ module.exports = function (Buffer, Hash) {
 
 }
 
-},{"./util":43,"util":49}],43:[function(require,module,exports){
+},{"./util":45,"util":51}],45:[function(require,module,exports){
 exports.write = write
 exports.zeroFill = zeroFill
 
@@ -7180,7 +7367,7 @@ function zeroFill(buf, from) {
 }
 
 
-},{}],44:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 (function (Buffer){
 // JavaScript PBKDF2 Implementation
 // Based on http://git.io/qsv2zw
@@ -7266,7 +7453,7 @@ module.exports = function (createHmac, exports) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":30}],45:[function(require,module,exports){
+},{"buffer":32}],47:[function(require,module,exports){
 (function (Buffer){
 // Original code adapted from Robert Kieffer.
 // details at https://github.com/broofa/node-uuid
@@ -7303,7 +7490,7 @@ module.exports = function (createHmac, exports) {
 }())
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":30}],46:[function(require,module,exports){
+},{"buffer":32}],48:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -7328,7 +7515,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],47:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -7393,14 +7580,14 @@ process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 
-},{}],48:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],49:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -7990,4 +8177,4 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require("FWaASH"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":48,"FWaASH":47,"inherits":46}]},{},[8]);
+},{"./support/isBuffer":50,"FWaASH":49,"inherits":48}]},{},[10]);
