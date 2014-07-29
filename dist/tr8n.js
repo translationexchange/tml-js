@@ -56,6 +56,7 @@ var Ajax = {
     }
     
     if (method.match(/^get$/i)) {
+      
       url = url + "?" + this.serialize(params || {});
       data = null;
     } else {
