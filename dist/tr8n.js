@@ -3436,10 +3436,12 @@ module.exports = {
     var payload_encoded_sig = parts[0].trim();
     var payload_json_encoded = parts[1];
 
-    var verification_sig = crypto.createHmac('sha256', secret).update(payload_json_encoded).digest();
-    verification_sig = new Buffer(verification_sig).toString('base64').trim();
+    if (secret) {
+      var verification_sig = crypto.createHmac('sha256', secret).update(payload_json_encoded).digest();
+      verification_sig = new Buffer(verification_sig).toString('base64').trim();
 
-    if (payload_encoded_sig != verification_sig) return null;
+      if (payload_encoded_sig != verification_sig) return null;
+    }
 
     var payload_json = new Buffer(payload_json_encoded, 'base64').toString('utf-8');
     return JSON.parse(payload_json);
@@ -3488,6 +3490,17 @@ module.exports = {
     if (onload) script.onload = onload;
     doc.getElementsByTagName('head')[0].appendChild(script);
     return script;
+  },
+
+  getCookie: function(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0; i<ca.length; i++) {
+      var c = ca[i];
+      while (c.charAt(0)==' ') c = c.substring(1);
+      if (c.indexOf(name) != -1) return c.substring(name.length,c.length);
+    }
+    return "";
   }
 
 };

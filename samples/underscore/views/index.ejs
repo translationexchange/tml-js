@@ -16,10 +16,18 @@
   <script src="/javascripts/tr8n.js"></script>
 
   <script>
-    Tr8nSDK.init("default", "asdfasdf", {
-      default_locale: "en-US",
-      current_locale: "ru",
-      current_source: "index",
+    var app_key = "default";
+    var app_secret = "test";
+    var data = Tr8nSDK.utils.decodeAndVerifyParams(Tr8nSDK.utils.getCookie(app_key));
+    var translator = (data && data.translator) ? new Tr8nSDK.Translator(data.translator) : null;
+    var default_locale = "en-US";
+    var current_locale = (data && data.locale) ? data.locale : default_locale;
+    var current_source = "index";
+
+    Tr8nSDK.init(app_key, app_secret, {
+      default_locale: default_locale,
+      current_locale: current_locale,
+      current_source: current_source,
       host: "https://translationexchange.com",
       cache: {
         adapter: "inline",
