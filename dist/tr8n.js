@@ -62,8 +62,12 @@ var Ajax = {
       return false;
     }
 
-    xhr.onload = function() {callback(null, xhr.responseText)};
-    xhr.onerror = function(err) {callback(err)};
+    xhr.onload = function() {
+      callback(null, xhr, xhr.responseText);
+    };
+    xhr.onerror = function(err) {
+      callback(err, xhr);
+    };
     xhr.send(data);
   },
 
@@ -251,19 +255,13 @@ ApiClient.prototype = {
 //        request.post(url, {form: params}, request_callback);
 //      }.bind(this));
     } else {
-      console.log(options.cache_key);
-      console.log(this.cache);
       if (options.cache_key && this.cache) {
         this.cache.fetch(options.cache_key, function(cache_callback) {
           logger.log("api " + options.method + " " + url, params);
           self.request.get(url, params, function(error, response, body) {
             var t1 = new Date();
             logger.log("api took " + (t1-t0) + " mls");
-            if (!error && response.statusCode == 200) {
-              cache_callback(error, body);
-            } else {
-              cache_callback(error, body);
-            }
+            cache_callback(error, body);
           });
         }, function(error, data) {
 //          console.log(data);
@@ -319,6 +317,7 @@ module.exports = ApiClient;
 
 var utils     = require("./utils");
 var config    = require("./configuration");
+var logger    = require('./logger');
 
 var Language  = require("./language");
 var Source  = require("./source");
@@ -458,6 +457,7 @@ Application.prototype = {
     locales.forEach(function(locale) {
       data[locale] = function(callback) {
         self.getApiClient().get("language", {locale: locale, definition: true}, {cache_key: locale + "/language"}, function(error, data) {
+//          console.log("Loading language: " +  error + " " + data);
           if (error) {
             callback(error, null);
             return;
@@ -540,15 +540,14 @@ Application.prototype = {
 
     sources.forEach(function(source) {
       data[source] = function(callback) {
-        console.log("loading " + source + " for locale " + locale);
+//        console.log("loading " + source + " for locale " + locale);
 
         var api_options = {};
-//        if (!options.translator || !options.translator.inline)
+        if (!options.translator || !options.translator.inline)
           api_options.cache_key = self.getSourceKey(source, locale);
-        console.log("cache key " + api_options.cache_key);
+//        console.log("cache key " + api_options.cache_key);
 
         self.getApiClient().get("source", {source:source, locale:locale, translations:true, subsources:true}, api_options, function(error, data) {
-          console.log("GOT CALLBACK FROM API" + error + " " +  data);
 
           if (error) {
             callback(error, null);
@@ -579,7 +578,7 @@ Application.prototype = {
   registerMissingTranslationKey: function(source_key, translation_key) {
     if (!this.isKeyRegistrationEnabled()) return;
 
-    console.log("Registering missing translation key: " + source_key + " " + translation_key.label);
+    logger.log("Registering missing translation key: " + source_key + " " + translation_key.label);
     if (!this.missing_keys_by_source)
       this.missing_keys_by_source = {};
     if (!this.missing_keys_by_source[source_key])
@@ -671,7 +670,7 @@ Application.prototype = {
 module.exports = Application;
 
 }).call(this,"/..")
-},{"./api_client":3,"./configuration":8,"./language":11,"./source":19,"./utils":29,"async":30,"fs":31}],5:[function(require,module,exports){
+},{"./api_client":3,"./configuration":8,"./language":11,"./logger":16,"./source":19,"./utils":29,"async":30,"fs":31}],5:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -914,6 +913,7 @@ Inline.prototype = utils.extend(new Base(), {
   read_only: true,
 
   create: function() {
+    Tr8nCache = Tr8nCache || {};
     return Tr8nCache;
   },
 
@@ -999,6 +999,7 @@ var Configuration = function() {
   this.enabled = true;
   this.default_locale = "en-US";
   this.source_separator = "@:@";
+  this.delayed_flush = false;
 //  this.api_client_class = Tr8n.Api.Request;
 };
 
