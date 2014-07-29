@@ -540,8 +540,12 @@ Application.prototype = {
     sources.forEach(function(source) {
       data[source] = function(callback) {
         console.log("loading " + source + " for locale " + locale);
+
         var api_options = {};
-        if (!options.translator || !options.translator.inline) api_options.cache_key = self.getSourceKey(source, locale);
+//        if (!options.translator || !options.translator.inline)
+          api_options.cache_key = self.getSourceKey(source, locale);
+        console.log("cache key " + api_options.cache_key);
+
         self.getApiClient().get("source", {source:source, locale:locale, translations:true, subsources:true}, api_options, function(error, data) {
           if (error) {
             callback(error, null);

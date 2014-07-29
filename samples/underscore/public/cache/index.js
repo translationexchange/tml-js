@@ -1,5 +1,5 @@
 var Tr8nCache = Tr8nCache || {};
-Tr8nCache["ru/sources/[-]"] = {
+Tr8nCache["ru/[-]"] = {
   "key": "/",
   "source": "/",
   "locale": "ru",
