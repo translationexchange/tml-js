@@ -953,11 +953,18 @@ module.exports = HTMLDecorator;
 window.Tr8nSDK = require('../tr8n');
 
 window.tr = function(label, description, tokens, options) {
+  if (typeof description !== "string") {
+    options = tokens || {};
+    tokens  = description || {};
+    description = "";
+  }
+
   options = Tr8nSDK.utils.extend({}, options, {
     current_locale: Tr8nSDK.config.current_locale,
     current_source: Tr8nSDK.config.current_source,
     current_translator: Tr8nSDK.config.current_translator
   });
+
   return Tr8nSDK.translate(label, description, tokens, options);
 };
 },{"../tr8n":22}],8:[function(require,module,exports){
@@ -2937,9 +2944,6 @@ var Tr8n = {
   utils: utils,
   config: config,
 
-  // TODO: we cannot keep app instance across requests - sources are based on languages
-  // each request may have a different language
-
   init: function(key, secret, options, callback) {
     utils.extend(config, options);
     this.application = new Application({
@@ -3492,7 +3496,8 @@ module.exports = {
     return script;
   },
 
-  getCookie: function(cname) {
+  getCookie: function(app_key) {
+    var cname = "tr8n_" + app_key;
     var name = cname + "=";
     var ca = document.cookie.split(';');
     for(var i=0; i<ca.length; i++) {

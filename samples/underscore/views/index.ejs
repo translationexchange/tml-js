@@ -22,7 +22,7 @@
     var translator = (data && data.translator) ? new Tr8nSDK.Translator(data.translator) : null;
     var default_locale = "en-US";
     var current_locale = (data && data.locale) ? data.locale : default_locale;
-    var current_source = "index";
+    var current_source = "/";
 
     Tr8nSDK.init(app_key, app_secret, {
       default_locale: default_locale,
@@ -70,18 +70,13 @@
           Tr8n.locale = Tr8nSDK.config.current_locale;
 
           if (Tr8nSDK.application.isFeatureEnabled("shortcuts")) {
-
-
             for (var sc in Tr8nSDK.application.shortcuts) {
-
               shortcut.add(sc, (function(sc){
                 return function(){
                   eval(Tr8nSDK.application.shortcuts[sc]);
                 }
               })(sc))
             }
-
-          
           }
         })
       }
