@@ -46,6 +46,13 @@ var Ajax = {
       callback = callback || new Function,
       xhr = new XMLHttpRequest();
 
+    if (method.match(/^get$/i)) {
+      url = url + "?" + this.serialize(params || {});
+      data = null;
+    } else {
+      data = JSON.stringify(params || {});
+    }
+
     if ("withCredentials" in xhr) {
       xhr.open(method, url, true);
     } else if (typeof XDomainRequest != "undefined") {
@@ -55,13 +62,6 @@ var Ajax = {
       return false;
     }
     
-    if (method.match(/^get$/i)) {
-      url = url + "?" + this.serialize(params || {});
-      data = null;
-    } else {
-      data = JSON.stringify(params || {});
-    }
-
     xhr.onload = function() {callback(null, xhr.responseText)}
     xhr.onerror = function(err) {callback(err)}
     xhr.send(data);
@@ -112,6 +112,20 @@ module.exports = Ajax;
  */
 
 var request = require('request');
+
+var Request = {
+
+  get: function(url, params, callback){
+    callback = callback || new Function;
+    request.get(url, {qs: params || {}}, callback)
+  },
+
+  post: function(url, parms, callback) {
+    callback = callback || new Function;
+    request.post(url, {form: params || {}}, callback);
+  }
+
+}
 
 module.exports = request;
 },{}],3:[function(require,module,exports){
@@ -231,7 +245,7 @@ ApiClient.prototype = {
     };
 
     if (options.method == "post") {
-      self.request.post(url, {form: params}, request_callback);
+      self.request.post(url, params, request_callback);
 //      this.getAccessToken(function(error, token_info) {
 //        utils.extend(params, {access_token: token_info.access_token});
 //        request.post(url, {form: params}, request_callback);
@@ -242,7 +256,7 @@ ApiClient.prototype = {
       if (options.cache_key && this.cache) {
         this.cache.fetch(options.cache_key, function(cache_callback) {
           logger.log("api " + options.method + " " + url, params);
-          self.request.get(url, {qs: params}, function(error, response, body) {
+          self.request.get(url, params, function(error, response, body) {
             var t1 = new Date();
             logger.log("api took " + (t1-t0) + " mls");
             if (!error && response.statusCode == 200) {
@@ -260,7 +274,7 @@ ApiClient.prototype = {
         });
       } else {
         logger.log("api " + options.method + " " + url, params);
-        self.request.get(url, {qs: params}, request_callback);
+        self.request.get(url, params, request_callback);
       }
     }
   }
@@ -897,7 +911,7 @@ Inline.prototype = utils.extend(new Base(), {
 
   fetch: function(key, def, callback) {
     var val = this.cache[key] || (typeof(def) == "function" ? def() : def) || null;
-    console.log("value found for: ", key)
+    this.info("cache hit " + key);
     if(callback) callback(null, JSON.stringify(this.cache[key]));
   },
 
