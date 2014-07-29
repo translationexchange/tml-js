@@ -61,9 +61,9 @@ var Ajax = {
     } else {
       return false;
     }
-    
-    xhr.onload = function() {callback(null, xhr.responseText)}
-    xhr.onerror = function(err) {callback(err)}
+
+    xhr.onload = function() {callback(null, xhr.responseText)};
+    xhr.onerror = function(err) {callback(err)};
     xhr.send(data);
   },
 
@@ -267,7 +267,7 @@ ApiClient.prototype = {
           });
         }, function(error, data) {
 //          console.log(data);
-          if (!error)
+          if (!error && data)
             callback(null, JSON.parse(data));
           else
             callback(error, null);
@@ -387,6 +387,7 @@ Application.prototype = {
   },
 
   addSource: function(source) {
+    if (!source) return;
     source.application = this;
     this.sources_by_key[source.source] = new Source(source);
     return this.getSource(source.source);
@@ -429,7 +430,7 @@ Application.prototype = {
             // init main source
             self.loadSources(options.sources, options.current_locale, options, function(sources) {
               // init all sub-sources
-              if (sources.length > 0 && sources[0].sources) {
+              if (sources.length > 0 && sources[0] && sources[0].sources) {
                 // console.log("Loading subsources: " + sources[0].sources);
                 self.loadSources(sources[0].sources, options.current_locale, options, function (sources) {
                   callback(null);
@@ -547,10 +548,13 @@ Application.prototype = {
         console.log("cache key " + api_options.cache_key);
 
         self.getApiClient().get("source", {source:source, locale:locale, translations:true, subsources:true}, api_options, function(error, data) {
+          console.log("GOT CALLBACK FROM API" + error + " " +  data);
+
           if (error) {
             callback(error, null);
             return;
           }
+
           callback(null, data);
         });
       };
@@ -907,26 +911,44 @@ var Inline = function(config) {
 Inline.prototype = utils.extend(new Base(), {
 
   name: "inline",
-  read_only: false,
+  read_only: true,
 
   create: function() {
     return Tr8nCache;
   },
 
   fetch: function(key, def, callback) {
-    var val = this.cache[key] || (typeof(def) == "function" ? def() : def) || null;
-    this.info("cache hit " + key);
-    if(callback) callback(null, JSON.stringify(this.cache[key]));
+    var val = this.cache[key];
+
+    if (val) {
+      this.info("cache hit " + key);
+      val = JSON.stringify(val);
+      if (callback) callback(null, val);
+      return;
+    }
+
+    this.info("cache miss " + key);
+
+    if (utils.isFunction(def)) {
+      def(function(err, data) {
+        // the cache is readonly and cannot store anything
+        callback(err, data);
+      });
+      return;
+    }
+
+    val = def || null;
+    if (val) val = JSON.stringify(val);
+    if (callback) callback(null, val);
   },
 
   store: function(key, value, callback) {
-    this.info("cache store " + key + " " + value);
-    return this.cache.set(this.getVersionedKey(key), value, callback);
+    this.info("the cache is readonly. can't store data");
+    return value;
   },
 
   del: function(key, callback) {
-    this.info("cache del " + key);
-    this.cache.del(this.getVersionedKey(key), callback);
+    this.info("the cache is readonly. can't delete data");
   },
 
   exists: function(key, callback){
@@ -1254,7 +1276,7 @@ window.tr8n_init = function(key, secret, callback) {
   var current_source = "/";
 
   Tr8nSDK.init(key, secret, {
-    host: "https://translationexchange.com",
+    host: "http://localhost:3000",
     default_locale: default_locale,
     current_locale: current_locale,
     current_source: current_source,
