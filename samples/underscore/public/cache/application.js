@@ -1,4 +1,5 @@
-Tr8nSDK.application.extend({
+var Tr8nCache = Tr8nCache || {};
+Tr8nCache["default"] = {
     "name":"Sample",
     "default_locale":"en-US",
     "languages":[
@@ -69,5 +70,5 @@ Tr8nSDK.application.extend({
       "Alt+Shift+B":"Tr8n.Utils.redirectTo('/tr8n/app/forum')",
       "Alt+Shift+G":"Tr8n.Utils.redirectTo('/tr8n/app/glossary')"
     }
-});
+};
 

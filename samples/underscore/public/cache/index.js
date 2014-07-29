@@ -1,5 +1,5 @@
-Tr8nSDK.application.addSource({
-  "id": 1294,
+var Tr8nCache = Tr8nCache || {};
+Tr8nCache["ru/sources/[-]"] = {
   "key": "/",
   "source": "/",
   "locale": "ru",
@@ -239,5 +239,5 @@ Tr8nSDK.application.addSource({
       }
     }
   ]
-});
+};
 

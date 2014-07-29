@@ -55,9 +55,12 @@ var Ajax = {
       return false;
     }
     
-    data = method.match(/^get$/i) ? 
-      this.serialize(params || {}) : 
-      JSON.stringify(params || {});
+    if (method.match(/^get$/i)) {
+      url = url + "?" + this.serialize(params || {});
+      data = null;
+    } else {
+      data = JSON.stringify(params || {});
+    }
 
     xhr.onload = function() {callback(null, xhr.responseText)}
     xhr.onerror = function(err) {callback(err)}
@@ -149,14 +152,13 @@ var logger    = require("./logger");
 var utils     = require("./utils");
 var config    = require("./configuration");
 
-
 var API_PATH = "/tr8n/api/";
 
 var ApiClient = function(app) {
   this.application = app;
   this.cache = config.getCache();
 
-  if(config.api = "ajax") { //??
+  if(config.api == "ajax") {
     this.request = require("./api/ajax");
   } else {
     this.request = require("./api/request");
@@ -235,6 +237,8 @@ ApiClient.prototype = {
 //        request.post(url, {form: params}, request_callback);
 //      }.bind(this));
     } else {
+      console.log(options.cache_key);
+      console.log(this.cache);
       if (options.cache_key && this.cache) {
         this.cache.fetch(options.cache_key, function(cache_callback) {
           logger.log("api " + options.method + " " + url, params);
@@ -1034,6 +1038,67 @@ module.exports = HTMLDecorator;
 // entry point for browserify
 window.Tr8nSDK = require('../tr8n');
 
+window.tr8n_init = function(key, secret, callback) {
+  if (window.tr8n_already_initialized) return;
+  window.tr8n_already_initialized = true;
+
+  var data = Tr8nSDK.utils.decodeAndVerifyParams(Tr8nSDK.utils.getCookie(key));
+  var current_translator = (data && data.translator) ? new Tr8nSDK.Translator(data.translator) : null;
+  var default_locale = "en-US";
+  var current_locale = (data && data.locale) ? data.locale : default_locale;
+  var current_source = "/";
+
+  Tr8nSDK.init(key, secret, {
+    host: "https://translationexchange.com",
+    default_locale: default_locale,
+    current_locale: current_locale,
+    current_source: current_source,
+    current_translator: current_translator,
+    api: "ajax",
+    cache: {
+      enabled: true,
+      adapter: "inline"
+    }
+  });
+
+  var locales = [Tr8nSDK.application.default_locale];
+  if (current_locale) {
+    locales.push(current_locale);
+  } else {
+    current_locale = Tr8nSDK.application.default_locale;
+  }
+
+  Tr8nSDK.application.init({
+    current_locale: current_locale,
+    locales: locales,
+    sources: [current_source],
+    translator: current_translator
+  }, function(error) {
+    Tr8nSDK.utils.addCSS(window.document, Tr8nSDK.application.host + '/assets/tr8n/tools.css', false);
+    Tr8nSDK.utils.addCSS(window.document, Tr8nSDK.application.css, true);
+    Tr8nSDK.utils.addJS(window.document, 'tr8n-jssdk', Tr8nSDK.application.host + '/assets/tr8n/tools.js', function() {
+      Tr8n.app_key = Tr8nSDK.application.key;
+      Tr8n.host = Tr8nSDK.application.host;
+      Tr8n.sources = [];
+      Tr8n.default_locale = Tr8nSDK.application.default_locale;
+      Tr8n.page_locale = Tr8nSDK.config.current_locale;
+      Tr8n.locale = Tr8nSDK.config.current_locale;
+
+      if (Tr8nSDK.application.isFeatureEnabled("shortcuts")) {
+        for (var sc in Tr8nSDK.application.shortcuts) {
+          shortcut.add(sc, (function(sc){
+            return function(){
+              eval(Tr8nSDK.application.shortcuts[sc]);
+            }
+          })(sc))
+        }
+      }
+    });
+
+    if (callback) callback();
+  });
+};
+
 window.tr = function(label, description, tokens, options) {
   if (typeof description !== "string") {
     options = tokens || {};
@@ -1046,6 +1111,8 @@ window.tr = function(label, description, tokens, options) {
     current_source: Tr8nSDK.config.current_source,
     current_translator: Tr8nSDK.config.current_translator
   });
+
+  console.log(Tr8nSDK.config.current_translator);
 
   return Tr8nSDK.translate(label, description, tokens, options);
 };

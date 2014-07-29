@@ -1,4 +1,5 @@
-Tr8nSDK.application.addLanguage({
+var Tr8nCache = Tr8nCache || {};
+Tr8nCache["ru/language"] = {
   "locale":"ru",
   "name":"Русский",
   "english_name":"Russian",
@@ -7813,4 +7814,4 @@ Tr8nSDK.application.addLanguage({
       ]
     }
   }
-});
+};

@@ -1,4 +1,5 @@
-Tr8nSDK.application.addLanguage({
+var Tr8nCache = Tr8nCache || {};
+Tr8nCache["en-US/language"] = {
   "locale":"en-US",
   "name":"English (US)",
   "english_name":"English (U.S.)",
@@ -1437,4 +1438,4 @@ Tr8nSDK.application.addLanguage({
       ]
     }
   }
-});
+};
