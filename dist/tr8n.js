@@ -525,7 +525,7 @@ Application.prototype = {
 
     sources.forEach(function(source) {
       data[source] = function(callback) {
-//        console.log("loading " + source + " for locale " + locale);
+        console.log("loading " + source + " for locale " + locale);
         var api_options = {};
         if (!options.translator || !options.translator.inline) api_options.cache_key = self.getSourceKey(source, locale);
         self.getApiClient().get("source", {source:source, locale:locale, translations:true, subsources:true}, api_options, function(error, data) {
@@ -1299,7 +1299,7 @@ window.tr = function(label, description, tokens, options) {
     current_translator: Tr8nSDK.config.current_translator
   });
 
-  console.log(Tr8nSDK.config.current_translator);
+//  console.log(Tr8nSDK.config.current_translator);
 
   return Tr8nSDK.translate(label, description, tokens, options);
 };
