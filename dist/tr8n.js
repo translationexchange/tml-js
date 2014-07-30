@@ -283,7 +283,7 @@ ApiClient.prototype = {
 
 module.exports = ApiClient;
 
-},{"./api/ajax":1,"./api/request":2,"./configuration":9,"./logger":17,"./utils":31}],4:[function(require,module,exports){
+},{"./api/ajax":1,"./api/request":2,"./configuration":9,"./logger":17,"./utils":30}],4:[function(require,module,exports){
 (function (__dirname){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
@@ -689,7 +689,7 @@ Application.prototype = {
 module.exports = Application;
 
 }).call(this,"/..")
-},{"./api_client":3,"./configuration":9,"./language":12,"./logger":17,"./source":20,"./utils":31,"async":32,"fs":33}],5:[function(require,module,exports){
+},{"./api_client":3,"./configuration":9,"./language":12,"./logger":17,"./source":20,"./utils":30,"async":31,"fs":32}],5:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -986,7 +986,7 @@ Browser.prototype = utils.extend(new Base(), {
 });
 
 module.exports = Browser;
-},{"../utils":31,"./base":6}],8:[function(require,module,exports){
+},{"../utils":30,"./base":6}],8:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -1076,7 +1076,7 @@ Inline.prototype = utils.extend(new Base(), {
 });
 
 module.exports = Inline;
-},{"../utils":31,"./base":6}],9:[function(require,module,exports){
+},{"../utils":30,"./base":6}],9:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -1381,109 +1381,150 @@ module.exports = HTMLDecorator;
 
 
 },{}],11:[function(require,module,exports){
+
 // entry point for browserify
-window.Tr8nSDK = require('../tr8n');
 
-window.tr8n_init = function(key, secret, options, callback) {
-  if (window.tr8n_already_initialized) return;
-  window.tr8n_already_initialized = true;
+var config      = require('../configuration');
+var utils       = require('../utils');
 
-  options = options || {};
+var Application = require('../application');
+var Translator  = require('../translator');
+var DomTokenizer  = require('../tokenizers/dom');
 
-  var data = Tr8nSDK.utils.decodeAndVerifyParams(Tr8nSDK.utils.getCookie(key));
-//  console.log(data);
+var app = null;
 
-  var current_translator = (data && data.translator) ? new Tr8nSDK.Translator(data.translator) : null;
-  var default_locale = "en-US";
-  var current_locale = options.locale ? options.locale : ((data && data.locale) ? data.locale : default_locale);
-  var current_source = options.source;
 
-  Tr8nSDK.init(key, secret, {
-    host: "http://localhost:3000",
-    default_locale: default_locale,
-    current_locale: current_locale,
-    current_source: current_source,
-    current_translator: current_translator,
-    delayed_flush: true,
-    api: "ajax",
-    cache: {
-      enabled: true,
-      adapter: options.cache || "browser"
-    }
-  });
+var includeTools = function(app, callback) {
+  utils.addCSS(window.document, app.host + '/assets/tr8n/tools.css', false);
+  utils.addCSS(window.document, app.css, true);      
 
-  var locales = [Tr8nSDK.application.default_locale];
-  if (current_locale) {
-    locales.push(current_locale);
-  } else {
-    current_locale = Tr8nSDK.application.default_locale;
-  }
+  utils.addJS(window.document, 'tr8n-jssdk', app.host + '/assets/tr8n/tools.js', function() {
 
-  Tr8nSDK.application.init({
-    current_locale: current_locale,
-    locales: locales,
-    sources: [current_source],
-    translator: current_translator
-  }, function(error) {
-    Tr8nSDK.utils.addCSS(window.document, Tr8nSDK.application.host + '/assets/tr8n/tools.css', false);
-    Tr8nSDK.utils.addCSS(window.document, Tr8nSDK.application.css, true);
-    Tr8nSDK.utils.addJS(window.document, 'tr8n-jssdk', Tr8nSDK.application.host + '/assets/tr8n/tools.js', function() {
-      Tr8n.app_key = Tr8nSDK.application.key;
-      Tr8n.host = Tr8nSDK.application.host;
-      Tr8n.sources = [];
-      Tr8n.default_locale = Tr8nSDK.application.default_locale;
-      Tr8n.page_locale = Tr8nSDK.config.current_locale;
-      Tr8n.locale = Tr8nSDK.config.current_locale;
+    Tr8n.app_key = app.key;
+    Tr8n.host = app.host;
+    Tr8n.sources = [];
+    Tr8n.default_locale = app.default_locale;
+    Tr8n.page_locale = config.current_locale;
+    Tr8n.locale = config.current_locale;
 
-      if (Tr8nSDK.application.isFeatureEnabled("shortcuts")) {
-        for (var sc in Tr8nSDK.application.shortcuts) {
-          shortcut.add(sc, (function(sc){
-            return function(){
-              eval(Tr8nSDK.application.shortcuts[sc]);
-            }
-          })(sc))
-        }
+    if (app.isFeatureEnabled("shortcuts")) {
+      for (var sc in app.shortcuts) {
+        shortcut.add(sc, (function(sc){
+          return function(){
+            eval(app.shortcuts[sc]);
+          }
+        })(sc))
       }
-    });
+    }
 
     if (callback) callback();
-  });
-};
 
-window.tr = function(label, description, tokens, options) {
-  if (typeof description !== "string") {
-    options = tokens || {};
-    tokens  = description || {};
-    description = "";
+  })
+}
+
+
+var tr8n = {
+
+  application:null,
+
+  init: function(key, secret, options, callback) {
+
+    var 
+      data                = utils.decodeAndVerifyParams(utils.getCookie(key)),
+      current_translator  = (data && data.translator) ? new Translator(data.translator) : null,
+      default_locale      = "en-US",
+      current_locale      = (data && data.locale) ? data.locale : default_locale,
+      current_source      = "/";
+
+    options = utils.extend(config, {
+      host: "http://translationexchange.com",
+      default_locale: default_locale,
+      current_locale: current_locale,
+      current_source: current_source,
+      current_translator: current_translator,
+      delayed_flush: true,
+      api: "ajax",
+      cache: {
+        enabled: true,
+        adapter: "browser"
+      }
+    }, options);
+
+    config.initCache();
+
+    app = this.application = new Application({
+      key     : key,
+      secret  : secret,
+      host    : options.host
+    });
+
+    var locales = [app.default_locale];
+    if (current_locale) {
+      locales.push(current_locale);
+    } else {
+      current_locale = app.default_locale;
+    }
+
+    app.init({
+      current_locale  : current_locale,
+      locales         : locales,
+      sources         : [current_source],
+      translator      : current_translator
+    },
+    function(err) {
+      if(err) {
+        throw new Error(err);
+      }
+      // This should be optionable
+      // Maybe tools and tr8n should be separate for now?
+      includeTools(app, callback);
+    })
+  },
+
+  translate: function(label, description, tokens, options) {
+    if(!app) {
+      throw new Error("Invalid application.");
+    }
+
+    if (typeof description !== "string") {
+      options = tokens || {};
+      tokens  = description || {};
+      description = "";
+    }
+
+    options = utils.extend({}, {
+      current_locale: config.current_locale,
+      current_source: config.current_source,
+      current_translator: config.current_translator
+    }, options);
+
+    var language = app.getLanguage(config.current_locale) || app.getLanguage(config.default_locale);
+    return language.translate(label, description, tokens, options);
+  },
+
+  translateElement: function(element_id) {
+    var container = document.getElementById(element_id);
+    config.currentLanguage = app.getLanguage(Tr8nSDK.config.current_locale);
+
+    var tokenizer = new DomTokenizer(container, {}, {
+      "debug": false,
+      "data_tokens.numeric": true,
+      "current_source": config.current_source,
+      "current_translator": config.current_translator
+    });
+
+    var result = tokenizer.translate();
+  //        console.log(result);
+    container.innerHTML = result;
   }
 
-  options = Tr8nSDK.utils.extend({}, options, {
-    current_locale: Tr8nSDK.config.current_locale,
-    current_source: Tr8nSDK.config.current_source,
-    current_translator: Tr8nSDK.config.current_translator
-  });
-
-//  console.log(Tr8nSDK.config.current_translator);
-
-  return Tr8nSDK.translate(label, description, tokens, options);
 };
 
-window.tre = function(element_id) {
-  var container = document.getElementById(element_id);
-  Tr8nSDK.config.currentLanguage = Tr8nSDK.application.getLanguage(Tr8nSDK.config.current_locale);
+window.tr8n = tr8n;
+window.tr   = tr8n.translate;
+window.tre  = tr8n.translateElement;
 
-  var tokenizer = new Tr8nSDK.DomTokenizer(container, {}, {
-    "debug": false,
-    "data_tokens.numeric": true,
-    "current_source": Tr8nSDK.config.current_source,
-    "current_translator": Tr8nSDK.config.current_translator
-  });
-
-  var result = tokenizer.translate();
-//        console.log(result);
-  container.innerHTML = result;
-};
-},{"../tr8n":27}],12:[function(require,module,exports){
+},{"../application":4,"../configuration":9,"../tokenizers/dom":23,"../translator":29,"../utils":30}],12:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -1617,7 +1658,7 @@ Language.prototype = {
 
 module.exports = Language;
 
-},{"./configuration":9,"./language_case":13,"./language_context":15,"./translation_key":29,"./utils":31}],13:[function(require,module,exports){
+},{"./configuration":9,"./language_case":13,"./language_context":15,"./translation_key":28,"./utils":30}],13:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -1743,7 +1784,7 @@ LanguageCase.prototype = {
 module.exports = LanguageCase;
 
 
-},{"./configuration":9,"./language_case_rule":14,"./utils":31}],14:[function(require,module,exports){
+},{"./configuration":9,"./language_case_rule":14,"./utils":30}],14:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -1842,7 +1883,7 @@ LanguageCaseRule.prototype = {
 
 module.exports = LanguageCaseRule;
 
-},{"./rules_engine/evaluator":18,"./rules_engine/parser":19,"./utils":31}],15:[function(require,module,exports){
+},{"./rules_engine/evaluator":18,"./rules_engine/parser":19,"./utils":30}],15:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -1961,7 +2002,7 @@ LanguageContext.prototype = {
 };
 
 module.exports = LanguageContext;
-},{"./configuration":9,"./language_context_rule":16,"./utils":31}],16:[function(require,module,exports){
+},{"./configuration":9,"./language_context_rule":16,"./utils":30}],16:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -2032,7 +2073,7 @@ LanguageContextRule.prototype = {
 };
 
 module.exports = LanguageContextRule;
-},{"./rules_engine/evaluator":18,"./rules_engine/parser":19,"./utils":31}],17:[function(require,module,exports){
+},{"./rules_engine/evaluator":18,"./rules_engine/parser":19,"./utils":30}],17:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -2080,7 +2121,7 @@ var Logger = {
 };
 
 module.exports = Logger;
-},{"./utils":31}],18:[function(require,module,exports){
+},{"./utils":30}],18:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -2399,7 +2440,7 @@ Source.prototype = {
 };
 
 module.exports = Source;
-},{"./configuration":9,"./translation_key":29,"./utils":31}],21:[function(require,module,exports){
+},{"./configuration":9,"./translation_key":28,"./utils":30}],21:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -2666,7 +2707,7 @@ DecorationTokenizer.prototype = {
 
 
 module.exports = DecorationTokenizer;
-},{"../configuration":9,"../utils":31}],23:[function(require,module,exports){
+},{"../configuration":9,"../utils":30}],23:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -3062,7 +3103,7 @@ DomTokenizer.prototype = {
 };
 
 module.exports = DomTokenizer;
-},{"../configuration":9,"../utils":31}],24:[function(require,module,exports){
+},{"../configuration":9,"../utils":30}],24:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -3425,7 +3466,7 @@ DataToken.prototype = {
 };
 
 module.exports = DataToken;
-},{"../configuration":9,"../logger":17,"../utils":31}],25:[function(require,module,exports){
+},{"../configuration":9,"../logger":17,"../utils":30}],25:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -3498,7 +3539,7 @@ MethodToken.prototype.substitute = function(label, tokens, language, options) {
 module.exports = MethodToken;
 
 
-},{"../utils":31,"./data":24}],26:[function(require,module,exports){
+},{"../utils":30,"./data":24}],26:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -3754,146 +3795,7 @@ PipedToken.prototype.substitute = function(label, tokens, language, options) {
 module.exports = PipedToken;
 
 
-},{"../utils":31,"./data":24}],27:[function(require,module,exports){
-
-/**
- * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
- *
- *  _______                  _       _   _             ______          _
- * |__   __|                | |     | | (_)           |  ____|        | |
- *    | |_ __ __ _ _ __  ___| | __ _| |_ _  ___  _ __ | |__  __  _____| |__   __ _ _ __   __ _  ___
- *    | | '__/ _` | '_ \/ __| |/ _` | __| |/ _ \| '_ \|  __| \ \/ / __| '_ \ / _` | '_ \ / _` |/ _ \
- *    | | | | (_| | | | \__ \ | (_| | |_| | (_) | | | | |____ >  < (__| | | | (_| | | | | (_| |  __/
- *    |_|_|  \__,_|_| |_|___/_|\__,_|\__|_|\___/|_| |_|______/_/\_\___|_| |_|\__,_|_| |_|\__, |\___|
- *                                                                                        __/ |
- *                                                                                       |___/
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-
-
-
-//function translate(label, description, tokens, options) {
-//  label = label || process.argv[2];
-//  console.log(label);
-//  return label;
-//}
-
-//Tr8n.config = new Tr8n.Configuration();
-
-// Cache adapters
-//Tr8n.cache = new Tr8n.Cache();
-
-// Api Client
-//Tr8n.api = new Tr8n.ApiClient();
-
-// Exporting classes
-
-/*
-exports.Configuration = Tr8n.Configuration;
-exports.RulesEngine = Tr8n.RulesEngine;
-exports.Tokenizers = Tr8n.Tokenizers;
-exports.Tokens = Tr8n.Tokens;
-exports.Decorators = Tr8n.Decorators;
-exports.Utils = Tr8n.Utils;
-exports.Language = Tr8n.Language;
-exports.LanguageContext = Tr8n.LanguageContext;
-exports.LanguageContextRule = Tr8n.LanguageContextRule;
-exports.LanguageCase = Tr8n.LanguageCase;
-exports.LanguageCaseRule = Tr8n.LanguageCaseRule;
-exports.Application = Tr8n.Application;
-exports.TranslationKey = Tr8n.TranslationKey;
-exports.Translation = Tr8n.Translation;
-
-exports.configure = function(callback) {
-  callback(Tr8n.config);
-};
-*/
-
-var utils       = require('./utils');
-var config      = require('./configuration');
-
-var Application = require('./application');
-var Language = require('./language');
-var LanguageContext = require('./language_context');
-var LanguageContextRule = require('./language_context_rule');
-var LanguageCase = require('./language_case');
-var LanguageCaseRule = require('./language_case_rule');
-var TranslationKey = require('./translation_key');
-var Translation = require('./translation');
-var Translator = require('./translator');
-var Source = require('./source');
-var DomTokenizer = require('./tokenizers/dom');
-
-var Tr8n = {
-
-  Application: Application,
-  Language: Language,
-  LanguageContext: LanguageContext,
-  LanguageContextRule: LanguageContextRule,
-  LanguageCase: LanguageCase,
-  LanguageCaseRule: LanguageCaseRule,
-  TranslationKey: TranslationKey,
-  Translation: Translation,
-  Translator: Translator,
-  Source: Source,
-  DomTokenizer: DomTokenizer,
-
-  utils: utils,
-  config: config,
-
-  init: function(key, secret, options, callback) {
-    utils.extend(config, options);
-    this.application = new Application({
-      key: key,
-      secret: secret,
-      host: options.host
-    });
-    config.initCache();
-    if (callback) callback();
-  },
-
-  translate: function(label, description, tokens, options) {
-    var language = this.application.getLanguage(config.current_locale);
-    language = language || this.application.getLanguage(config.default_locale);
-    return language.translate(label, description, tokens, options);
-  },
-
-  configure: function(callback) {
-    callback(config);
-  },
-
-  cache: function(callback) {
-    var data = config.cache.data || {};
-    data.languages = data.languages || {};
-    data.sources = data.sources || {};
-    config.cache.data = data;
-    callback(config.cache.data);
-  }
-
-};
-
-module.exports = Tr8n;
-
-
-
-},{"./application":4,"./configuration":9,"./language":12,"./language_case":13,"./language_case_rule":14,"./language_context":15,"./language_context_rule":16,"./source":20,"./tokenizers/dom":23,"./translation":28,"./translation_key":29,"./translator":30,"./utils":31}],28:[function(require,module,exports){
+},{"../utils":30,"./data":24}],27:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -3983,7 +3885,7 @@ module.exports = Translation;
 
 
 
-},{"./tokens/data":24,"./utils":31}],29:[function(require,module,exports){
+},{"./tokens/data":24,"./utils":30}],28:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -4174,7 +4076,7 @@ TranslationKey.prototype = {
 module.exports = TranslationKey;
 
 
-},{"./configuration":9,"./decorators/html":10,"./tokenizers/data":21,"./tokenizers/decoration":22,"./translation":28,"./utils":31}],30:[function(require,module,exports){
+},{"./configuration":9,"./decorators/html":10,"./tokenizers/data":21,"./tokenizers/decoration":22,"./translation":27,"./utils":30}],29:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
  *
@@ -4220,7 +4122,7 @@ var Translator = function(attrs) {
 
 module.exports = Translator;
 
-},{"./utils":31}],31:[function(require,module,exports){
+},{"./utils":30}],30:[function(require,module,exports){
 (function (Buffer){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
@@ -4431,7 +4333,7 @@ module.exports = {
 
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":34,"crypto":40}],32:[function(require,module,exports){
+},{"buffer":33,"crypto":39}],31:[function(require,module,exports){
 (function (process){
 /*!
  * async
@@ -5558,9 +5460,9 @@ module.exports = {
 }());
 
 }).call(this,require("FWaASH"))
-},{"FWaASH":51}],33:[function(require,module,exports){
+},{"FWaASH":50}],32:[function(require,module,exports){
 
-},{}],34:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 /*!
  * The buffer module from node.js, for the browser.
  *
@@ -6718,7 +6620,7 @@ function assert (test, message) {
   if (!test) throw new Error(message || 'Failed assertion')
 }
 
-},{"base64-js":35,"ieee754":36}],35:[function(require,module,exports){
+},{"base64-js":34,"ieee754":35}],34:[function(require,module,exports){
 var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 ;(function (exports) {
@@ -6840,7 +6742,7 @@ var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 	exports.fromByteArray = uint8ToBase64
 }(typeof exports === 'undefined' ? (this.base64js = {}) : exports))
 
-},{}],36:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 exports.read = function(buffer, offset, isLE, mLen, nBytes) {
   var e, m,
       eLen = nBytes * 8 - mLen - 1,
@@ -6926,7 +6828,7 @@ exports.write = function(buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128;
 };
 
-},{}],37:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 (function (Buffer){
 var createHash = require('sha.js')
 
@@ -6960,7 +6862,7 @@ module.exports = function (alg) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"./md5":41,"buffer":34,"ripemd160":42,"sha.js":44}],38:[function(require,module,exports){
+},{"./md5":40,"buffer":33,"ripemd160":41,"sha.js":43}],37:[function(require,module,exports){
 (function (Buffer){
 var createHash = require('./create-hash')
 
@@ -7005,7 +6907,7 @@ Hmac.prototype.digest = function (enc) {
 
 
 }).call(this,require("buffer").Buffer)
-},{"./create-hash":37,"buffer":34}],39:[function(require,module,exports){
+},{"./create-hash":36,"buffer":33}],38:[function(require,module,exports){
 (function (Buffer){
 var intSize = 4;
 var zeroBuffer = new Buffer(intSize); zeroBuffer.fill(0);
@@ -7043,7 +6945,7 @@ function hash(buf, fn, hashSize, bigEndian) {
 module.exports = { hash: hash };
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":34}],40:[function(require,module,exports){
+},{"buffer":33}],39:[function(require,module,exports){
 (function (Buffer){
 var rng = require('./rng')
 
@@ -7101,7 +7003,7 @@ each(['createCredentials'
 })
 
 }).call(this,require("buffer").Buffer)
-},{"./create-hash":37,"./create-hmac":38,"./pbkdf2":48,"./rng":49,"buffer":34}],41:[function(require,module,exports){
+},{"./create-hash":36,"./create-hmac":37,"./pbkdf2":47,"./rng":48,"buffer":33}],40:[function(require,module,exports){
 /*
  * A JavaScript implementation of the RSA Data Security, Inc. MD5 Message
  * Digest Algorithm, as defined in RFC 1321.
@@ -7258,7 +7160,7 @@ module.exports = function md5(buf) {
   return helpers.hash(buf, core_md5, 16);
 };
 
-},{"./helpers":39}],42:[function(require,module,exports){
+},{"./helpers":38}],41:[function(require,module,exports){
 (function (Buffer){
 
 module.exports = ripemd160
@@ -7467,7 +7369,7 @@ function ripemd160(message) {
 
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":34}],43:[function(require,module,exports){
+},{"buffer":33}],42:[function(require,module,exports){
 var u = require('./util')
 var write = u.write
 var fill = u.zeroFill
@@ -7567,7 +7469,7 @@ module.exports = function (Buffer) {
   return Hash
 }
 
-},{"./util":47}],44:[function(require,module,exports){
+},{"./util":46}],43:[function(require,module,exports){
 var exports = module.exports = function (alg) {
   var Alg = exports[alg]
   if(!Alg) throw new Error(alg + ' is not supported (we accept pull requests)')
@@ -7581,7 +7483,7 @@ exports.sha =
 exports.sha1 = require('./sha1')(Buffer, Hash)
 exports.sha256 = require('./sha256')(Buffer, Hash)
 
-},{"./hash":43,"./sha1":45,"./sha256":46,"buffer":34}],45:[function(require,module,exports){
+},{"./hash":42,"./sha1":44,"./sha256":45,"buffer":33}],44:[function(require,module,exports){
 /*
  * A JavaScript implementation of the Secure Hash Algorithm, SHA-1, as defined
  * in FIPS PUB 180-1
@@ -7742,7 +7644,7 @@ module.exports = function (Buffer, Hash) {
   return Sha1
 }
 
-},{"util":53}],46:[function(require,module,exports){
+},{"util":52}],45:[function(require,module,exports){
 
 /**
  * A JavaScript implementation of the Secure Hash Algorithm, SHA-256, as defined
@@ -7907,7 +7809,7 @@ module.exports = function (Buffer, Hash) {
 
 }
 
-},{"./util":47,"util":53}],47:[function(require,module,exports){
+},{"./util":46,"util":52}],46:[function(require,module,exports){
 exports.write = write
 exports.zeroFill = zeroFill
 
@@ -7945,7 +7847,7 @@ function zeroFill(buf, from) {
 }
 
 
-},{}],48:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 (function (Buffer){
 // JavaScript PBKDF2 Implementation
 // Based on http://git.io/qsv2zw
@@ -8031,7 +7933,7 @@ module.exports = function (createHmac, exports) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":34}],49:[function(require,module,exports){
+},{"buffer":33}],48:[function(require,module,exports){
 (function (Buffer){
 // Original code adapted from Robert Kieffer.
 // details at https://github.com/broofa/node-uuid
@@ -8068,7 +7970,7 @@ module.exports = function (createHmac, exports) {
 }())
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":34}],50:[function(require,module,exports){
+},{"buffer":33}],49:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -8093,7 +7995,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],51:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -8158,14 +8060,14 @@ process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 
-},{}],52:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],53:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -8755,4 +8657,4 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require("FWaASH"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":52,"FWaASH":51,"inherits":50}]},{},[11]);
+},{"./support/isBuffer":51,"FWaASH":50,"inherits":49}]},{},[11]);
