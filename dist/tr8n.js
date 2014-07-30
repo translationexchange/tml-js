@@ -880,6 +880,13 @@ Base.prototype = {
     if(callback) callback(this.version)
   },
 
+  setVersion: function(version, callback) {
+    this.version = version;
+    this.store(VERSION_KEY, this.version, function() {
+      if (callback) callback(this.version)
+    }.bind(this));
+  },
+
   resetVersion: function() {
     this.version = null;
   },
@@ -929,6 +936,12 @@ var Base    = require('./base');
 
 var Browser = function(config) {
   this.initialize(config);
+  this.getVersion(function(version){
+    if(config.version && version != config.version) {
+      this.clear();
+      this.setVersion(config.version)
+    }
+  }.bind(this))
 };
 
 Browser.prototype = utils.extend(new Base(), {
@@ -957,7 +970,7 @@ Browser.prototype = utils.extend(new Base(), {
           } else callback("no data", null);
         }.bind(this));
       } else if (def) {
-        this.store(key, def, function(data) {
+        this.store(key, def, function(err, data) {
           callback(null, data);
         });
       }
@@ -979,6 +992,15 @@ Browser.prototype = utils.extend(new Base(), {
   exists: function(key, callback){
     var key = this.cache.getItem(this.getVersionedKey(key));
     if (callback) callback(!!key);
+  },
+
+  clear: function() {
+    console.log("CLEARING CACHE!")
+    for (var key in localStorage){
+      if(key.match(/^tr8n/)) {
+        this.cache.removeItem(key);
+      }
+    }
   }
 
 
@@ -1456,6 +1478,9 @@ var tr8n = {
     }, options);
 
     config.initCache();
+    
+
+
 
     app = this.application = new Application({
       key     : key,
