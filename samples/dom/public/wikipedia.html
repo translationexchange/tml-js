@@ -517,16 +517,6 @@ Lua memory usage: 5.04 MB/50 MB
 
 <script src="javascripts/tr8n.js"></script>
 
-<script>
-    var container = document.getElementById("tr8n_content");
-    container.style.display = "none";
-
-//    tr8n.init("680d6c3913971ac32", "35510cb65d5144673", {"source": "wikipedia", "host": "http://localhost:3000"}, function() {
-    tr8n.init("77b274618a8d58873", "cff464ce525ad6020", {"source": "wikipedia"}, function() {
-        console.log("Tr8n initialized");
-        tre(container.id);
-        container.style.display = "block";
-    });
-</script>
+<script>tr8n.init("77b274618a8d58873", "cff464ce525ad6020", {source: "wikipedia", element: "tr8n_content"});</script>
 
 </body></html>

@@ -1422,7 +1422,6 @@ var includeTools = function(app, callback) {
   })
 };
 
-
 var tr8n = {
 
   application:null,
@@ -1434,7 +1433,13 @@ var tr8n = {
       current_translator  = (data && data.translator) ? new Translator(data.translator) : null,
       default_locale      = "en-US",
       current_locale      = (data && data.locale) ? data.locale : default_locale,
-      current_source      = "/";
+      current_source      = options.source || "/";
+
+    var browser_element = null;
+    if (options.element) {
+      browser_element = (typeof options.element === "string") ? document.getElementById(options.element) : options.element;
+      browser_element.style.display = "none";
+    }
 
     options = utils.extend(config, {
       host: options.host || "https://translationexchange.com",
@@ -1465,6 +1470,7 @@ var tr8n = {
       current_locale = app.default_locale;
     }
 
+    var self = this;
     app.init({
       current_locale  : current_locale,
       locales         : locales,
@@ -1477,7 +1483,13 @@ var tr8n = {
       }
       // This should be optionable
       // Maybe tools and tr8n should be separate for now?
-      includeTools(app, callback);
+      includeTools(app, function() {
+        if (browser_element != null) {
+          self.translateElement(browser_element);
+          browser_element.style.display = "block";
+        }
+        if (callback) callback();
+      });
     })
   },
 
@@ -1516,8 +1528,8 @@ var tr8n = {
     return this.translate(label, description, tokens, options);
   },
 
-  translateElement: function(element_id) {
-    var container = document.getElementById(element_id);
+  translateElement: function(element) {
+    var container = (typeof element === "string") ? document.getElementById(element) : element;
     config.currentLanguage = app.getLanguage(config.current_locale);
 
     var tokenizer = new DomTokenizer(container, {}, {
