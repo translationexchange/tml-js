@@ -5,23 +5,22 @@
     <title></title>
     <script src="../../dist/tr8n.js"></script>
 
-    <script>
-        Tr8nSDK.init("default", "test", {
-            default_locale: "en-US",
-            current_locale: "ru",
-            current_source: "index"
-        });
-    </script>
-
     <script src="data/application.js"></script>
     <script src="data/ru.js"></script>
     <script src="data/en-US.js"></script>
     <script src="data/index.js"></script>
+
+    <script>
+        tr8n_init("680d6c3913971ac32", "35510cb65d5144673", {"source": "html", "locale": "ru"}, function() {
+            console.log("Tr8n initialized");
+        });
+    </script>
+
 </head>
 <body>
 
-<button onclick="alert(tr('Hello World'))">
-    Hello World
+<button onclick="alert(tr('Hello {user}', {'user': 'Michael'}))">
+    Click Here
 </button>
 
 </body>
