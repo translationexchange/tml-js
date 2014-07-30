@@ -22,9 +22,11 @@
   <!--<script src="cache/index.js"></script>-->
 
   <script>
-    tr8n_init("680d6c3913971ac32", "35510cb65d5144673", {"source": "client"}, function() {
+
+    //tr8n.init("680d6c3913971ac32", "35510cb65d5144673", {"source": "client"}, function() {
+    tr8n.init("4ecfac1de1b59e2ad", "3798347ab094d7f15", {"source": "client"}, function() {      
       console.log("Done init");
-      console.log(Tr8nSDK.application);
+      console.log(tr8n.application);
 
       $.ajax({
         url: "/templates/index.jst"
