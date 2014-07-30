@@ -4,6 +4,7 @@ tmp
 coverage
 doc
 coverage.html
+dist/
 samples/node/.idea
 samples/express/node_modules
 samples/undescore/node_modules
