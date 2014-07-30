@@ -1420,7 +1420,7 @@ var includeTools = function(app, callback) {
     if (callback) callback();
 
   })
-}
+};
 
 
 var tr8n = {
@@ -1437,7 +1437,7 @@ var tr8n = {
       current_source      = "/";
 
     options = utils.extend(config, {
-      host: "http://translationexchange.com",
+      host: options.host || "https://translationexchange.com",
       default_locale: default_locale,
       current_locale: current_locale,
       current_source: current_source,
@@ -1502,9 +1502,23 @@ var tr8n = {
     return language.translate(label, description, tokens, options);
   },
 
+  translateLabel: function(label, description, tokens, options) {
+    if (typeof description !== "string") {
+      options = tokens || {};
+      tokens  = description || {};
+      description = "";
+    }
+
+    options = utils.extend({}, {
+      skip_decorations: true
+    }, options);
+
+    return this.translate(label, description, tokens, options);
+  },
+
   translateElement: function(element_id) {
     var container = document.getElementById(element_id);
-    config.currentLanguage = app.getLanguage(Tr8nSDK.config.current_locale);
+    config.currentLanguage = app.getLanguage(config.current_locale);
 
     var tokenizer = new DomTokenizer(container, {}, {
       "debug": false,
@@ -1522,6 +1536,7 @@ var tr8n = {
 
 window.tr8n = tr8n;
 window.tr   = tr8n.translate;
+window.trl  = tr8n.translateLabel;
 window.tre  = tr8n.translateElement;
 
 },{"../application":4,"../configuration":9,"../tokenizers/dom":23,"../translator":29,"../utils":30}],12:[function(require,module,exports){
