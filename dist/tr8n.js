@@ -41,9 +41,9 @@ var Ajax = {
   },
 
   request: function (method, url, params, callback) {
+    if(!callback) callback = function(){};
     var 
       data,
-      callback = callback || new Function,
       xhr = new XMLHttpRequest();
 
     if (method.match(/^get$/i)) {
@@ -122,18 +122,18 @@ var request = require('request');
 var Request = {
 
   get: function(url, params, callback){
-    callback = callback || new Function;
-    request.get(url, {qs: params || {}}, callback)
+    if(!callback) callback = function(){};
+    request.get(url, {qs: params || {}}, callback);
   },
 
   post: function(url, parms, callback) {
-    callback = callback || new Function;
+    if(!callback) callback = function(){};
     request.post(url, {form: params || {}}, callback);
   }
 
-}
+};
 
-module.exports = request;
+module.exports = Request;
 },{}],3:[function(require,module,exports){
 /**
  * Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
@@ -359,7 +359,7 @@ Application.prototype = {
   },
 
   isKeyRegistrationEnabled: function() {
-    return (this.secret != null);
+    return (this.secret !== null);
   },
 
   /**
@@ -416,8 +416,8 @@ Application.prototype = {
     var self = this;
 
     // load application
-    self.getApiClient().get("application", {definition: true}, {cache_key: self.key}, function (error, data) {
-      if (error) {
+    self.getApiClient().get("application", {definition: true}, {cache_key: self.key}, function (err, data) {
+      if (err) {
         console.log(err);
         throw err;
       }
@@ -862,7 +862,7 @@ Base.prototype = {
     this.getVersion(function(version) {
       this.version = parseInt(version) + 1;
       this.store(VERSION_KEY, this.version, function() {
-        if (callback) callback(this.version)
+        if (callback) callback(this.version);
       }.bind(this));
     }.bind(this));
   },
@@ -871,17 +871,17 @@ Base.prototype = {
     if (!this.version) {
       this.fetch(VERSION_KEY, 1, function(err, data) {
         this.version = data;
-        if (callback) callback(this.version)
+        if (callback) callback(this.version);
       }.bind(this));
       return;
     }
-    if(callback) callback(this.version)
+    if(callback) callback(this.version);
   },
 
   setVersion: function(version, callback) {
     this.version = version;
     this.store(VERSION_KEY, this.version, function() {
-      if (callback) callback(this.version)
+      if (callback) callback(this.version);
     }.bind(this));
   },
 
@@ -937,9 +937,9 @@ var Browser = function(config) {
   this.getVersion(function(version){
     if(config.version && version != config.version) {
       this.clear();
-      this.setVersion(config.version)
+      this.setVersion(config.version);
     }
-  }.bind(this))
+  }.bind(this));
 };
 
 Browser.prototype = utils.extend(new Base(), {
@@ -948,7 +948,7 @@ Browser.prototype = utils.extend(new Base(), {
   read_only: false,
 
   create: function() {
-    return window.localStorage
+    return window.localStorage;
   },
 
   fetch: function(key, def, callback) {
@@ -983,13 +983,13 @@ Browser.prototype = utils.extend(new Base(), {
 
   del: function(key, callback) {
     this.info("cache del " + key);
-    this.cache.removeItem(this.getVersionedKey(key))
+    this.cache.removeItem(this.getVersionedKey(key));
     if(callback) callback(null);
   },
 
   exists: function(key, callback){
-    var key = this.cache.getItem(this.getVersionedKey(key));
-    if (callback) callback(!!key);
+    var val = this.cache.getItem(this.getVersionedKey(key));
+    if (callback) callback(!!val);
   },
 
   clear: function() {
@@ -1321,7 +1321,7 @@ Configuration.prototype = {
   }
 };
 
-module.exports = new Configuration;
+module.exports = new Configuration();
 
 
 
@@ -1424,19 +1424,21 @@ var includeTools = function(app, callback) {
     Tr8n.page_locale = config.current_locale;
     Tr8n.locale = config.current_locale;
 
+    var shortcutFn = function(sc){
+      return function(){
+        eval(app.shortcuts[sc]); // jshint ignore:line
+      };
+    };
+
     if (app.isFeatureEnabled("shortcuts")) {
       for (var sc in app.shortcuts) {
-        shortcut.add(sc, (function(sc){
-          return function(){
-            eval(app.shortcuts[sc]);
-          }
-        })(sc))
+        shortcut.add(sc, shortcutFn(sc));
       }
     }
 
     if (callback) callback();
 
-  })
+  });
 };
 
 var tr8n = {
@@ -1501,13 +1503,13 @@ var tr8n = {
       // This should be optionable
       // Maybe tools and tr8n should be separate for now?
       includeTools(app, function() {
-        if (browser_element != null) {
+        if (browser_element !== null) {
           self.translateElement(browser_element);
           browser_element.style.display = "block";
         }
         if (callback) callback();
       });
-    })
+    });
   },
 
   translate: function(label, description, tokens, options) {
@@ -2213,36 +2215,36 @@ var Evaluator = function(ctx) {
   
     'set'     : function(l, r){ this.vars[l] = this.ctx[l] = r; return r; },
 
-    '='       : function(l, r)    {return l == r },                                                     // ['=', 1, 2]
-    '!='      : function(l, r)    {return l != r },                                                     // ['!=', 1, 2]
-    '<'       : function(l, r)    {return l < r },                                                      // ['<', 1, 2]
-    '>'       : function(l, r)    {return l > r },                                                      // ['>', 1, 2]
-    '+'       : function(l, r)    {return l + r },                                                      // ['+', 1, 2]
-    '-'       : function(l, r)    {return l - r },                                                      // ['-', 1, 2]
-    '*'       : function(l, r)    {return l * r },                                                      // ['*', 1, 2]
-    '%'       : function(l, r)    {return l % r },                                                      // ['%', 14, 10]
-    'mod'     : function(l, r)    {return l % r },                                                      // ['mod', '@n', 10]
-    '/'       : function(l, r)    {return (l * 1.0) / r },                                              // ['/', 1, 2]
-    '!'       : function(expr)    {return !expr },                                                      // ['!', ['true']]
-    'not'     : function(val)     {return !val },                                                       // ['not', ['true']]
+    '='       : function(l, r)    {return l == r; },                                                     // ['=', 1, 2]
+    '!='      : function(l, r)    {return l != r; },                                                     // ['!=', 1, 2]
+    '<'       : function(l, r)    {return l < r; },                                                      // ['<', 1, 2]
+    '>'       : function(l, r)    {return l > r; },                                                      // ['>', 1, 2]
+    '+'       : function(l, r)    {return l + r; },                                                      // ['+', 1, 2]
+    '-'       : function(l, r)    {return l - r; },                                                      // ['-', 1, 2]
+    '*'       : function(l, r)    {return l * r; },                                                      // ['*', 1, 2]
+    '%'       : function(l, r)    {return l % r; },                                                      // ['%', 14, 10]
+    'mod'     : function(l, r)    {return l % r; },                                                      // ['mod', '@n', 10]
+    '/'       : function(l, r)    {return (l * 1.0) / r; },                                              // ['/', 1, 2]
+    '!'       : function(expr)    {return !expr; },                                                      // ['!', ['true']]
+    'not'     : function(val)     {return !val; },                                                       // ['not', ['true']]
 
-    '&&'      : function()        {return Array.prototype.slice.call(arguments).every(this.evaluate.bind(this))},            // ['&&', [], [], ...]
-    'and'     : function()        {return Array.prototype.slice.call(arguments).every(this.evaluate.bind(this))},            // ['and', [], [], ...]
-    '||'      : function()        {return !!Array.prototype.slice.call(arguments).filter(this.evaluate.bind(this)).length},  // ['||', [], [], ...]
-    'or'      : function()        {return !!Array.prototype.slice.call(arguments).filter(this.evaluate.bind(this)).length},  // ['or', [], [], ...]
+    '&&'      : function()        {return Array.prototype.slice.call(arguments).every(this.evaluate.bind(this));},            // ['&&', [], [], ...]
+    'and'     : function()        {return Array.prototype.slice.call(arguments).every(this.evaluate.bind(this));},            // ['and', [], [], ...]
+    '||'      : function()        {return !!Array.prototype.slice.call(arguments).filter(this.evaluate.bind(this)).length;},  // ['||', [], [], ...]
+    'or'      : function()        {return !!Array.prototype.slice.call(arguments).filter(this.evaluate.bind(this)).length;},  // ['or', [], [], ...]
 
-    'if'      : function(c,t,f)   {return this.evaluate(c) ? this.evaluate(t) : this.evaluate(f)},      // ['if', 'cond', 'true', 'false']
-    'let'     : function(l, r)    {return this.vars[l] = r },                                           // ['let', 'n', 5]
-    'true'    : function()        {return true },                                                       // ['true']
-    'false'   : function()        {return false },                                                      // ['false']
+    'if'      : function(c,t,f)   {return this.evaluate(c) ? this.evaluate(t) : this.evaluate(f);},      // ['if', 'cond', 'true', 'false']
+    'let'     : function(l, r)    {this.vars[l] = r; return r;},                                         // ['let', 'n', 5]
+    'true'    : function()        {return true; },                                                       // ['true']
+    'false'   : function()        {return false; },                                                      // ['false']
 
-    'date'    : function(date)    {return new Date(date) },                                             // ['date', '2010-01-01']
-    'today'   : function()        {return new Date() },                                                 // ['today']
-    'time'    : function(expr)    {return new Date(expr) },                                             // ['time', '2010-01-01 10:10:05']
-    'now'     : function()        {return Date.now() },                                                 // ['now']
+    'date'    : function(date)    {return new Date(date); },                                             // ['date', '2010-01-01']
+    'today'   : function()        {return new Date(); },                                                 // ['today']
+    'time'    : function(expr)    {return new Date(expr); },                                             // ['time', '2010-01-01 10:10:05']
+    'now'     : function()        {return Date.now(); },                                                 // ['now']
 
-    'append'  : function(l, r)    {return String(r) + String(l) },                                      // ['append', 'world', 'hello ']
-    'prepend' : function(l, r)    {return String(l) + String(r) },                                      // ['prepend', 'hello  ', 'world']
+    'append'  : function(l, r)    {return String(r) + String(l); },                                      // ['append', 'world', 'hello ']
+    'prepend' : function(l, r)    {return String(l) + String(r); },                                      // ['prepend', 'hello  ', 'world']
 
     'match'   : function(search, subject) {                                                             // ['match', /a/, 'abc']
       search = this._stringToRegexp(search);
@@ -2256,7 +2258,7 @@ var Evaluator = function(ctx) {
         .replace(/(\w+)\.\.(\w+)/g, function(x,f,l){
           bounds = range(f,l);
           bounds.push(l);
-          return bounds.join()
+          return bounds.join();
         });
       return values
         .split(',')
@@ -2265,8 +2267,8 @@ var Evaluator = function(ctx) {
 
     'within'  : function(values, search) {                                                             // ['within', '0..3', '@n']
       var 
-        bounds = values.split('..').map(function(d){return parseInt(d)})
-      return (bounds[0] <= search && search <= bounds[1])
+        bounds = values.split('..').map(function(d){return parseInt(d);});
+      return (bounds[0] <= search && search <= bounds[1]);
     },
 
     'replace' : function(search, replace, subject) {                                                  // ['replace', '/^a/', 'v', 'abc']
@@ -2275,17 +2277,17 @@ var Evaluator = function(ctx) {
     },
 
     'count'   : function(list){                                                                       // ['count', '@genders']
-      return (typeof(list) == "string" ? this.vars[list] : list).length
+      return (typeof(list) == "string" ? this.vars[list] : list).length;
     },
 
     'all'     : function(list, value) {                                                               // ['all', '@genders', 'male']
       list = (typeof(list) == "string") ? this.vars[list] : list;
-      return (list instanceof Array) ? list.every(function(e){return e == value}) : false;
+      return (list instanceof Array) ? list.every(function(e){return e == value;}) : false;
     },
     
     'any'     : function(list, value) {                                                               // ['any', '@genders', 'female']
       list = (typeof(list) == "string") ? this.vars[list] : list;
-      return (list instanceof Array) ? !!list.filter(function(e){return e == value}) : false;
+      return (list instanceof Array) ? !!list.filter(function(e){return e == value;}) : false;
     }
 
   };
@@ -2317,10 +2319,10 @@ Evaluator.prototype = {
     }
     str = str.replace(re, '');
     if (str.match(/\/i$/)) {
-      str = str.replace(/\/i$/g, '')
-      return new RegExp(str,"ig")
+      str = str.replace(/\/i$/g, '');
+      return new RegExp(str,"ig");
     }
-    str = str.replace(/\/$/, '')
+    str = str.replace(/\/$/, '');
     return new RegExp(str,"g");
   },
 
@@ -2336,11 +2338,11 @@ Evaluator.prototype = {
     if (typeof this.ctx[fn] == 'function') {
       return this.ctx[fn].apply(this,args);
     }
-    return this.ctx[fn]
+    return this.ctx[fn];
   },
 
   evaluate: function(expr) {
-    if (this.ctx['atom'].call(this, expr)) {
+    if (this.ctx.atom.call(this, expr)) {
       if (typeof expr == "string" && this.vars[expr]) return this.vars[expr];
       return (expr in this.ctx ? this.ctx[expr] : expr);
     }
@@ -2349,9 +2351,9 @@ Evaluator.prototype = {
       args  = expr.slice(1);
 
     if(['quote','car','cdr','cond','if','&&','||','and','or','true','false','let','count','all','any'].indexOf(fn) == -1) {
-      args = args.map(this.evaluate.bind(this))
+      args = args.map(this.evaluate.bind(this));
     }
-    return this.apply(fn,args)
+    return this.apply(fn,args);
   }
 };
 
@@ -2641,12 +2643,12 @@ DecorationTokenizer.prototype = {
   },
 
   peek: function() {
-    if (this.fragments.length == 0) return null;
+    if (this.fragments.length === 0) return null;
     return this.fragments[0];
   },
 
   getNextFragment: function() {
-    if (this.fragments.length == 0) return null;
+    if (this.fragments.length === 0) return null;
     return this.fragments.shift();
   },
 
@@ -2666,7 +2668,7 @@ DecorationTokenizer.prototype = {
 
     if (type == TOKEN_TYPE_SHORT) {
       var first = true;
-      while (this.peek()!=null && !this.peek().match(new RegExp(RE_SHORT_TOKEN_END))) {
+      while (this.peek()!==null && !this.peek().match(new RegExp(RE_SHORT_TOKEN_END))) {
         var value = this.parse();
         if (first && typeof value == "string") {
           value = value.replace(/^\s+/,'');
@@ -2675,7 +2677,7 @@ DecorationTokenizer.prototype = {
         tree.push(value);
       }
     } else if (type == TOKEN_TYPE_LONG) {
-      while (this.peek()!=null && !this.peek().match(new RegExp(RE_LONG_TOKEN_END))) {
+      while (this.peek()!==null && !this.peek().match(new RegExp(RE_LONG_TOKEN_END))) {
         tree.push(this.parse());
       }
     }
@@ -2690,7 +2692,7 @@ DecorationTokenizer.prototype = {
 
   getDefaultDecoration: function(token, value) {
     var default_decoration = config.getDefaultToken(token, "decoration");
-    if (default_decoration == null) return value;
+    if (default_decoration === null) return value;
 
     var decoration_token_values = this.context[token];
     default_decoration = default_decoration.replace(PLACEHOLDER, value);
@@ -2711,7 +2713,7 @@ DecorationTokenizer.prototype = {
 
     var method = this.context[token];
 
-    if (method != null) {
+    if (!!method) {
       if (typeof method === 'string')
         return method.replace(PLACEHOLDER, value);
 
@@ -2826,12 +2828,12 @@ DomTokenizer.prototype = {
       } else if (this.isInlineNode(child) && this.hasInlineOrTextSiblings(child) && !this.isBetweenSeparators(child)) {  // inline nodes - tml
         buffer = buffer + this.generateTmlTags(child);
       } else if (this.isSeparatorNode(child)) {    // separators:  br or hr
-        if (buffer != "")
+        if (buffer !== "")
           html = html + this.translateTml(buffer);
         html = html + this.generateHtmlToken(child);
         buffer = "";
       } else {
-        if (buffer != "")
+        if (buffer !== "")
           html = html + this.translateTml(buffer);
 
         var containerValue = this.translateTree(child);
@@ -2845,7 +2847,7 @@ DomTokenizer.prototype = {
       }
     }
 
-    if (buffer != "") {
+    if (buffer !== "") {
       html = html + this.translateTml(buffer);
     }
 
@@ -2855,9 +2857,9 @@ DomTokenizer.prototype = {
   isNonTranslatableNode: function(node) {
     if (!node) return false;
 
-    if (node.nodeType == 1 && this.getOption("nodes.scripts").indexOf(node.nodeName.toLowerCase()) != -1)
+    if (node.nodeType === 1 && this.getOption("nodes.scripts").indexOf(node.nodeName.toLowerCase()) !== -1)
       return true;
-    if (node.nodeType == 1 && node.childNodes.length == 0 && node.nodeValue == "")
+    if (node.nodeType === 1 && node.childNodes.length === 0 && node.nodeValue === "")
       return true;
     return false;
   },
@@ -2941,7 +2943,7 @@ DomTokenizer.prototype = {
   //  console.log("TML Before: [" + tml + "]");
     tml = tml.replace(/[\s\n\r\t\0\x0b\xa0\xc2]/g, '');
   //  console.log("TML After: [" + tml + "]");
-    return (tml == '');
+    return (tml === '');
   },
 
   resetContext: function() {
@@ -2953,12 +2955,12 @@ DomTokenizer.prototype = {
   },
 
   isOnlyChild: function(node) {
-    if (node.parentNode == null) return false;
+    if (node.parentNode === null) return false;
     return (node.parentNode.childNodes.length == 1);
   },
 
   hasInlineOrTextSiblings: function(node) {
-    if (node.parentNode == null) return false;
+    if (node.parentNode === null) return false;
 
     for (var i=0; i < node.parentNode.childNodes.length; i++) {
       var child = node.parentNode.childNodes[i];
@@ -2973,33 +2975,31 @@ DomTokenizer.prototype = {
 
   isInlineNode: function(node) {
     return (
-      node.nodeType == 1
-      && this.getOption("nodes.inline").indexOf(node.tagName.toLowerCase()) != -1
-      && !this.isOnlyChild(node)
+      node.nodeType == 1 && this.getOption("nodes.inline").indexOf(node.tagName.toLowerCase()) != -1 && !this.isOnlyChild(node)
     );
   },
 
   isContainerNode: function(node) {
-    return (node.nodeType == 1 && !this.isInlineNode(node));
+    return (node.nodeType === 1 && !this.isInlineNode(node));
   },
 
   isSelfClosingNode: function(node) {
-    return (node.firstChild == null);
+    return (node.firstChild === null);
   },
 
   isIgnoredNode: function(node) {
-    if (node.nodeType != 1) return true;
+    if (node.nodeType !== 1) return true;
     return (this.getOption("nodes.ignored").indexOf(node.tagName.toLowerCase()) != -1);
   },
 
   isValidTextNode: function(node) {
-    if (node == null) return false;
-    return (node.nodeType == 3 && !this.isEmptyString(node.nodeValue));
+    if (node === null) return false;
+    return (node.nodeType === 3 && !this.isEmptyString(node.nodeValue));
   },
 
   isSeparatorNode: function(node) {
-    if (node == null) return false;
-    return (node.nodeType == 1 && this.getOption("nodes.splitters").indexOf(node.tagName.toLowerCase()) != -1);
+    if (node === null) return false;
+    return (node.nodeType === 1 && this.getOption("nodes.splitters").indexOf(node.tagName.toLowerCase()) != -1);
   },
 
   sanitizeValue: function(value) {
@@ -3042,17 +3042,17 @@ DomTokenizer.prototype = {
   generateHtmlToken: function(node, value) {
     var name = node.tagName.toLowerCase();
     var attributes = node.attributes;
-    var attributesHash = {},
-    value = ((value == null) ? '{$0}' : value);
+    var attributesHash = {};
+    var val = ((value === null) ? '{$0}' : value);
 
-    if (attributes.length == 0) {
+    if (attributes.length === 0) {
       if (this.isSelfClosingNode(node)) {
         if (name == "br" || name == "hr")
           return '<' + name + '/>';
         else
           return '<' + name + '>' + '</' + name + '>';
       }
-      return '<' + name + '>' + value + '</' + name + '>';
+      return '<' + name + '>' + val + '</' + name + '>';
     }
 
     for(var i=0; i<attributes.length; i++) {
@@ -3072,13 +3072,13 @@ DomTokenizer.prototype = {
     if (this.isSelfClosingNode(node))
       return '<' + name + ' ' + attr + '>' + '</' + name + '>';
 
-    return '<' + name + ' ' + attr + '>' + value + '</' + name + '>';
+    return '<' + name + ' ' + attr + '>' + val + '</' + name + '>';
   },
 
   adjustName: function(node) {
     var name = node.tagName.toLowerCase();
     var map = this.getOption("name_mapping");
-    name = (map[name] != null) ? map[name] : name;
+    name = (map[name] !== null) ? map[name] : name;
     return name;
   },
 
@@ -3282,7 +3282,7 @@ DataToken.prototype = {
   
   getTokenValueFromArrayParam: function(arr, language, options) {
     options = options || {};
-    if (arr.length == 0)
+    if (arr.length === 0)
       return this.error("Invalid number of params of an array");
   
     var object = arr[0];
@@ -3379,7 +3379,7 @@ DataToken.prototype = {
     var values = [];
     for (var i=0; i<objects.length; i++) {
       var obj = objects[i];
-      if (method == null) {
+      if (method === null) {
         values.push(this.sanitize("" + obj, obj, language, utils.extend(options, {safe: false})));
       } else if (typeof method === "string") {
         if (method.match(/^@/)) {
@@ -3412,7 +3412,7 @@ DataToken.prototype = {
     if (values.length == 1)
       return values[0];
   
-    if (!list_options.joiner || list_options.joiner == "")
+    if (!list_options.joiner || list_options.joiner === "")
       return values.join(list_options.separator);
   
     var joiner = language.translate(list_options.joiner, list_options.description, {}, options);
@@ -3454,7 +3454,7 @@ DataToken.prototype = {
   
     if (list_options.collapsable) {
       result = result + ' <a href="#" class="tr8n_other_less_link" style="font-size:smaller;white-space:nowrap" onClick="' + "document.getElementById('tr8n_other_link_key').style.display='inline'; document.getElementById('tr8n_other_elements_key').style.display='none'; return false;" + '">';
-      result = result + language.translate(list_options.less, list_options["description"], {}, options);
+      result = result + language.translate(list_options.less, list_options.description, {}, options);
       result = result + "</a>";
     }
   
@@ -3713,10 +3713,10 @@ PipedToken.prototype.isValueDisplayedInTranslation = function() {
 */
 
 PipedToken.prototype.generateValueMapForContext = function(context) {
-  var values = {};
+  var values = {}, i, j;
 
   if (this.parameters[0].indexOf(':') != -1) {
-    for (var i=0; i<this.parameters.length; i++) {
+    for (i=0; i<this.parameters.length; i++) {
       var name_value = this.parameters[i].split(":");
       values[name_value[0].trim()] = name_value[1].trim();
     }
@@ -3754,7 +3754,7 @@ PipedToken.prototype.generateValueMapForContext = function(context) {
   // {}
   var keys = utils.keys(token_mapping);
 
-  for (var i=0; i<keys.length; i++) {
+  for (i=0; i<keys.length; i++) {
     var key = keys[i];
     var value = token_mapping[key];
 
@@ -3764,7 +3764,7 @@ PipedToken.prototype.generateValueMapForContext = function(context) {
 
     var internal_keys = value.match(/{\$\d(::[\w]+)*\}/g) || [];
 
-    for (var j=0; j<internal_keys.length; j++) {
+    for (j=0; j<internal_keys.length; j++) {
       var token = internal_keys[j];
       var token_without_parens = token.replace(/[\{\}]/g, '');
       var parts = token_without_parens.split('::');
@@ -3798,7 +3798,7 @@ PipedToken.prototype.substitute = function(label, tokens, language, options) {
 
   var object = this.getTokenObject(tokens);
 
-  if (this.parameters.length == 0) {
+  if (this.parameters.length === 0) {
     this.error("Piped params may not be empty");
     return label;
   }
@@ -3811,7 +3811,7 @@ PipedToken.prototype.substitute = function(label, tokens, language, options) {
 
   var rule = context.findMatchingRule(object);
 
-  if (rule == null) return label;
+  if (rule === null) return label;
 
   var value = piped_values[rule.keyword];
   if (!value) {
@@ -3873,7 +3873,7 @@ module.exports = PipedToken;
 
 var utils           = require('./utils');
 
-var DataToken       = require('./tokens/data')
+var DataToken       = require('./tokens/data');
 
 /**
  * Translation
@@ -4103,8 +4103,9 @@ TranslationKey.prototype = {
   },
 
   substituteTokens: function(label, tokens, language, options) {
+    var tokenizer;
     if (label.indexOf('{') != -1) {
-      var tokenizer = new DataTokenizer(label);
+      tokenizer = new DataTokenizer(label);
       label = tokenizer.substitute(language, tokens, utils.extend(options, {allowed_tokens: this.getDataTokenNames()}));
     }
 
@@ -4247,7 +4248,7 @@ module.exports = {
   },
   
   clone: function(obj) {
-    if(obj == null || typeof(obj) != 'object')
+    if(obj === null || typeof(obj) != 'object')
       return obj;
   
     var temp = obj.constructor(); // changed
@@ -4318,7 +4319,7 @@ module.exports = {
     return parts[0];
   },
 
-  process: function(destination, source, deep) {  
+  assign: function(destination, source, deep) {  
     for (var key in source) {
       if (hasOwnProperty.call(source, key)) {
         if (deep && key in destination && typeof(destination[key]) == 'object' && typeof(source[key]) == 'object') {
@@ -4333,14 +4334,14 @@ module.exports = {
 
   extend: function(destination) {
     for(var i=1; i<arguments.length; i++) {
-      destination = this.process(destination, arguments[i]);
+      destination = this.assign(destination, arguments[i]);
     }
     return destination;
   },
 
   merge: function(destination) {
     for(var i=1; i<arguments.length; i++) {
-      destination = this.process(destination, arguments[i], true);
+      destination = this.assign(destination, arguments[i], true);
     }
     return destination;
   },
@@ -4383,21 +4384,20 @@ module.exports = {
   },
 
   parallel: function(funcs, callback) {
-    var i,l=0,c=0,r={},e = null;
+    var k,i,l=0,c=0,r={},e = null;
+    var cb = function(k){
+      funcs[k](function(err, data){
+        if(err) callback(err);
+        if(data) r[k] = data;
+        c++;
+        if(c == l) {
+          callback(null, r);
+        }
+      });
+    };
     for(k in funcs) l++;
     if(!l) callback(null,r);
-    for(k in funcs) {
-      (function(k){
-        funcs[k](function(err, data){
-          if(err) callback(err);
-          if(data) r[k] = data;
-          c++;
-          if(c == l) {
-            callback(null, r);
-          }
-        })
-      })(k)
-    }
+    for(k in funcs) {cb(k);}
   }
 
 };

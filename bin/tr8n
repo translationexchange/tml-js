@@ -2,23 +2,11 @@
 
 var program = require('commander');
 var config = require('../lib/configuration');
+var fs = require('fs');
 
 program
-  .version('0.0.1')
-  .option('-c, --cache', 'Shows cache version')
-  .option('-r, --reset', 'Reset cache')
-  .parse(process.argv);
+  .version('0.0.1');
 
-config.cache = {
-    enabled: true,
-    adapter: "redis",
-    host: "localhost",
-    port: 6379,
-    version: 1,
-    timeout: 3600
-};
-
-config.initCache();
 
 if (program["reset"]) {
   config.getCache().incrementVersion(function(version) {
@@ -29,3 +17,94 @@ if (program["reset"]) {
     console.log("Current cache version is: " + version);
   });
 }
+
+program
+  .command('cache:version')
+  .description('shows current cache version')
+  .action(function(options){
+    config.cache = {
+      enabled: true,
+      adapter: "redis",
+      host: "localhost",
+      port: 6379,
+      version: 1,
+      timeout: 3600
+    };
+    config.initCache();
+    config.getCache().getVersion(function(version) {
+      console.log("Current cache version is: " + version);
+      process.exit(code=0);
+    });
+});
+
+program
+  .command('cache:config')
+  .description('shows current cache version')
+  .action(function(options){
+    config.cache = {
+      enabled: true,
+      adapter: "redis",
+      host: "localhost",
+      port: 6379,
+      version: 1,
+      timeout: 3600
+    };
+    console.log(config.cache);
+    process.exit(code=0);
+  });
+
+
+program
+  .command('cache:reset')
+  .description('resets cache')
+  .option("-v, --version [version]", "which version to reset to")
+  .action(function(options){
+
+    config.cache = {
+      enabled: true,
+      adapter: "redis",
+      host: "localhost",
+      port: 6379,
+      version: 1,
+      timeout: 3600
+    };
+
+    config.initCache();
+
+    config.getCache().incrementVersion(function(version) {
+      console.log("New cache version is: " + version);
+      process.exit(code=0);
+    });
+});
+
+
+program
+  .command('cache:generate')
+  .description('generates file based cache')
+  .action(function(options){
+    console.log("Generating file based cache...");
+
+
+
+
+    process.exit(code=0);
+  });
+
+
+//program
+//  .command('exec <cmd>')
+//  .description('execute the given remote cmd')
+//  .option("-e, --exec_mode <mode>", "Which exec mode to use")
+//  .action(function(cmd, options){
+//    console.log('exec "%s" using %s mode', cmd, options.exec_mode);
+//  }).on('--help', function() {
+//    console.log('  Examples:');
+//    console.log();
+//    console.log('    $ deploy exec sequential');
+//    console.log('    $ deploy exec async');
+//    console.log();
+//  });
+
+
+program.parse(process.argv);
+
