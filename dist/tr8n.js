@@ -1458,7 +1458,7 @@ var tr8n = {
       browser_element.style.display = "none";
     }
 
-    options = utils.extend(config, {
+    options = utils.merge(config, {
       host: options.host || "https://translationexchange.com",
       default_locale: default_locale,
       current_locale: current_locale,
@@ -4318,17 +4318,29 @@ module.exports = {
     return parts[0];
   },
 
-  extend: function(destination, source) {   
-    var process = function(d, s) {   
-      for (var key in s) {
-        if (hasOwnProperty.call(s, key)) {
-          d[key] = s[key];
+  process: function(destination, source, deep) {  
+    for (var key in source) {
+      if (hasOwnProperty.call(source, key)) {
+        if (deep && key in destination && typeof(destination[key]) == 'object' && typeof(source[key]) == 'object') {
+          this.process(destination[key], source[key], deep);
+        } else {
+          destination[key] = source[key];
         }
       }
-      return d;
-    };
+    }
+    return destination;
+  },
+
+  extend: function(destination) {
     for(var i=1; i<arguments.length; i++) {
-      destination = process(destination, arguments[i]);
+      destination = this.process(destination, arguments[i]);
+    }
+    return destination;
+  },
+
+  merge: function(destination) {
+    for(var i=1; i<arguments.length; i++) {
+      destination = this.process(destination, arguments[i], true);
     }
     return destination;
   },
