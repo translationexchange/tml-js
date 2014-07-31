@@ -115,7 +115,7 @@ module.exports = function(grunt) {
 
 //  grunt.registerTask('test', ['jshint', 'mocha']);
 
-  grunt.registerTask('test', ['blanket', 'copy', 'mochaTest']);
+  grunt.registerTask('test', ['jshint', 'blanket', 'copy', 'mochaTest']);
   grunt.registerTask('doc', ['jsdoc']);
   grunt.registerTask('build', ['test','browserify','uglify']);
 
