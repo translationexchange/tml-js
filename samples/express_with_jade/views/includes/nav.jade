@@ -1,4 +1,4 @@
-- tr8n_begin_block_with_options({source: "navigation"})
+- tr8n_begin_block({source: "navigation"})
 .navbar.navbar-default.navbar-static-top(role='navigation')
   .container
     .navbar-header
@@ -22,6 +22,8 @@
         li
           a(href='#')!= tr("Help")
       ul.nav.navbar-nav.navbar-right
+        li
+          != tr8n_language_selector()
         li.dropdown
           a.dropdown-toggle(href='#', data-toggle='dropdown')!= tr("More {carret}", {carret: '<b class="caret"></b>'})
           ul.dropdown-menu
@@ -31,4 +33,4 @@
             li.divider
             li
               a(href='#')!= tr("Sign Up")
-- tr8n_end_block_with_options()
+- tr8n_end_block()
