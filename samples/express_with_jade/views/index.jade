@@ -51,6 +51,7 @@ include ./includes/nav
                     p!= restaurant.last_comment
 
       .col-sm-5
+        - tr8n_begin_block_with_options({source: "search_form"})
         form
           .form-group
             label
@@ -62,6 +63,7 @@ include ./includes/nav
               input.form-control(type='text', value=trl('Los Angeles'))
             .form-group
               button.btn.btn-default.btn-sm(type='submit')!= tr("Search")
+        - tr8n_end_block_with_options()
         hr
         h4.text-primary!= tr("Review of the day")
 
