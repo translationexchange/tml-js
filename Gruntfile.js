@@ -12,13 +12,17 @@ module.exports = function(grunt) {
       coverage: {
         src: ['test/**'],
         dest: 'coverage/'
-      }
+      },
+      config: {
+        src: ['config/**'],
+        dest: 'coverage/'
+      }      
     },
     blanket: {
       coverage: {
         src: ['lib/'],
         dest: 'coverage/lib/'
-      }
+      }      
     },
     comments: {
       your_target: {

@@ -4,6 +4,7 @@ var favicon = require('static-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var connectAssets = require('connect-assets')
 
 var tr8n = require('./../../lib/extensions/express.js');
 
@@ -22,6 +23,8 @@ app.use(bodyParser.urlencoded());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(connectAssets());
+
 //app.use(tr8n.init("4a70fec459854794e", "680a8479c8387ebc1", {
 //  cache: {
 //    enabled: true,
@@ -34,7 +37,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 //}));
 
 app.use(tr8n.init("680d6c3913971ac32", "35510cb65d5144673", {
-//app.use(tr8n.init("77b274618a8d58873", "cff464ce525ad6020", {
+// app.use(tr8n.init("77b274618a8d58873", "cff464ce525ad6020", {
   host: "http://localhost:3000",
   cache: {
     enabled: true,

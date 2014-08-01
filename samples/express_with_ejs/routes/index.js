@@ -3,7 +3,7 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res) {
-  req. restaurants = [
+  res.locals.restaurants = [
     {
       "name": "Ricky's Fish Tacos",
       "rating": 4,
@@ -29,8 +29,7 @@ router.get('/', function(req, res) {
       "last_comment": "I can't wait to introduce more people to these orgasmic tacos."
     }
   ];
-
-  res.render('index', { title: 'Express' });
+  res.render('index', { title: 'Welp' });
 });
 
 module.exports = router;
