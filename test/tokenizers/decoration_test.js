@@ -52,6 +52,12 @@ describe('Decoration', function(){
       var tokenizer = new DecorationTokenizer("[bold: Hello World]");
       assert.deepEqual("<strong>Hello World</strong>", tokenizer.substitute());
 
+      var tokenizer = new DecorationTokenizer("[bold1: Hello World]");
+      assert.deepEqual("<strong>Hello World</strong>", tokenizer.substitute());
+
+      var tokenizer = new DecorationTokenizer("[my_bold11234: Hello World]");
+      assert.deepEqual("<strong>Hello World</strong>", tokenizer.substitute());
+
       var tokenizer = new DecorationTokenizer("[bold]Hello World[/bold]");
       assert.deepEqual("<strong>Hello World</strong>", tokenizer.substitute());
 

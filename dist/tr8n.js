@@ -44,7 +44,7 @@ module.exports = {
         em     :  "<em>{$0}</em>",
         italic :  "<i>{$0}</i>",
         i      :  "<i>{$0}</i>",
-        link   :  "<a href='{$href}'>{$0}</a>",
+        link   :  "<a href='{$href}' class='{$class}' style='{$style}'>{$0}</a>",
         br     :  "<br>{$0}",
         strike :  "<strike>{$0}</strike>",
         div    :  "<div id='{$id}' class='{$class}' style='{$style}'>{$0}</div>",
@@ -1302,8 +1302,18 @@ Configuration.prototype = {
 
   getDefaultToken: function(token, type, format) {
     type = type || "data"; format = format || "html";
-    if (typeof this.default_tokens[format][type][token] === 'undefined') return null;
-    return this.default_tokens[format][type][token];
+
+    if (this.default_tokens[format][type][token])
+      return this.default_tokens[format][type][token];
+
+    var parts = token.split("_");
+    token = parts[parts.length-1];
+    token = token.replace(/_*\d+$/, '');
+
+    if (this.default_tokens[format][type][token])
+      return this.default_tokens[format][type][token];
+
+    return null;
   },
 
   setDefaultToken: function(token, value, type, format) {
@@ -1487,7 +1497,7 @@ var tr8n = {
 
     config.initCache();
 
-    app = this.application = new Application({
+    app = tr8n.application = new Application({
       key     : key,
       secret  : secret,
       host    : options.host
@@ -1500,7 +1510,6 @@ var tr8n = {
       current_locale = app.default_locale;
     }
 
-    var self = this;
     app.init({
       current_locale  : current_locale,
       locales         : locales,
@@ -1515,7 +1524,7 @@ var tr8n = {
       // Maybe tools and tr8n should be separate for now?
       includeTools(app, function() {
         if (browser_element !== null) {
-          self.translateElement(browser_element);
+          tr8n.translateElement(browser_element);
           browser_element.style.display = "block";
         }
         if (callback) callback();
@@ -1555,7 +1564,7 @@ var tr8n = {
       skip_decorations: true
     }, options);
 
-    return this.translate(label, description, tokens, options);
+    return tr8n.translate(label, description, tokens, options);
   },
 
   translateElement: function(element) {
@@ -2829,11 +2838,12 @@ DecorationTokenizer.prototype = {
     var decoration_token_values = this.context[token];
     default_decoration = default_decoration.replace(PLACEHOLDER, value);
 
-    if (decoration_token_values instanceof Object) {
+    if (utils.isObject(decoration_token_values)) {
       var keys = utils.keys(decoration_token_values);
       for (var i = 0; i < keys.length; i++) {
         default_decoration = default_decoration.replace("{$" + keys[i] + "}", decoration_token_values[keys[i]]);
       }
+      default_decoration = default_decoration.replace(/[\w]*=['"]\{\$[^\}]*\}['"]/g, "").replace(/\s*>/, '>').trim();
     }
 
     return default_decoration;

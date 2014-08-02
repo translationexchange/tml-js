@@ -1,0 +1,11 @@
+<div id="details" class="span7"></div>
+<div class="span5">
+    <div id="reports" class="well">
+        <h3 class="modal-header"><%=tr("Direct Reports") %></h3>
+
+        <div class="alert alert-info no-reports">
+            <h4 class="alert-heading"><%=tr("Info") %></h4>
+            <%= tr("{first_name} {last_name} has no direct reports", {first_name: firstName, last_name: lastName}) %>
+        </div>
+    </div>
+</div>

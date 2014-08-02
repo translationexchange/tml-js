@@ -43,7 +43,7 @@ module.exports = {
         em     :  "<em>{$0}</em>",
         italic :  "<i>{$0}</i>",
         i      :  "<i>{$0}</i>",
-        link   :  "<a href='{$href}'>{$0}</a>",
+        link   :  "<a href='{$href}' class='{$class}' style='{$style}'>{$0}</a>",
         br     :  "<br>{$0}",
         strike :  "<strike>{$0}</strike>",
         div    :  "<div id='{$id}' class='{$class}' style='{$style}'>{$0}</div>",
