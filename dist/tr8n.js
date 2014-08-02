@@ -1826,6 +1826,10 @@ Language.prototype = {
     return translation_key.translate(this, tokens, options);
   },
 
+  isRightToLeft: function() {
+    return this.right_to_left;
+  },
+
   getSourcePath: function(options) {
     if (!options.block_options)
       return [options.current_source];

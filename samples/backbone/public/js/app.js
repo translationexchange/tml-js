@@ -81,10 +81,9 @@ directory.Router = Backbone.Router.extend({
 
 $(document).on("ready", function () {
   tr8n.init("73a5623cda1c6428e", "f332e95cb38b92a66", {"source": "directory"}, function() {
-    directory.loadTemplates(["HomeView", "ContactView", "ShellView", "EmployeeView", "EmployeeSummaryView", "EmployeeListItemView"],
-      function () {
-        directory.router = new directory.Router();
-        Backbone.history.start();
-      });
+    directory.loadTemplates(["HomeView", "ContactView", "ShellView", "EmployeeView", "EmployeeSummaryView", "EmployeeListItemView"], function () {
+      directory.router = new directory.Router();
+      Backbone.history.start();
+    });
   });
 });
