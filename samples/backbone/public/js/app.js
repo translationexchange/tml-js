@@ -68,7 +68,6 @@ directory.Router = Backbone.Router.extend({
         var self = this;
         employee.fetch({
             success: function (data) {
-                console.log(data);
                 // Note that we could also 'recycle' the same instance of EmployeeFullView
                 // instead of creating new instances
                 self.$content.html(new directory.EmployeeView({model: data}).render().el);

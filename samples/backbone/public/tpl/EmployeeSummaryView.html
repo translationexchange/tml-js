@@ -15,6 +15,10 @@
             }
             %>
             <tr>
+                <td><%=tr("{user | Joined On}:", {user: {gender: gender}}) %></td>
+                <td><i class="icon-calendar"></i> <%= joinedOn %></td>
+            </tr>
+            <tr>
                 <td><%=tr("Office Phone:") %></td>
                 <td><i class="icon-home"></i> <%= officePhone %></td>
             </tr>
