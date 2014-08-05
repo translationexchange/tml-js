@@ -120,7 +120,7 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.registerTask('test', ['jshint', 'blanket', 'copy', 'mochaTest']);
+  grunt.registerTask('test', ['jshint', 'blanket', 'copy', 'mochaTest', 'coveralls']);
   grunt.registerTask('doc', ['jsdoc']);
   grunt.registerTask('build', ['test','browserify','uglify']);
 
