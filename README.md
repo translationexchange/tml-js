@@ -6,7 +6,7 @@ Tr8n for JavaScript
 ===
 
 [![Build Status](https://travis-ci.org/tr8n/tr8n_javascript_clientsdk.svg?branch=master)](https://travis-ci.org/tr8n/tr8n_javascript_clientsdk)
-[![Coverage Status](https://coveralls.io/repos/tr8n/tr8n_javascript_clientsdk/badge.png)](https://coveralls.io/r/tr8n/tr8n_javascript_clientsdk)
+[![Coverage Status](https://coveralls.io/repos/tr8n/tr8n_javascript_clientsdk/badge.png?branch=master)](https://coveralls.io/r/tr8n/tr8n_javascript_clientsdk?branch=master)
 [![Dependency status](https://david-dm.org/tr8n/tr8n_javascript_clientsdk/status.png)](https://david-dm.org/tr8n/tr8n_javascript_clientsdk#info=dependencies&view=table) 
 [![Dev Dependency Status](https://david-dm.org/tr8n/tr8n_javascript_clientsdk/dev-status.png)](https://david-dm.org/tr8n/tr8n_javascript_clientsdk#info=devDependencies&view=table)
 [![Project status](http://stillmaintained.com/tr8n/tr8n_javascript_clientsdk.png)](http://stillmaintained.com/tr8n/tr8n_javascript_clientsdk.png)
