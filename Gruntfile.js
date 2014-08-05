@@ -48,7 +48,7 @@ module.exports = function(grunt) {
           quiet: true,
           captureFile: 'reports/coverage.html'
         },
-        src: ['lib-cov/test/tasks/**/*.js']
+        src: ['coverage/test/**/*.js']
       },
       'mocha-lcov-reporter': {
         options: {
@@ -56,7 +56,7 @@ module.exports = function(grunt) {
           quiet: true,
           captureFile: 'reports/lcov.info'
         },
-        src: ['lib-cov/test/tasks/**/*.js']
+        src: ['coverage/test/**/*.js']
       },
       'travis-cov': {
         options: {
