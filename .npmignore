@@ -1,3 +1,13 @@
 node_modules
 test/
 .travis.yml
+.gitignore
+.jshintrc
+Gruntfule.js
+Jakefile.js
+coverage/
+samples/
+tmp/
+doc/
+reports/
+README.md
