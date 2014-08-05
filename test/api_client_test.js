@@ -12,13 +12,14 @@ describe('ApiClient', function() {
       host: "http://localhost:3001"
     });
 
-//    application.getApiClient().get("application", {definition: true}, function(error, data) {
-//      console.log(data);
-//    });
 
-//    application.getApiClient().get("language", {locale: "ru", definition: true}, function(error, data) {
-//      console.log(data);
-//    });
+    application.getApiClient().get("application", {definition: true}, function(error, data) {
+      console.log("xxxxx",error);
+    });
+
+    application.getApiClient().get("language", {locale: "ru", definition: true}, function(error, data) {
+      console.log(data);
+    });
 
   });
 });
