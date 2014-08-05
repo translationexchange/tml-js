@@ -8,8 +8,9 @@ Tr8n for JavaScript
 [![Build Status](https://travis-ci.org/tr8n/tr8n_javascript_clientsdk.svg?branch=master)](https://travis-ci.org/tr8n/tr8n_javascript_clientsdk)
 [![Coverage Status](https://coveralls.io/repos/tr8n/tr8n_javascript_clientsdk/badge.png)](https://coveralls.io/r/tr8n/tr8n_javascript_clientsdk)
 [![Code Climate](https://codeclimate.com/github/tr8n/tr8n_javascript_clientsdk/badges/gpa.svg)](https://codeclimate.com/github/tr8n/tr8n_javascript_clientsdk)
+[![Dependency status](https://david-dm.org/tr8n/tr8n_javascript_clientsdk/status.png)](https://david-dm.org/tr8n/tr8n_javascript_clientsdk#info=dependencies&view=table) 
+[![Dev Dependency Status](https://david-dm.org/tr8n/tr8n_javascript_clientsdk/dev-status.png)](https://david-dm.org/tr8n/tr8n_javascript_clientsdk#info=devDependencies&view=table)
 [![Project status](http://stillmaintained.com/tr8n/tr8n_javascript_clientsdk.png)](http://stillmaintained.com/tr8n/tr8n_javascript_clientsdk.png)
-[![Dependency Status](https://www.versioneye.com/user/projects/53e03362151b3536b0000051/badge.svg?style=flat)](https://www.versioneye.com/user/projects/53e03362151b3536b0000051)
 
 [![NPM](https://nodei.co/npm/tr8n.png?downloads=true)](https://nodei.co/npm/tr8n) 
 
