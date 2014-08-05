@@ -3,11 +3,11 @@ test/
 .travis.yml
 .gitignore
 .jshintrc
-Gruntfule.js
+Gruntfile.js
 Jakefile.js
 coverage/
 samples/
 tmp/
 doc/
 reports/
-README.md
+.idea
