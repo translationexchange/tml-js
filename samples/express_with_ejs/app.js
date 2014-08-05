@@ -22,32 +22,22 @@ app.use(bodyParser.urlencoded());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-//app.use(tr8n.init("4a70fec459854794e", "680a8479c8387ebc1", {
-//  cache: {
+//app.use(tr8n.init("680d6c3913971ac32", "35510cb65d5144673", {
+app.use(tr8n.init("77b274618a8d58873", "cff464ce525ad6020", {
+//  host: "http://localhost:3000",
+  cache: {
 //    enabled: true,
 //    adapter: "redis",
 //    host: "localhost",
 //    port: 6379,
-//    version: 1,
+//    version: 30,
 //    timeout: 3600
-//  }
-//}));
-
-app.use(tr8n.init("680d6c3913971ac32", "35510cb65d5144673", {
-//app.use(tr8n.init("77b274618a8d58873", "cff464ce525ad6020", {
-  host: "http://localhost:3000",
-  cache: {
-    enabled: false,
-    adapter: "redis",
-    host: "localhost",
-    port: 6379,
-    version: 1,
+    enabled: true,
+    adapter: "memcached",
+    hosts: {"localhost:11211": 1},
+    options: {},
+    version: 3,
     timeout: 3600
-//    adapter: "memcached",
-//    hosts: {"localhost:11211": 1},
-//    options: {},
-//    version: 1,
-//    timeout: 3600
   }
 }));
 
