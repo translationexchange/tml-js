@@ -65,6 +65,8 @@
     "jsdom": "*",
     "keygrip": "^1.0.1",
     "phantomjs": "1.8.1-1",
+    "proxyquire": "^1.0.1",
+    "redis-mock": "^0.3.0",
     "request": "*",
     "should": "4.0.4",
     "travis-cov": "*"
