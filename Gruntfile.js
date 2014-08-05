@@ -1,6 +1,16 @@
 module.exports = function(grunt) {
 
-  // Project configuration.
+  grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-browserify');
+  grunt.loadNpmTasks('grunt-blanket');
+  grunt.loadNpmTasks('grunt-coveralls');
+  grunt.loadNpmTasks('grunt-mocha-test');
+  grunt.loadNpmTasks('grunt-jsdoc');
+
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     clean: {
@@ -24,30 +34,29 @@ module.exports = function(grunt) {
         dest: 'coverage/lib/'
       }      
     },
-    comments: {
-      your_target: {
-        options: {
-          singleline: true,
-          multiline: true
-        },
-        src: [ 'dist/<%= pkg.name %>.js']
-      }
-    },
     mochaTest: {
-      test: {
+      'spec': {
         options: {
-          reporter: 'spec'
+          reporter: 'spec',
+          timeout: 10000
         },
-//        src: ['test/**/*.js']
         src: ['coverage/test/**/*.js']
       },
-      coverage: {
+      'html-cov': {
         options: {
           reporter: 'html-cov',
           quiet: true,
-          captureFile: 'coverage.html'
+          captureFile: 'reports/coverage.html'
         },
-        src: ['coverage/test/**/*.js']
+        src: ['lib-cov/test/tasks/**/*.js']
+      },
+      'mocha-lcov-reporter': {
+        options: {
+          reporter: 'mocha-lcov-reporter',
+          quiet: true,
+          captureFile: 'reports/lcov.info'
+        },
+        src: ['lib-cov/test/tasks/**/*.js']
       },
       'travis-cov': {
         options: {
@@ -100,24 +109,16 @@ module.exports = function(grunt) {
         files: ['src/**/*.js', 'test/**/*.js'],
         tasks: ['concat', 'comments', 'clean', 'blanket', 'copy', 'mochaTest'] //NOTE the :run flag
       }
+    },
+    coveralls: {
+      options: {
+        force: true
+      },
+      all: {
+        src: 'reports/lcov.info'
+      }
     }
-
   });
-
-  // Load the plugin that provides the "uglify" task.
-  grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-stripcomments');
-  grunt.loadNpmTasks('grunt-browserify');
-
-  grunt.loadNpmTasks('grunt-mocha-test');
-  grunt.loadNpmTasks('grunt-contrib-clean');
-  grunt.loadNpmTasks('grunt-contrib-copy');
-  grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-blanket');
-  grunt.loadNpmTasks('grunt-jsdoc');
-
-//  grunt.registerTask('test', ['jshint', 'mocha']);
 
   grunt.registerTask('test', ['jshint', 'blanket', 'copy', 'mochaTest']);
   grunt.registerTask('doc', ['jsdoc']);
@@ -125,5 +126,4 @@ module.exports = function(grunt) {
 
   // Default task(s).
   grunt.registerTask('default', ['test']);
-
 };
