@@ -100,7 +100,7 @@
       });
 
       $.ajax({
-        url: "/templates/index.jst"
+        url: "/templates/index.hjs"
       }).done(function(data) {
         var template = Handlebars.compile(data);
         $(document.body).html(template(context));

@@ -1,22 +1,22 @@
 {
   "name": "tr8n",
-  "description": "Translation framework from TranslationExchange.com",
-  "version": "0.1.3",
+  "description": "Core translation framework from TranslationExchange.com",
+  "version": "0.1.4",
   "author": {
     "name": "Michael Berkovich",
-    "email": "michael@tr8nhub.com"
+    "email": "michael@translationexchange.com"
   },
   "maintainers": [
-    "Michael Berkovich <michael@tr8nhub.com>",
-    "Ian McDaniels <ian@tr8nhub.com>"
+    "Michael Berkovich <michael@translationexchange.com>",
+    "Ian McDaniels <ian@translationexchange.com>"
   ],
   "bugs": {
-    "url": "https://github.com/tr8n/tr8n_javascript_clientsdk/issues"
+    "url": "https://github.com/tr8n/tr8n_js_core/issues"
   },
-  "homepage": "https://github.com/tr8n/tr8n_javascript_clientsdk",
+  "homepage": "https://github.com/tr8n/tr8n_js_core",
   "repository": {
     "type": "git",
-    "url": "git://github.com/tr8n/tr8n_javascript_clientsdk.git"
+    "url": "git://github.com/tr8n/tr8n_js_core.git"
   },
   "license": "MIT",
   "main": "./lib/tr8n",
