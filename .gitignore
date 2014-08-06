@@ -12,5 +12,6 @@ samples/undescore/node_modules
 samples/backbone/node_modules
 samples/dom/node_modules
 samples/angular/node_modules
+samples/handlebars/node_modules
 dump.rdb
 reports
