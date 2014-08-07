@@ -15,3 +15,4 @@ samples/angular/node_modules
 samples/handlebars/node_modules
 dump.rdb
 reports
+npm-debug.log

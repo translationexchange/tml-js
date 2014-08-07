@@ -4,11 +4,11 @@
   "version": "0.1.5",
   "author": {
     "name": "Michael Berkovich",
-    "email": "michael@tr8nhub.com"
+    "email": "michael@translationexchange.com"
   },
   "maintainers": [
-    "Michael Berkovich <michael@tr8nhub.com>",
-    "Ian McDaniel <ian@tr8nhub.com>"
+    "Michael Berkovich <michael@translationexchange.com>",
+    "Ian McDaniels <ian@translationexchange.com>"
   ],
   "bugs": {
     "url": "https://github.com/tr8n/tr8n_js_core/issues"

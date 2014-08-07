@@ -25,6 +25,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 //app.use(tr8n.init("680d6c3913971ac32", "35510cb65d5144673", {
 app.use(tr8n.init("77b274618a8d58873", "cff464ce525ad6020", {
 //  host: "http://localhost:3000",
+//  current_locale: function(req, resp) {
+//    return locale;
+//  },
   cache: {
 //    enabled: true,
 //    adapter: "redis",
