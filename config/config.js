@@ -5,14 +5,7 @@ module.exports = {
   source_separator: "@:@",
   delayed_flush: false,
 
-  cache: {
-    enabled: true,
-    adapter: "redis",
-    host: "localhost",
-    port: 6379,
-    version: 1,
-    timeout: 3600
-  },
+  cache: {},
 
   default_tokens: {
     html : {
