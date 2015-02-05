@@ -2,7 +2,7 @@ var sys = require('sys');
 var jsdom = require("jsdom");
 var request = require('request');
 var fs = require('fs');
-var Tr8n = require('./lib/tr8n');
+var Tml = require('./lib/tml');
 
 desc('Download a url and ');
 task('default', [], function () {
@@ -47,7 +47,7 @@ function translatePage(url, name) {
       });
 
       var doc = jsdom.jsdom(body, jsdom.level(3, "core"));
-      var tokenizer = new Tr8n.Tokenizers.DomTokenizer(doc, {});
+      var tokenizer = new Tml.Tokenizers.DomTokenizer(doc, {});
 
       fs.writeFile("./tmp/" + name + ".after.html", tokenizer.translate(), function(err) {
         if(err) {

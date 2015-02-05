@@ -1,7 +1,7 @@
 {
-  "name": "tr8n",
-  "description": "Translation framework from TranslationExchange.com",
-  "version": "0.1.6",
+  "name": "tml",
+  "description": "Translation Markup Language for JavaScript",
+  "version": "0.2.1",
   "author": {
     "name": "Michael Berkovich",
     "email": "michael@translationexchange.com"
@@ -11,15 +11,15 @@
     "Ian McDaniels <ian@translationexchange.com>"
   ],
   "bugs": {
-    "url": "https://github.com/tr8n/tr8n_js_core/issues"
+    "url": "https://github.com/translationexchange/tml-js/issues"
   },
-  "homepage": "https://github.com/tr8n/tr8n_js_core",
+  "homepage": "https://github.com/translationexchange/tml-js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/tr8n/tr8n_js_core.git"
+    "url": "git://github.com/translationexchange/tml-js.git"
   },
   "license": "MIT",
-  "main": "./lib/tr8n",
+  "main": "./lib/tml",
   "keywords": [
     "internationalization",
     "translation",
@@ -29,10 +29,11 @@
     "i18n",
     "t9n",
     "tr8n",
-    "l10n"
+    "l10n",
+    "tml"
   ],
   "bin": {
-    "tr8n": "./bin/tr8n"
+    "tr8n": "./bin/tml"
   },
   "scripts": {
     "test": "grunt test"

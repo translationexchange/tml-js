@@ -5,43 +5,43 @@ describe('Decoration', function(){
   describe('creation', function(){
     it('should correctly split label into elements', function(){
       var tokenizer = new DecorationTokenizer("[bold: Hello World]");
-      assert.deepEqual(['[tr8n]', '[bold:', ' Hello World', ']', '[/tr8n]'], tokenizer.fragments);
+      assert.deepEqual(['[tml]', '[bold:', ' Hello World', ']', '[/tml]'], tokenizer.fragments);
     });
   });
 
   describe('parsing', function(){
     it('should correctly split label into elements', function(){
       var tokenizer = new DecorationTokenizer("Hello World");
-      assert.deepEqual(['[tr8n]', 'Hello World', '[/tr8n]'], tokenizer.fragments);
-      assert.deepEqual(['tr8n', 'Hello World'], tokenizer.parse());
+      assert.deepEqual(['[tml]', 'Hello World', '[/tml]'], tokenizer.fragments);
+      assert.deepEqual(['tml', 'Hello World'], tokenizer.parse());
 
       var tokenizer = new DecorationTokenizer("[bold: Hello World]");
-      assert.deepEqual(["[tr8n]", "[bold:", " Hello World", "]", "[/tr8n]"], tokenizer.fragments);
-      assert.deepEqual(["tr8n", ["bold", "Hello World"]], tokenizer.parse());
+      assert.deepEqual(["[tml]", "[bold:", " Hello World", "]", "[/tml]"], tokenizer.fragments);
+      assert.deepEqual(["tml", ["bold", "Hello World"]], tokenizer.parse());
 
       var tokenizer = new DecorationTokenizer("[bold: Hello World");
-      assert.deepEqual(["[tr8n]", "[bold:", " Hello World", "[/tr8n]"], tokenizer.fragments);
-      assert.deepEqual(["tr8n", ["bold", "Hello World"]], tokenizer.parse());
+      assert.deepEqual(["[tml]", "[bold:", " Hello World", "[/tml]"], tokenizer.fragments);
+      assert.deepEqual(["tml", ["bold", "Hello World"]], tokenizer.parse());
 
       var tokenizer = new DecorationTokenizer("[bold: Hello [strong: World]]");
-      assert.deepEqual(["[tr8n]", "[bold:", " Hello ", "[strong:", " World", "]", "]", "[/tr8n]"], tokenizer.fragments);
-      assert.deepEqual(["tr8n", ["bold", "Hello ", ["strong", "World"]]], tokenizer.parse());
+      assert.deepEqual(["[tml]", "[bold:", " Hello ", "[strong:", " World", "]", "]", "[/tml]"], tokenizer.fragments);
+      assert.deepEqual(["tml", ["bold", "Hello ", ["strong", "World"]]], tokenizer.parse());
 
       var tokenizer = new DecorationTokenizer("[bold: Hello [strong: World]");
-      assert.deepEqual(["[tr8n]", "[bold:", " Hello ", "[strong:", " World", "]", "[/tr8n]"], tokenizer.fragments);
-      assert.deepEqual(["tr8n", ["bold", "Hello ", ["strong", "World"]]], tokenizer.parse());
+      assert.deepEqual(["[tml]", "[bold:", " Hello ", "[strong:", " World", "]", "[/tml]"], tokenizer.fragments);
+      assert.deepEqual(["tml", ["bold", "Hello ", ["strong", "World"]]], tokenizer.parse());
 
       var tokenizer = new DecorationTokenizer("[bold1: Hello [strong22: World]]");
-      assert.deepEqual(["[tr8n]", "[bold1:", " Hello ", "[strong22:", " World", "]", "]", "[/tr8n]"], tokenizer.fragments);
-      assert.deepEqual(["tr8n", ["bold1", "Hello ", ["strong22", "World"]]], tokenizer.parse());
+      assert.deepEqual(["[tml]", "[bold1:", " Hello ", "[strong22:", " World", "]", "]", "[/tml]"], tokenizer.fragments);
+      assert.deepEqual(["tml", ["bold1", "Hello ", ["strong22", "World"]]], tokenizer.parse());
 
       var tokenizer = new DecorationTokenizer("[bold: Hello, [strong: how] [weak: are] you?]");
-      assert.deepEqual(["[tr8n]", "[bold:", " Hello, ", "[strong:", " how", "]", " ", "[weak:", " are", "]", " you?", "]", "[/tr8n]"], tokenizer.fragments);
-      assert.deepEqual(["tr8n", ["bold", "Hello, ", ["strong", "how"], " ", ["weak", "are"], " you?"]], tokenizer.parse());
+      assert.deepEqual(["[tml]", "[bold:", " Hello, ", "[strong:", " how", "]", " ", "[weak:", " are", "]", " you?", "]", "[/tml]"], tokenizer.fragments);
+      assert.deepEqual(["tml", ["bold", "Hello, ", ["strong", "how"], " ", ["weak", "are"], " you?"]], tokenizer.parse());
 
       var tokenizer = new DecorationTokenizer("[link] you have [italic: [bold: {count}] messages] [light: in your mailbox] [/link]");
-      assert.deepEqual(["[tr8n]", "[link]", " you have ", "[italic:", " ", "[bold:", " {count}", "]", " messages", "]", " ", "[light:", " in your mailbox", "]", " ", "[/link]", "[/tr8n]"], tokenizer.fragments);
-      assert.deepEqual(["tr8n", ["link", " you have ", ["italic", "", ["bold", "{count}"], " messages"], " ", ["light", "in your mailbox"], " "]], tokenizer.parse());
+      assert.deepEqual(["[tml]", "[link]", " you have ", "[italic:", " ", "[bold:", " {count}", "]", " messages", "]", " ", "[light:", " in your mailbox", "]", " ", "[/link]", "[/tml]"], tokenizer.fragments);
+      assert.deepEqual(["tml", ["link", " you have ", ["italic", "", ["bold", "{count}"], " messages"], " ", ["light", "in your mailbox"], " "]], tokenizer.parse());
 
     });
   });

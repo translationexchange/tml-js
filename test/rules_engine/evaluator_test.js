@@ -1,4 +1,4 @@
-//var Tr8n = require("../../lib/tr8n");
+//var Tml = require("../../lib/tml");
 
 var Evaluator = require("../../lib/rules_engine/evaluator.js");
 var assert = require("assert");

@@ -1,4 +1,4 @@
-<% tr8n_begin_block({source: "navigation"}) %>
+<% tml_begin_block({source: "navigation"}) %>
 <div class="navbar navbar-default navbar-static-top" role="navigation">
     <div class="container">
         <div class="navbar-header">
@@ -19,7 +19,7 @@
                 <li><a href="#"><%= tr("Help") %></a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                <li><%= tr8n_language_selector() %></li>
+                <li><%= tml_language_selector() %></li>
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><%= tr("More {carret}", {carret: '<b class="caret"></b>'}) %></a>
 
@@ -34,7 +34,7 @@
         </div>
     </div>
 </div>
-<% tr8n_end_block() %>
+<% tml_end_block() %>
 
 <div class="container">
 
@@ -107,7 +107,7 @@
             </div>
 
             <div class="col-sm-5">
-                <% tr8n_begin_block({source: "search_form"}) %>
+                <% tml_begin_block({source: "search_form"}) %>
                 <form>
                     <div class="form-group">
                         <label><small><%= tr("Find") %></small></label>
@@ -121,7 +121,7 @@
                         <button type="submit" class="btn btn-default btn-sm"><%= tr("Search") %></button>
                     </div>
                 </form>
-                <% tr8n_end_block() %>
+                <% tml_end_block() %>
 
                 <hr>
 

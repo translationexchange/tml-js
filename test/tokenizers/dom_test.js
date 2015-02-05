@@ -1,4 +1,4 @@
-//var Tr8n = require("../../lib/tr8n");
+//var Tml = require("../../lib/tml");
 var DomTokenizer = require("../../lib/tokenizers/dom.js");
 var assert = require("assert");
 
@@ -8,7 +8,7 @@ describe('Dom', function() {
       var jsdom = require("jsdom");
 
       var original = '<p><a class="the-link" href="https://github.com/tmpvar/jsdom">jsdom\'s Homepage</a></p>';
-      var doc = jsdom.jsdom(original, jsdom.level(3, "core"));
+      var doc = jsdom.jsdom(original);
 //      var window = doc.parentWindow;
 //      console.log(doc);
 
@@ -71,7 +71,7 @@ describe('Dom', function() {
 //      ';
 //
 //      var doc = jsdom.jsdom(original, jsdom.level(3, "core"));
-//      var tokenizer = new Tr8n.Tokenizers.Dom(doc, {});
+//      var tokenizer = new Tml.Tokenizers.Dom(doc, {});
 //
 //      console.log("");
 //      console.log(original);
@@ -94,7 +94,7 @@ describe('Dom', function() {
 //      ';
 //
 //      var doc = jsdom.jsdom(original, jsdom.level(3, "core"));
-//      var tokenizer = new Tr8n.Tokenizers.Dom(doc, {});
+//      var tokenizer = new Tml.Tokenizers.Dom(doc, {});
 //
 //      console.log("");
 //      console.log(original);
@@ -114,7 +114,7 @@ describe('Dom', function() {
 //      ';
 //
 //      var doc = jsdom.jsdom(original, jsdom.level(3, "core"));
-//      var tokenizer = new Tr8n.Tokenizers.Dom(doc, {});
+//      var tokenizer = new Tml.Tokenizers.Dom(doc, {});
 //
 //      console.log("");
 //      console.log(original);
@@ -132,7 +132,7 @@ describe('Dom', function() {
       <a href="c">World1</a>\
       </body>';
 
-      var doc = jsdom.jsdom(original, jsdom.level(3, "core"));
+      var doc = jsdom.jsdom(original);
       var tokenizer = new DomTokenizer(doc, {});
 //      console.log("");
 //      console.log(original);
