@@ -1,22 +1,19 @@
 <p align="center">
-  <img src="https://raw.github.com/tr8n/tr8n/master/doc/screenshots/tr8nlogo.png">
+  <img src="https://avatars0.githubusercontent.com/u/1316274?v=3&s=200">
 </p>
 
-Tr8n for JavaScript
+Tml for JavaScript
 ===
 
-[![Build Status](https://travis-ci.org/tr8n/tr8n_js_core.svg?branch=master)](https://travis-ci.org/tr8n/tr8n_js_core)
-[![Coverage Status](https://coveralls.io/repos/tr8n/tr8n_js_core/badge.png?branch=master)](https://coveralls.io/r/tr8n/tr8n_js_core?branch=master)
-[![Dependency status](https://david-dm.org/tr8n/tr8n_js_core/status.png)](https://david-dm.org/tr8n/tr8n_js_core#info=dependencies&view=table) 
-[![Dev Dependency Status](https://david-dm.org/tr8n/tr8n_js_core/dev-status.png)](https://david-dm.org/tr8n/tr8n_js_core#info=devDependencies&view=table)
-[![Project status](http://stillmaintained.com/tr8n/tr8n_js_core.png)](http://stillmaintained.com/tr8n/tr8n_js_core.png)
+[![Build Status](https://travis-ci.org/translationexchange/tml-js.svg?branch=master)](https://travis-ci.org/translationexchange/tml-js)
+[![Coverage Status](https://coveralls.io/repos/translationexchange/tml-js/badge.png?branch=master)](https://coveralls.io/r/translationexchange/tml-js?branch=master)
+[![Dependency status](https://david-dm.org/translationexchange/tml-js/status.png)](https://david-dm.org/translationexchange/tml-js#info=dependencies&view=table) 
+[![Dev Dependency Status](https://david-dm.org/translationexchange/tml-js/dev-status.png)](https://david-dm.org/translationexchange/tml-js#info=devDependencies&view=table)
+[![Project status](http://stillmaintained.com/translationexchange/tml-js.png)](http://stillmaintained.com/translationexchange/tml-js.png)
 
-[![NPM](https://nodei.co/npm/tr8n.png?downloads=true)](https://nodei.co/npm/tr8n) 
+[![NPM](https://nodei.co/npm/tml.png?downloads=true)](https://nodei.co/npm/tml) 
 
-This library provides the core JavaScript classes for the Tr8n translation service.
-
-
-
+This library provides the core JavaScript classes for the Translation Markup Language.
 
 
 Links
@@ -24,21 +21,17 @@ Links
 
 * Register on TranslationExchange.com: https://translationexchange.com
 
-* Read TranslationExchange's documentation: http://wiki.translationexchange.com
-
-* Visit TranslationExchange's blog: http://blog.translationexchange.com
-
 * Follow TranslationExchange on Twitter: https://twitter.com/translationx
 
 * Connect with TranslationExchange on Facebook: https://www.facebook.com/translationexchange
 
-* If you have any questions or suggestions, contact us: info@translationexchange.com
+* If you have any questions or suggestions, contact us: support@translationexchange.com
 
 
 Copyright and license
 ==================
 
-Copyright (c) 2014 Michael Berkovich, TranslationExchange.com
+Copyright (c) 2015 Translation Exchange, Inc.
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
