@@ -23,7 +23,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 //app.use(tr8n.init("680d6c3913971ac32", "35510cb65d5144673", {
-app.use(tr8n.init("77b274618a8d58873", "cff464ce525ad6020", {
+app.use(tr8n.init("57daff5a4499b26be63884e9e3b37437c0866bbe7288b74543d293c34b1657b3", {
 //  host: "http://localhost:3000",
 //  current_locale: function(req, resp) {
 //    return locale;

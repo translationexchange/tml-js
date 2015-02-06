@@ -80,7 +80,7 @@ module.exports = function(grunt) {
     browserify: {
       dist: {
         src: ['lib/extensions/browser.js'],
-        dest: 'dist/<%= pkg.name %>.js',
+        dest: 'dist/tml.js',
         options: {
           exclude: ['request']
         }
@@ -92,7 +92,7 @@ module.exports = function(grunt) {
       },
       dist: {
         files: {
-          'dist/<%= pkg.name %>.min.js': ['<%= browserify.dist.dest %>']
+          'dist/tml.min.js': ['<%= browserify.dist.dest %>']
         }
       }
     },
