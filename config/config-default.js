@@ -1,18 +1,17 @@
 module.exports = {
 
   enabled: true,
-  default_locale: "en-US",
+  default_locale: "en",
   source_separator: "@:@",
   delayed_flush: false,
 
   application: {
-    access_token  : "b20951876caae5f3a7c6ad404d89aa9c43dc4a8eb6042ac3a25867816eb0d391",
-    host          : "http://localhost:3000"
+    access_token  : "YOUR_TOKEN"
   },
 
   cache: {
     adapter: "file",
-    path:    "./cache"
+    path: "./cache"
   },
 
   default_tokens: {

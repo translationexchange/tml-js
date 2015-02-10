@@ -33,13 +33,14 @@
     "tml"
   ],
   "bin": {
-    "tr8n": "./bin/tml"
+    "tml": "./bin/tml"
   },
   "scripts": {
     "test": "grunt test"
   },
   "dependencies": {
-    "request": "^2.40.0"
+    "request": "^2.40.0",
+    "fs-extra": "^0.16.3"
   },
   "devDependencies": {
     "commander": "2.6.0",

@@ -2,10 +2,11 @@
 
 var program = require('commander');
 var config = require('../lib/configuration');
+var FileCache = require('../lib/cache_adapters/file');
 var fs = require('fs');
 
 program
-  .version('0.0.1');
+  .version('0.1.0');
 
 
 if (program["reset"]) {
@@ -82,12 +83,13 @@ program
   .command('cache:generate')
   .description('generates file based cache')
   .action(function(options){
-    console.log("Generating file based cache...");
+    var cache = new FileCache(config.cache);
+    cache.generate(function() {
 
+      console.log("Cache hash been generated.");
 
-
-
-    process.exit(code=0);
+      process.exit(code=0);
+    });
   });
 
 
