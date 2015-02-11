@@ -1,7 +1,7 @@
 module.exports = {
 
   enabled: true,
-  default_locale: "en-US",
+  default_locale: "en",
   source_separator: "@:@",
   delayed_flush: false,
 
