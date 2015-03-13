@@ -106,8 +106,8 @@ module.exports = function(grunt) {
     },
     watch: {
       all: {
-        files: ['src/**/*.js', 'test/**/*.js'],
-        tasks: ['concat', 'comments', 'clean', 'blanket', 'copy', 'mochaTest'] //NOTE the :run flag
+        files: ['lib/**/*.js', 'test/**/*.js'],
+        tasks: ['test','browserify','uglify'] //NOTE the :run flag
       }
     },
     coveralls: {
@@ -120,7 +120,8 @@ module.exports = function(grunt) {
     }
   });
 
-  grunt.registerTask('test', ['jshint', 'blanket', 'copy', 'mochaTest', 'coveralls']);
+  // grunt.registerTask('test', ['jshint', 'blanket', 'copy', 'mochaTest', 'coveralls']);
+  grunt.registerTask('test', ['jshint', 'blanket', 'copy', 'mochaTest']);
   grunt.registerTask('doc', ['jsdoc']);
   grunt.registerTask('build', ['test','browserify','uglify']);
 

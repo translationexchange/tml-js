@@ -13,11 +13,11 @@ describe('ApiClient', function() {
 
 
     application.getApiClient().get("applications/current", {definition: true}, function(error, data) {
-      console.log("xxxxx", error);
+      // console.log("xxxxx", error);
     });
 
     application.getApiClient().get("languages/ru", {definition: true}, function(error, data) {
-      console.log(data);
+      // console.log(data);
     });
 
   });

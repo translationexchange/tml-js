@@ -12,7 +12,8 @@ module.exports = {
 
   cache: {
     adapter: "file",
-    path:    "./cache"
+    path1:    "./cache",
+    cdn:     false
   },
 
   default_tokens: {
@@ -116,9 +117,19 @@ module.exports = {
       img: "picture"
     },
     data_tokens: {
-      special: false,
-      numeric: false,
-      numeric_name: "num"
+      special: {
+        enable: true,
+        regex: /(&[^;]*;)/g
+      },
+      numeric: {
+        enabled: true,
+        regex: /^(\d+)$|^(\d+[.,;\s])|(\s\d+)$|(\s\d+[,;\s])/g,
+        name: 'num'
+      },
+      data: {
+        enabled: false,
+        regex: /(((Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)|(January|February|March|April|May|June|July|August|September|October|November|December))\\s\\d+(,\\s\\d+)*(,*\\sat\\s\\d+:\\d+(\\sUTC))*)/g
+      }
     }
   },
 
