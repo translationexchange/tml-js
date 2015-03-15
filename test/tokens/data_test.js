@@ -157,7 +157,7 @@ describe('Tokens.Data', function(){
           attribute: "name"
         }], language));
 
-        assert.deepEqual("{users}", token.getTokenValueFromArray([users, {
+        assert.deepEqual("Michael, Tom, Anna, Peter and 2 others", token.getTokenValueFromArray([users, {
           value: "<strong>{$0}</strong>"
         }], language));
 
@@ -174,7 +174,7 @@ describe('Tokens.Data', function(){
           }], language));
 
 
-        assert.deepEqual('Michael, Tom, Anna, Peter<span id="tml_other_link_72a06b5c9851a0ef57c71c1fbea186d0"> and <a href="#" class="tml_other_list_link" onClick="document.getElementById(\'tml_other_link_key\').style.display=\'none\'; document.getElementById(\'tml_other_elements_key\').style.display=\'inline\'; return false;">2 others</a></span><span id="tml_other_elements_72a06b5c9851a0ef57c71c1fbea186d0" style="display:none">, Kate and Olga <a href="#" class="tml_other_less_link" style="font-size:smaller;white-space:nowrap" onClick="document.getElementById(\'tml_other_link_key\').style.display=\'inline\'; document.getElementById(\'tml_other_elements_key\').style.display=\'none\'; return false;">&laquo; less</a></span>',
+        assert.deepEqual('Michael, Tom, Anna, Peter<span id="tml_other_link_72a06b5c9851a0ef57c71c1fbea186d0"> and <a href="#" class="tml_other_list_link" onClick="document.getElementById(\'tml_other_link_72a06b5c9851a0ef57c71c1fbea186d0\').style.display=\'none\'; document.getElementById(\'tml_other_elements_72a06b5c9851a0ef57c71c1fbea186d0\').style.display=\'inline\'; return false;">2 others</a></span><span id="tml_other_elements_72a06b5c9851a0ef57c71c1fbea186d0" style="display:none">, Kate and Olga <a href="#" class="tml_other_less_link" style="font-size:smaller;white-space:nowrap" onClick="document.getElementById(\'tml_other_link_72a06b5c9851a0ef57c71c1fbea186d0\').style.display=\'inline\'; document.getElementById(\'tml_other_elements_72a06b5c9851a0ef57c71c1fbea186d0\').style.display=\'none\'; return false;">&laquo; less</a></span>',
           token.getTokenValueFromArray([users, "@name", {
             expandable: true
           }], language));
