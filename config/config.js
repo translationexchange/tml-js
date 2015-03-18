@@ -4,6 +4,7 @@ module.exports = {
   default_locale: "en",
   source_separator: "@:@",
   delayed_flush: false,
+  debug: true,
 
   application: {
     access_token  : "b20951876caae5f3a7c6ad404d89aa9c43dc4a8eb6042ac3a25867816eb0d391",
@@ -122,7 +123,7 @@ module.exports = {
         regex: /(&[^;]*;)/g
       },
       numeric: {
-        enabled: true,
+        enabled: false,
         regex: /^(\d+)$|^(\d+[.,;\s])|(\s\d+)$|(\s\d+[,;\s])/g,
         name: 'num'
       },
