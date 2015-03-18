@@ -104,7 +104,7 @@ module.exports = {
     nodes: {
       ignored:    [],
       scripts:    ["style", "script"],
-      inline:     ["a", "span", "i", "b", "img", "strong", "s", "em", "u", "sub", "sup"],
+      inline:     ["a", "span", "i", "b", "img", "strong", "s", "em", "u", "sub", "sup", "var"],
       short:      ["i", "b"],
       splitters:  ["br", "hr"]
     },
