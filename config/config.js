@@ -6,17 +6,6 @@ module.exports = {
   delayed_flush: false,
   debug: true,
 
-  application: {
-    access_token  : "b20951876caae5f3a7c6ad404d89aa9c43dc4a8eb6042ac3a25867816eb0d391",
-    host          : "http://localhost:3000"
-  },
-
-  cache: {
-    adapter: "file",
-    path1:    "./cache",
-    cdn:     false
-  },
-
   default_tokens: {
     html : {
       data : {
@@ -123,13 +112,19 @@ module.exports = {
         regex: /(&[^;]*;)/g
       },
       numeric: {
-        enabled: false,
+        enabled: true,
         regex: /^(\d+)$|^(\d+[.,;\s])|(\s\d+)$|(\s\d+[,;\s])/g,
         name: 'num'
       },
-      data: {
-        enabled: false,
-        regex: /(((Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)|(January|February|March|April|May|June|July|August|September|October|November|December))\\s\\d+(,\\s\\d+)*(,*\\sat\\s\\d+:\\d+(\\sUTC))*)/g
+      date: {
+        enabled: true,
+        formats: [
+          [/(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d+,\s+\d+/g, "{month} {day}, {year}"],
+          [/(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d+,\s+\d+/g, "{month} {day}, {year}"],
+          [/\d+\s+(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec),\s+\d+/g, "{day} {month}, {year}"],
+          [/\d+\s+(January|February|March|April|May|June|July|August|September|October|November|December),\s+\d+/g, "{day} {month}, {year}"]
+        ],
+        name: 'date'
       }
     }
   },

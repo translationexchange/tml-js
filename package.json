@@ -1,7 +1,7 @@
 {
   "name": "tml-js",
   "description": "Translation Markup Language for JavaScript",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "author": {
     "name": "Michael Berkovich",
     "email": "michael@translationexchange.com"
@@ -37,6 +37,9 @@
   },
   "scripts": {
     "test": "grunt test"
+  },
+  "scripts": {
+    "start": "node ./srv/bin/www"
   },
   "dependencies": {
     "request": "^2.40.0",

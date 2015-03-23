@@ -5,15 +5,6 @@ coverage
 doc
 coverage.html
 dist
-samples/node/.idea
-samples/express_with_ejs/node_modules
-samples/express_with_jade/node_modules
-samples/undescore/node_modules
-samples/backbone/node_modules
-samples/dom/node_modules
-samples/angular/node_modules
-samples/handlebars/node_modules
-dump.rdb
+srv/node_modules
 reports
-npm-debug.log
 projectFilesBackup
