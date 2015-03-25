@@ -92,7 +92,7 @@ module.exports = {
     split_sentences: false,
     nodes: {
       ignored:    [],
-      scripts:    ["style", "script"],
+      scripts:    ["iframe", "script", "style", "audio", "video", "map", "object", "track", "embed", "svg", "code", "ruby"],
       inline:     ["a", "span", "i", "b", "img", "strong", "s", "em", "u", "sub", "sup", "var"],
       short:      ["i", "b"],
       splitters:  ["br", "hr"]
