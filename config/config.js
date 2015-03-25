@@ -4,7 +4,8 @@ module.exports = {
   default_locale: "en",
   source_separator: "@:@",
   delayed_flush: false,
-  debug: true,
+  debug: false,
+  logo: false,
 
   default_tokens: {
     html : {
@@ -90,6 +91,7 @@ module.exports = {
     debug_format_html: "<span style='font-size:20px;color:red;'>{<\/span> {$0} <span style='font-size:20px;color:red;'>}<\/span>",
     debug_format: "{{{{$0}}}}",
     split_sentences: false,
+    decoration_token_format: "[]",
     nodes: {
       ignored:    [],
       scripts:    ["iframe", "script", "style", "audio", "video", "map", "object", "track", "embed", "svg", "code", "ruby"],
