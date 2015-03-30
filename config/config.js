@@ -5,7 +5,6 @@ module.exports = {
   source_separator: "@:@",
   delayed_flush: false,
   debug: false,
-  logo: false,
 
   default_tokens: {
     html : {
