@@ -86,12 +86,11 @@ program
     var cache = new FileCache(config.cache);
     cache.generate(function() {
 
-      console.log("Cache hash been generated.");
+      console.log("Cache has been generated.");
 
       process.exit(code=0);
     });
   });
-
 
 //program
 //  .command('exec <cmd>')
