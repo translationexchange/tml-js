@@ -1,7 +1,7 @@
 {
   "name": "tml-js",
   "description": "Translation Markup Language for JavaScript",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "author": {
     "name": "Michael Berkovich",
     "email": "michael@translationexchange.com"
@@ -16,7 +16,7 @@
   "homepage": "https://github.com/translationexchange/tml-js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/translationexchange/tml-js.git"
+    "url": "https://github.com/translationexchange/tml-js.git"
   },
   "license": "MIT",
   "main": "./lib/tml",
