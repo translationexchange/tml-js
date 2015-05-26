@@ -82,7 +82,7 @@ module.exports = function(grunt) {
         src: ['lib/extensions/browser.js'],
         dest: 'dist/tml.js',
         options: {
-          exclude: ['request']
+          exclude: ['request', 'redis', 'memcached']
         }
       }
     },
