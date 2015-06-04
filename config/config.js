@@ -4,7 +4,7 @@ module.exports = {
   default_locale: "en",
   source_separator: "@:@",
   delayed_flush: false,
-  debug: false,
+  debug: true,
 
   default_tokens: {
     html : {
