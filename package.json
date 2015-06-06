@@ -32,9 +32,6 @@
     "l10n",
     "tml"
   ],
-  "bin": {
-    "tml": "./bin/tml"
-  },
   "scripts": {
     "test": "grunt test"
   },
