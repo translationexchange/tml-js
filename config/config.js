@@ -93,7 +93,7 @@ module.exports = {
     decoration_token_format: "[]",
     nodes: {
       ignored:    [],
-      scripts:    ["iframe", "script", "style", "audio", "video", "map", "object", "track", "embed", "svg", "code", "ruby"],
+      scripts:    ["iframe", "script", "noscript", "style", "audio", "video", "map", "object", "track", "embed", "svg", "code", "ruby"],
       inline:     ["a", "span", "i", "b", "img", "strong", "s", "em", "u", "sub", "sup", "var"],
       short:      ["i", "b"],
       splitters:  ["br", "hr"]
