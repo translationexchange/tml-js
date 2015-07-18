@@ -39,6 +39,14 @@ describe('Decoration', function(){
       assert.deepEqual(["[tml]", "[bold:", " Hello, ", "[strong:", " how", "]", " ", "[weak:", " are", "]", " you?", "]", "[/tml]"], tokenizer.fragments);
       assert.deepEqual(["tml", ["bold", "Hello, ", ["strong", "how"], " ", ["weak", "are"], " you?"]], tokenizer.parse());
 
+      var tokenizer = new DecorationTokenizer("<bold>Hello, <strong>how</strong> <weak>are</weak> you?</bold>");
+      assert.deepEqual(["[tml]","<bold>","Hello, ","<strong>","how","</strong>"," ","<weak>","are","</weak>"," you?","</bold>", "[/tml]"], tokenizer.fragments);
+      assert.deepEqual(["tml", ["bold", "Hello, ", ["strong", "how"], " ", ["weak", "are"], " you?"]], tokenizer.parse());
+
+      var tokenizer = new DecorationTokenizer("<bold>Hello, [strong: how] <weak>are</weak> you?</bold>");
+      assert.deepEqual(["[tml]","<bold>","Hello, ","[strong:"," how","]"," ","<weak>","are","</weak>"," you?","</bold>","[/tml]"], tokenizer.fragments);
+      assert.deepEqual(["tml", ["bold", "Hello, ", ["strong", "how"], " ", ["weak", "are"], " you?"]], tokenizer.parse());
+
       var tokenizer = new DecorationTokenizer("[link] you have [italic: [bold: {count}] messages] [light: in your mailbox] [/link]");
       assert.deepEqual(["[tml]", "[link]", " you have ", "[italic:", " ", "[bold:", " {count}", "]", " messages", "]", " ", "[light:", " in your mailbox", "]", " ", "[/link]", "[/tml]"], tokenizer.fragments);
       assert.deepEqual(["tml", ["link", " you have ", ["italic", "", ["bold", "{count}"], " messages"], " ", ["light", "in your mailbox"], " "]], tokenizer.parse());
@@ -51,6 +59,24 @@ describe('Decoration', function(){
     it('should correctly split label into elements', function(){
       var tokenizer = new DecorationTokenizer("[bold: Hello World]");
       assert.deepEqual("<strong>Hello World</strong>", tokenizer.substitute());
+
+      var tokenizer = new DecorationTokenizer("<bold>Hello World</bold>");
+      assert.deepEqual("<strong>Hello World</strong>", tokenizer.substitute());
+
+      var tokenizer = new DecorationTokenizer("<strong>Hello World</strong>");
+      assert.deepEqual("<strong>Hello World</strong>", tokenizer.substitute());
+
+      var tokenizer = new DecorationTokenizer("<super>Hello World</super>");
+      assert.deepEqual("<super>Hello World</super>", tokenizer.substitute());
+
+      var tokenizer = new DecorationTokenizer("<link>Test</link>");
+      assert.deepEqual("<a href=''>Test</a>", tokenizer.substitute({link: "<a href=''>{$0}</a>"}));
+
+      var tokenizer = new DecorationTokenizer("<img src='images/1-stars.png' title='1 out of 5 stars'/> 2 Reviews");
+      assert.deepEqual("<img src='images/1-stars.png' title='1 out of 5 stars'/> 2 Reviews", tokenizer.substitute());
+
+      var tokenizer = new DecorationTokenizer("<test>Hello</test>");
+      assert.deepEqual("<test>Hello</test>", tokenizer.substitute());
 
       var tokenizer = new DecorationTokenizer("[bold1: Hello World]");
       assert.deepEqual("<strong>Hello World</strong>", tokenizer.substitute());
@@ -82,7 +108,7 @@ describe('Decoration', function(){
       assert.deepEqual("<a href='http://www.google.com'>you have {count || message}</a>", tokenizer.substitute({link: {href: "http://www.google.com"}}));
 
       var tokenizer = new DecorationTokenizer("[custom: you have {count || message}]");
-      assert.deepEqual("you have {count || message}", tokenizer.substitute());
+      assert.deepEqual("<custom>you have {count || message}</custom>", tokenizer.substitute());
 
       var tokenizer = new DecorationTokenizer("[custom: you have {count || message}]");
       assert.deepEqual("you have {count || message}", tokenizer.substitute({custom:1}));
