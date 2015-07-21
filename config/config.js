@@ -91,6 +91,7 @@ module.exports = {
     debug_format: "{{{{$0}}}}",
     split_sentences: false,
     decoration_token_format: "[]",
+    ignored_classes: ['notranslate'],
     nodes: {
       ignored:    [],
       scripts:    ["iframe", "script", "noscript", "style", "audio", "video", "map", "object", "track", "embed", "svg", "code", "ruby"],
