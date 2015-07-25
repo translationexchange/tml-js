@@ -5,7 +5,7 @@ var assert = require("assert");
 describe('LanguageCase', function(){
   describe('creation', function(){
     it('should correctly create a case', function() {
-      helper.fixtures.load("cases/en-US/plural", function(data) {
+      helper.fixtures.loadJSON("cases/en-US/plural", function(data) {
         var lcase = new LanguageCase(data);
         lcase.getConfig();
 

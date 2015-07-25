@@ -13,27 +13,35 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
+
     clean: {
       coverage: {
         src: ['coverage/']
       }
     },
+
     copy: {
       coverage: {
-        src: ['test/**'],
-        dest: 'coverage/'
+        expand: true,
+        cwd: 'test/',
+        src: ['**'],
+        dest: 'coverage/test'
       },
       config: {
-        src: ['config/**'],
-        dest: 'coverage/'
-      }      
+        expand: true,
+        cwd: 'config/',
+        src: ['**'],
+        dest: 'coverage/config'
+      }
     },
+
     blanket: {
       coverage: {
         src: ['lib/'],
         dest: 'coverage/lib/'
       }      
     },
+
     mochaTest: {
       'spec': {
         options: {
@@ -65,18 +73,34 @@ module.exports = function(grunt) {
         src: ['coverage/test/**/*.js']
       }
     },
+
     jshint: {
       files: ['Gruntfile.js', 'lib/**/*.js'],
       options: {
+        //curly: true,
+        //eqnull: true,
+        //eqeqeq: true,
+        //undef: true,
+        //immed: true,
+        //latedef: true,
+        //newcap: true,
+        //noarg: true,
+        //sub: true,
+        //undef: true,
+        //unused: true,
+        boss: true,
+        eqnull: true,
+        node: true,
         globals: {
           jQuery: true,
           console: true,
           module: true,
           document: true
         }
-//      jshintrc: '.jshintrc'
+        //jshintrc: '.jshintrc'
       }
     },
+
     browserify: {
       dist: {
         src: ['lib/extensions/browser.js'],
@@ -86,6 +110,7 @@ module.exports = function(grunt) {
         }
       }
     },
+
     uglify: {
       options: {
         banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
@@ -96,6 +121,7 @@ module.exports = function(grunt) {
         }
       }
     },
+
     jsdoc : {
       dist : {
         src: ['src/**/*.js'],
@@ -104,12 +130,14 @@ module.exports = function(grunt) {
         }
       }
     },
+
     watch: {
       all: {
         files: ['lib/**/*.js', 'test/**/*.js'],
         tasks: ['test','browserify','uglify'] //NOTE the :run flag
       }
     },
+
     coveralls: {
       options: {
         force: true
@@ -120,9 +148,9 @@ module.exports = function(grunt) {
     }
   });
 
-  // grunt.registerTask('test', ['jshint', 'blanket', 'copy', 'mochaTest', 'coveralls']);
+  //grunt.registerTask('test', ['jshint', 'blanket', 'copy', 'mochaTest', 'coveralls']);
   grunt.registerTask('test', ['jshint', 'blanket', 'copy', 'mochaTest']);
-  grunt.registerTask('doc', ['jsdoc']);
+  grunt.registerTask('docs', ['jsdoc']);
   grunt.registerTask('build', ['test','browserify','uglify']);
 
   // Default task(s).

@@ -8,7 +8,7 @@ var helper = require("./../test_helper");
 describe('Tokens.Piped', function(){
   describe('creation', function(){
     it('should correctly create a token', function() {
-      helper.fixtures.load("languages/en-US", function(data) {
+      helper.fixtures.loadJSON("languages/en-US", function(data) {
         var language = new Language(data);
 
         var token = new PipedToken("{count || message}");
@@ -42,7 +42,7 @@ describe('Tokens.Piped', function(){
 
   describe('substitution', function(){
     it('should correctly substitute a token', function() {
-      helper.fixtures.load("languages/en-US", function(data) {
+      helper.fixtures.loadJSON("languages/en-US", function(data) {
         var language = new Language(data);
 
         var token = new PipedToken("{count || message}");

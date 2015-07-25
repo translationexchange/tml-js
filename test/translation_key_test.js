@@ -8,7 +8,7 @@ var assert = require("assert");
 describe('TranslationKey', function(){
   describe('creation', function(){
     it('should correctly create a key', function() {
-      helper.fixtures.load("languages/en-US", function(data) {
+      helper.fixtures.loadJSON("languages/en-US", function(data) {
         var language = new Language(data);
 
         var tkey = new TranslationKey({

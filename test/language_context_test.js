@@ -5,7 +5,7 @@ var assert = require("assert");
 describe('LanguageContext', function(){
   describe('creation', function(){
     it('should correctly create a context', function() {
-      helper.fixtures.load("contexts/ru/number", function(data) {
+      helper.fixtures.loadJSON("contexts/ru/number", function(data) {
         var context = new LanguageContext(data);
         assert.ok(context.isAppliedToToken("num"));
 
@@ -20,7 +20,7 @@ describe('LanguageContext', function(){
 
       });
 
-      helper.fixtures.load("contexts/ru/gender", function(data) {
+      helper.fixtures.loadJSON("contexts/ru/gender", function(data) {
         var context = new LanguageContext(data);
         assert.ok(context.isAppliedToToken("user"));
 

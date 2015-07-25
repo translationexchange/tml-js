@@ -115,7 +115,7 @@ describe('Tokens.Data', function(){
 
   describe('get token value from array', function(){
     it('should return object', function() {
-      helper.fixtures.load("languages/en-US", function(data) {
+      helper.fixtures.loadJSON("languages/en-US", function(data) {
         var language = new Language(data);
 
         var token = new DataToken("{users}");
@@ -185,7 +185,7 @@ describe('Tokens.Data', function(){
 
   describe('language cases', function(){
     it('should apply them correctly', function() {
-      helper.fixtures.load("languages/en-US", function(data) {
+      helper.fixtures.loadJSON("languages/en-US", function(data) {
         var language = new Language(data);
 
         var token = new DataToken("{user::pos}");

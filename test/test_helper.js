@@ -7,10 +7,16 @@ var async = require('async');
 var fixture_path = "test/fixtures/";
 
 var FixtureHelper = {
-  load: function(filepath, callback) {
+  loadJSON: function(filepath, callback) {
     fs.readFile(path.resolve(process.cwd(), fixture_path + filepath + ".json"), function (err, data) {
       if (err) throw err;
       callback(JSON.parse(data));
+    });
+  },
+  load: function(filepath, callback) {
+    fs.readFile(path.resolve(process.cwd(), fixture_path + filepath), function (err, data) {
+      if (err) throw err;
+      callback(data);
     });
   }
 };
