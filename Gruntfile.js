@@ -101,27 +101,6 @@ module.exports = function(grunt) {
       }
     },
 
-    browserify: {
-      dist: {
-        src: ['lib/extensions/browser.js'],
-        dest: 'dist/tml.js',
-        options: {
-          exclude: ['request', 'redis', 'memcached']
-        }
-      }
-    },
-
-    uglify: {
-      options: {
-        banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
-      },
-      dist: {
-        files: {
-          'dist/tml.min.js': ['<%= browserify.dist.dest %>']
-        }
-      }
-    },
-
     jsdoc : {
       dist : {
         src: ['src/**/*.js'],
@@ -134,7 +113,7 @@ module.exports = function(grunt) {
     watch: {
       all: {
         files: ['lib/**/*.js', 'test/**/*.js'],
-        tasks: ['test','browserify','uglify'] //NOTE the :run flag
+        tasks: ['test', 'uglify'] //NOTE the :run flag
       }
     },
 
@@ -151,7 +130,7 @@ module.exports = function(grunt) {
   //grunt.registerTask('test', ['jshint', 'blanket', 'copy', 'mochaTest', 'coveralls']);
   grunt.registerTask('test', ['jshint', 'blanket', 'copy', 'mochaTest']);
   grunt.registerTask('docs', ['jsdoc']);
-  grunt.registerTask('build', ['test','browserify','uglify']);
+  grunt.registerTask('build', ['test']);
 
   // Default task(s).
   grunt.registerTask('default', ['test']);
