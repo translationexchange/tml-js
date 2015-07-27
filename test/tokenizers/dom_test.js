@@ -18,7 +18,10 @@ describe('Dom', function() {
         ["<html><head></head><body>Hello World</body></html>", "<html><head></head><body>{{{Hello World}}}</body></html>"],
         ["<html><head></head><body><div>Hello World</div></body></html>", "<html><head></head><body><div>{{{Hello World}}}</div></body></html>"],
         ["<html><head></head><body>Hello <a href='google.com'>World</a></body></html>", "<html><head></head><body>{{{Hello [link: World]}}}</body></html>"],
-        ["<html><head></head><body>Hello <a href='google.com'>World</a><div><p>This is <strong>cool</strong>!</p></div></body></html>", "<html><head></head><body>{{{Hello [link: World]}}}<div><p>{{{This is [strong: cool]!}}}</p></div></body></html>"]
+        ["<html><head></head><body>Hello <a href='google.com'>World</a><div><p>This is <strong>cool</strong>!</p></div></body></html>", "<html><head></head><body>{{{Hello [link: World]}}}<div><p>{{{This is [strong: cool]!}}}</p></div></body></html>"],
+        ["<html><head></head><body><p>This is awesome!</p> <div>How does <strong>this work</strong>?</div></body></html>", "<html><head></head><body><p>{{{This is awesome!}}}</p> <div>{{{How does [strong: this work]?}}}</div></body></html>"],
+        ["<html><head></head><body><span>Hello</span><span>World</span></body></html>", "<html><head></head><body>{{{[span: Hello][span: World]}}}</body></html>"]
+
       ].forEach(function(data) {
         var tokenizer = new DomTokenizer(jsdom.jsdom(data[0]));
         var result = tokenizer.translate();
