@@ -113,11 +113,6 @@ module.exports = {
         enable: true,
         regex: /(&[^;]*;)/g
       },
-      numeric: {
-        enabled: true,
-        regex: /^(\d+)$|^(\d+[.,;\s])|(\s\d+)$|(\s\d+[,;\s])/g,
-        name: 'num'
-      },
       date: {
         enabled: true,
         formats: [
@@ -127,7 +122,14 @@ module.exports = {
           [/\d+\s+(January|February|March|April|May|June|July|August|September|October|November|December),\s+\d+/g, "{day} {month}, {year}"]
         ],
         name: 'date'
-      }
+      },
+      rules: [
+        {enabled: true, name: 'phone',    regex: /(\d{1}-)?\d{3}-\d{3}-\d{4}|\d?\(\d{3}\)\s*\d{3}-\d{4}|(\d.)?\d{3}.\d{3}.\d{4}/g},
+        {enabled: true, name: 'email',    regex: /[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|io|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?/g},
+        {enabled: true, name: 'price',    regex: /\$\d*(,\d*)*(\.\d*)?/g},
+        {enabled: true, name: 'fraction', regex: /\d+\/\d+/g},
+        {enabled: true, name: 'num',      regex: /\b\d*(,\d*)*(\.\d*)?%?\b/g}
+      ]
     }
   },
 
