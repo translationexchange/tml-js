@@ -114,7 +114,7 @@ describe('Tokens.Data', function(){
 
 
   describe('get token value from array', function(){
-    it('should return object', function() {
+    it('should return object', function(done) {
       helper.fixtures.loadJSON("languages/en-US", function(data) {
         var language = new Language(data);
 
@@ -179,12 +179,14 @@ describe('Tokens.Data', function(){
             expandable: true
           }], language));
 
+        done();
+
       });
     });
   });
 
   describe('language cases', function(){
-    it('should apply them correctly', function() {
+    it('should apply them correctly', function(done) {
       helper.fixtures.loadJSON("languages/en-US", function(data) {
         var language = new Language(data);
 
@@ -195,6 +197,8 @@ describe('Tokens.Data', function(){
 
         token = new DataToken("{count::ord}");
         assert.deepEqual("5th", token.getTokenValue({count: 5}, language));
+
+        done();
       });
     });
   });

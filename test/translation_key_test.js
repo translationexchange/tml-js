@@ -7,7 +7,7 @@ var assert = require("assert");
 
 describe('TranslationKey', function(){
   describe('creation', function(){
-    it('should correctly create a key', function() {
+    it('should correctly create a key', function(done) {
       helper.fixtures.loadJSON("languages/en-US", function(data) {
         var language = new Language(data);
 
@@ -61,14 +61,14 @@ describe('TranslationKey', function(){
 
         assert.equal("<a href='google.com'>You</a> have <strong>5 messages</strong>", tkey.translate(language, {count: 5, link: {href: "google.com"}}));
 
+        done();
       });
     });
   });
 
   describe('translations', function(){
-    it('should correctly translate keys', function() {
+    it('should correctly translate keys', function(done) {
       helper.models.languages(["en-US", "ru"], function(languages) {
-//        console.log(languages);
 
         var tkey = new TranslationKey({
           label: "Hello World",
@@ -154,6 +154,7 @@ describe('TranslationKey', function(){
         assert.equal("У Михаила есть <strong>2 сообщения</strong> в почтовом ящике.", tkey.translate(languages["ru"], {user: {gender: "male", value: "Михаил"}, count: 2}));
         assert.equal("У Михаила есть <strong>5 сообщений</strong> в почтовом ящике.", tkey.translate(languages["ru"], {user: {gender: "male", value: "Михаил"}, count: 5}));
 
+        done();
 
       });
     });

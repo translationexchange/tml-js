@@ -6,6 +6,7 @@ var assert = require("assert");
 
 describe('ApiClient', function() {
   describe('access_token', function () {
+    
     var application = new Application({
       key: "default",
       host: "http://localhost:3000"
@@ -19,6 +20,7 @@ describe('ApiClient', function() {
     application.getApiClient().get("languages/ru", {definition: true}, function(error, data) {
       // console.log(data);
     });
+
 
   });
 });

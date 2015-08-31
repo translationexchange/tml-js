@@ -14,7 +14,7 @@ var FixtureHelper = {
     });
   },
   load: function(filepath, callback) {
-    fs.readFile(path.resolve(process.cwd(), fixture_path + filepath), function (err, data) {
+    fs.readFile(path.resolve(process.cwd(), fixture_path + filepath), 'utf8', function (err, data) {
       if (err) throw err;
       callback(data);
     });
@@ -27,7 +27,7 @@ var ModelHelper = {
 
     locales.forEach(function(locale) {
       languages[locale] = function(callback) {
-        FixtureHelper.load("languages/" + locale, function (data) {
+        FixtureHelper.loadJSON("languages/" + locale, function (data) {
           callback(null, new Language(data));
         });
       };

@@ -4,7 +4,8 @@ var assert = require("assert");
 
 describe('LanguageContext', function(){
   describe('creation', function(){
-    it('should correctly create a context', function() {
+    it('should correctly create a number context', function(done) {
+      
       helper.fixtures.loadJSON("contexts/ru/number", function(data) {
         var context = new LanguageContext(data);
         assert.ok(context.isAppliedToToken("num"));
@@ -17,8 +18,16 @@ describe('LanguageContext', function(){
 
         context.getConfig().variables["@n"] = 1;
         assert.deepEqual({"@n": 5}, context.getVars(5));
+        
+        done();
 
       });
+
+
+
+    });
+
+    it('should correctly create a gender context', function(done) {
 
       helper.fixtures.loadJSON("contexts/ru/gender", function(data) {
         var context = new LanguageContext(data);
@@ -40,6 +49,8 @@ describe('LanguageContext', function(){
         assert.deepEqual("male", context.findMatchingRule({g: 2}).keyword);
 
         context.getConfig().variables["@gender"] = temp;
+
+        done();
       });
 
     });

@@ -4,7 +4,8 @@ var assert = require("assert");
 
 describe('LanguageCase', function(){
   describe('creation', function(){
-    it('should correctly create a case', function() {
+    it('should correctly create a case', function(done) {
+      
       helper.fixtures.loadJSON("cases/en-US/plural", function(data) {
         var lcase = new LanguageCase(data);
         lcase.getConfig();
@@ -19,8 +20,11 @@ describe('LanguageCase', function(){
 
         lcase.application = "word";
         assert.equal("<a>items moves</a>", lcase.apply("<a>item move</a>"));
-
+        
+        done();
       });
+
+
     });
   });
 });

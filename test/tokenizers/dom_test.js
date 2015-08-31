@@ -5,7 +5,7 @@ var helper = require("../test_helper");
 
 describe('Dom', function() {
   describe('parsing', function() {
-    it('should properly parse the document', function(){
+    it('should properly parse the document', function(done){
       var jsdom = require('node-jsdom');
 
       var original = "<html><head></head><body><p><a class='the-link' href='https://github.com/tmpvar/jsdom'>Welcome to TML testing!</a></p></body></html>";
@@ -36,6 +36,8 @@ describe('Dom', function() {
             var tokenizer = new DomTokenizer(jsdom.jsdom(original));
             var result = tokenizer.translate();
             assert.deepEqual(result, expectation);
+
+            done();
           });
         });
       });
