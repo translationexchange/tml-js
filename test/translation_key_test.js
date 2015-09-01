@@ -36,14 +36,16 @@ var helper          = require("./test_helper");
 
 var assert = require("assert");
 
+
 describe('TranslationKey', function(){
   describe('creation', function(){
     it('should correctly create a key', function(done) {
-      helper.fixtures.loadJSON("languages/en-US", function(data) {
-        var language = new Language(data);
+      helper.models.application({locales: ["en"]}, function(err, app) {
+        var language = app.getLanguage("en");
 
         var tkey = new TranslationKey({
-          label: "Hello World"
+          label: "Hello World",
+          language: language
         });
 
         assert.equal("Hello World", tkey.translate(language));
@@ -91,7 +93,6 @@ describe('TranslationKey', function(){
         });
 
         assert.equal("<a href='google.com'>You</a> have <strong>5 messages</strong>", tkey.translate(language, {count: 5, link: {href: "google.com"}}));
-
         done();
       });
     });
@@ -99,94 +100,93 @@ describe('TranslationKey', function(){
 
   describe('translations', function(){
     it('should correctly translate keys', function(done) {
-      helper.models.languages(["en-US", "ru"], function(languages) {
+      helper.models.application({locales: ["en", 'ru']}, function(err, app)
+      {
+        if (err) return done(err);
+
+        var russian = app.getLanguage("ru");
+        var english = app.getLanguage("en");
 
         var tkey = new TranslationKey({
           label: "Hello World",
-          locale: "en-US",
-          language: languages["en-US"]
+          language: english
         });
 
         var translation = new Translation({
           label: "Привет Мир",
-          locale: "ru",
-          language: languages["ru"]
+          language: russian
         });
 
-        assert.equal("Hello World", tkey.translate(languages["ru"]));
+        assert.equal("Hello World", tkey.translate(russian));
 
         tkey.addTranslation(translation);
-        assert.equal("Привет Мир", tkey.translate(languages["ru"]));
+        assert.equal("Привет Мир", tkey.translate(russian));
 
 
         tkey = new TranslationKey({
           label: "Hello [bold: World]",
-          locale: "en-US",
-          language: languages["en-US"]
+          language: english
         });
 
-        assert.equal("Hello <strong>World</strong>", tkey.translate(languages["ru"]));
+        assert.equal("Hello <strong>World</strong>", tkey.translate(russian));
 
         tkey.addTranslation(new Translation({
           label: "Привет [bold: Мир]",
-          locale: "ru",
-          language: languages["ru"]
+          language: russian
         }));
 
-        assert.equal("Привет <strong>Мир</strong>", tkey.translate(languages["ru"]));
+        assert.equal("Привет <strong>Мир</strong>", tkey.translate(russian));
 
 
         tkey = new TranslationKey({
           label: "You have {count || message}",
-          locale: "en-US",
-          language: languages["en-US"]
+          language: english
         });
 
-        assert.equal("You have 1 message", tkey.translate(languages["ru"], {count: 1}));
-        assert.equal("You have 5 messages", tkey.translate(languages["ru"], {count: 5}));
+        assert.equal("You have 1 message", tkey.translate(russian, {count: 1}));
+        //assert.equal("You have 1 message", tkey.translate(russian, tokensAsObj, {count: 1}));
+        assert.equal("You have 5 messages", tkey.translate(russian, {count: 5}));
 
         tkey.addTranslation(new Translation({
           label: "У вас есть {count || one: сообщение, few: сообщения, other: сообщений}",
-          locale: "ru",
-          language: languages["ru"]
+          language: russian
         }));
 
-        assert.equal("У вас есть 1 сообщение", tkey.translate(languages["ru"], {count: 1}));
-        assert.equal("У вас есть 2 сообщения", tkey.translate(languages["ru"], {count: 2}));
-        assert.equal("У вас есть 5 сообщений", tkey.translate(languages["ru"], {count: 5}));
+        assert.equal("У вас есть 0 сообщений", tkey.translate(russian, {count: 0}));
+        assert.equal("У вас есть 1 сообщение", tkey.translate(russian, {count: 1}));
+        assert.equal("У вас есть 2 сообщения", tkey.translate(russian, {count: 2}));
+        assert.equal("У вас есть 5 сообщений", tkey.translate(russian, {count: 5}));
 
         tkey.resetTranslations();
 
         tkey.addTranslation(new Translation({
           label: "У вас есть {count || сообщение, сообщения, сообщений}",
-          locale: "ru",
-          language: languages["ru"]
+          language: russian
         }));
 
-        assert.equal("У вас есть 1 сообщение", tkey.translate(languages["ru"], {count: 1}));
-        assert.equal("У вас есть 2 сообщения", tkey.translate(languages["ru"], {count: 2}));
-        assert.equal("У вас есть 5 сообщений", tkey.translate(languages["ru"], {count: 5}));
+        assert.equal("У вас есть 0 сообщений", tkey.translate(russian, {count: 0}));
+        assert.equal("У вас есть 1 сообщение", tkey.translate(russian, {count: 1}));
+        assert.equal("У вас есть 2 сообщения", tkey.translate(russian, {count: 2}));
+        assert.equal("У вас есть 5 сообщений", tkey.translate(russian, {count: 5}));
 
         tkey = new TranslationKey({
           label: "{user} has [bold: {count || message}] in {user | his, her} inbox.",
-          locale: "en-US",
-          language: languages["en-US"]
+          language: english
         });
 
-        assert.equal("Michael has <strong>1 message</strong> in his inbox.", tkey.translate(languages["ru"], {user: {gender: "male", value: "Michael"}, count: 1}));
+        assert.equal("Michael has <strong>1 message</strong> in his inbox.", tkey.translate(russian, {user: {gender: "male", value: "Michael"}, count: 1}));
 
         tkey.addTranslation(new Translation({
           label: "У {user::gen} есть [bold: {count || сообщение, сообщения, сообщений}] в почтовом ящике.",
-          locale: "ru",
-          language: languages["ru"]
+          language: russian
         }));
 
-        assert.equal("У Михаила есть <strong>1 сообщение</strong> в почтовом ящике.", tkey.translate(languages["ru"], {user: {gender: "male", value: "Михаил"}, count: 1}));
-        assert.equal("У Михаила есть <strong>2 сообщения</strong> в почтовом ящике.", tkey.translate(languages["ru"], {user: {gender: "male", value: "Михаил"}, count: 2}));
-        assert.equal("У Михаила есть <strong>5 сообщений</strong> в почтовом ящике.", tkey.translate(languages["ru"], {user: {gender: "male", value: "Михаил"}, count: 5}));
+        assert.equal("У Михаила есть <strong>0 сообщений</strong> в почтовом ящике.", tkey.translate(russian, {user: {gender: "male", value: "Михаил"}, count: 0}));
+        assert.equal("У Михаила есть <strong>1 сообщение</strong> в почтовом ящике.", tkey.translate(russian, {user: {gender: "male", value: "Михаил"}, count: 1}));
+        assert.equal("У Михаила есть <strong>2 сообщения</strong> в почтовом ящике.", tkey.translate(russian, {user: {gender: "male", value: "Михаил"}, count: 2}));
+        assert.equal("У Михаила есть <strong>5 сообщений</strong> в почтовом ящике.", tkey.translate(russian, {user: {gender: "male", value: "Михаил"}, count: 5}));
 
         done();
-
       });
     });
   });

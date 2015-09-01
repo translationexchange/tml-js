@@ -36,10 +36,12 @@ var assert = require("assert");
 describe('LanguageCase', function(){
   describe('creation', function(){
     it('should correctly create a case', function(done) {
-      
-      helper.fixtures.loadJSON("cases/en-US/plural", function(data) {
+      helper.fixtures.loadJSON("cases/en-US/plural", function(err, data) {
+        if (err) return done(err);
+
         var lcase = new LanguageCase(data);
         lcase.getConfig();
+        //console.log(data);
 
         var rule = lcase.findMatchingRule("move");
         assert.equal(rule.description, "Irregular word");
@@ -51,7 +53,6 @@ describe('LanguageCase', function(){
 
         lcase.application = "word";
         assert.equal("<a>items moves</a>", lcase.apply("<a>item move</a>"));
-        
         done();
       });
 

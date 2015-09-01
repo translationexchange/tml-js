@@ -35,7 +35,7 @@ var assert = require("assert");
 
 describe('LanguageCaseRule', function(){
   describe('creation', function(){
-    it('should correctly create a case', function() {
+    it('should correctly create a case', function(done) {
       var rule = new LanguageCaseRule({
         "description":"Irregular word",
         "conditions":"(= 'move' @value)",
@@ -50,7 +50,6 @@ describe('LanguageCaseRule', function(){
           "moves"
         ]
       });
-
       assert.deepEqual(["=","move","@value"], rule.getConditionsExpression());
       assert.deepEqual(["quote", "moves"], rule.getOperationsExpression());
 
@@ -75,6 +74,7 @@ describe('LanguageCaseRule', function(){
       assert.ok(!rule.evaluate("move"));
       assert.equal("move", rule.apply("move"));
 
+      done();
     });
   });
 });

@@ -38,8 +38,10 @@ var helper = require("./../test_helper");
 
 describe('Tokens.Piped', function(){
   describe('creation', function(){
-    it('should correctly create a token', function() {
-      helper.fixtures.loadJSON("languages/en-US", function(data) {
+    it('should correctly create a token', function(done) {
+      helper.fixtures.loadJSON("languages/en-US", function(err, data) {
+        if (err) return done(err);
+
         var language = new Language(data);
 
         var token = new PipedToken("{count || message}");
@@ -66,14 +68,14 @@ describe('Tokens.Piped', function(){
         assert.ok(context);
 
         assert.deepEqual({"male":"He","female":"She","other":"He/She"}, token.generateValueMapForContext(context));
-
+        done();
       });
     });
   });
 
   describe('substitution', function(){
-    it('should correctly substitute a token', function() {
-      helper.fixtures.loadJSON("languages/en-US", function(data) {
+    it('should correctly substitute a token', function(done) {
+      helper.fixtures.loadJSON("languages/en", function(err, data) {
         var language = new Language(data);
 
         var token = new PipedToken("{count || message}");
@@ -95,7 +97,7 @@ describe('Tokens.Piped', function(){
         assert.deepEqual({"male":"He","it":"She"}, token.generateValueMapForContext(context));
 
         assert.deepEqual("{user | male: He, it: She}", token.substitute("{user | male: He, it: She}", {user: {gender: "female"}}, language));
-
+        done();
       });
     });
   });

@@ -62,17 +62,16 @@ describe('Dom', function() {
       [
         "example1"
       ].forEach(function(test) {
-        helper.fixtures.load("translator/" + test + ".html", function (original) {
-          helper.fixtures.load("translator/" + test + ".tml", function (expectation) {
+        helper.fixtures.load("translator/" + test + ".html", function (err, original) {
+          helper.fixtures.load("translator/" + test + ".tml", function (err, expectation) {
             var tokenizer = new DomTokenizer(jsdom.jsdom(original));
             var result = tokenizer.translate();
-            assert.deepEqual(result, expectation);
+            assert.equal(result, expectation);
 
             done();
           });
         });
       });
-
     });
   });
 });
