@@ -37,13 +37,13 @@ var assert = require("assert");
 describe('Source', function(){
   describe('creation', function(){
     it('should correctly create a source with translations', function(done) {
-      helper.fixtures.loadJSON("translations/ru/source1", function(data) {
+      helper.fixtures.loadJSON("translations/ru/source1", function(err, data) {
+        if (err) return done(err);
         var source = new Source({source: "abc"});
         source.updateTranslations('ru', data);
         assert.ok(source.getTranslations('ru', 'b329f56db19684d04e032864c225c574') != null);
         assert.ok(source.getTranslations('ru', 'abc') == null);
         assert.ok(source.getTranslations('fr', 'abc') == null);
-
         done();
       });
     });

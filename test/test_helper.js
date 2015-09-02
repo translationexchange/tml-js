@@ -30,7 +30,7 @@
  */
 
 var Language = require("../lib/language.js");
-var DataToken = require("../lib/application.js");
+var Application = require("../lib/application.js");
 
 var fs = require("fs");
 var path = require('path');
@@ -40,14 +40,14 @@ var fixture_path = "test/fixtures/";
 var FixtureHelper = {
   loadJSON: function(filepath, callback) {
     fs.readFile(path.resolve(process.cwd(), fixture_path + filepath + ".json"), function (err, data) {
-      if (err) throw err;
-      callback(JSON.parse(data));
+      if (err) return callback(err);
+      callback(null, JSON.parse(data));
     });
   },
   load: function(filepath, callback) {
-    fs.readFile(path.resolve(process.cwd(), fixture_path + filepath), 'utf8', function (err, data) {
-      if (err) throw err;
-      callback(data);
+    fs.readFile(path.resolve(process.cwd(), fixture_path + filepath), function (err, data) {
+      if (err) return callback(err);
+      callback(null, data);
     });
   }
 };
@@ -58,7 +58,8 @@ var ModelHelper = {
 
     locales.forEach(function(locale) {
       languages[locale] = function(callback) {
-        FixtureHelper.loadJSON("languages/" + locale, function (data) {
+        FixtureHelper.loadJSON("languages/" + locale, function (err, data) {
+          if (err) return callback(err);
           callback(null, new Language(data));
         });
       };
@@ -66,14 +67,30 @@ var ModelHelper = {
 
     async.parallel(languages, function(err, results) {
       if (err) throw err;
-
       main_callback(results);
     });
   },
 
-  application: function(callback) {
-    FixtureHelper.load("application", function (data) {
-      callback(new Application(data));
+  application: function(opts, callback) {
+    FixtureHelper.loadJSON("application", function (err, data) {
+      if (err) return callback(err);
+
+      var app = new Application(data);
+
+      if (opts.locales) {
+        ModelHelper.languages(opts.locales, function(languages) {
+          opts.locales.forEach(function(locale) {
+            if (languages[locale]) {
+              app.addLanguage(languages[locale]);
+            } else {
+              // scream
+            }
+          });
+          callback(null, app);
+        });
+      } else {
+        callback(null, app);
+      }
     });
   }
 };
