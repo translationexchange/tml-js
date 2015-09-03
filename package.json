@@ -1,14 +1,15 @@
 {
   "name": "tml-js",
   "description": "Translation Markup Language for JavaScript",
-  "version": "0.2.19",
+  "version": "0.3.0",
   "author": {
     "name": "Michael Berkovich",
     "email": "michael@translationexchange.com"
   },
   "maintainers": [
     "Michael Berkovich <michael@translationexchange.com>",
-    "Ian McDaniels <ian@translationexchange.com>"
+    "Ian McDaniels <ian@translationexchange.com>",
+    "Eli Rapoport <eli@translationexchange.com>"
   ],
   "bugs": {
     "url": "https://github.com/translationexchange/tml-js/issues"
