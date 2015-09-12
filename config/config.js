@@ -128,7 +128,7 @@ module.exports = {
         {enabled: true, name: 'email',    regex: /[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|io|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?/g},
         {enabled: true, name: 'price',    regex: /\$\d*(,\d*)*(\.\d*)?/g},
         {enabled: true, name: 'fraction', regex: /\d+\/\d+/g},
-        {enabled: true, name: 'num',      regex: /\b\d*(,\d*)*(\.\d*)?%?\b/g}
+        {enabled: true, name: 'num',      regex: /\b\d+(,\d*)*(\.\d*)?%?\b/g}
       ]
     }
   },
