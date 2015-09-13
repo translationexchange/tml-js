@@ -86,7 +86,7 @@ module.exports = {
   },
 
   translator_options: {
-    debug: true,
+    debug: false,
     debug_format_html: "<span style='font-size:20px;color:red;'>{<\/span> {$0} <span style='font-size:20px;color:red;'>}<\/span>",
     debug_format: "{{{{$0}}}}",
     split_sentences: false,

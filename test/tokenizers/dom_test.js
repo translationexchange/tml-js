@@ -32,11 +32,15 @@
 //var Tml = require('../../lib/tml');
 var DomTokenizer = require('../../lib/tokenizers/dom.js');
 var assert = require('assert');
-var helper = require("../test_helper");
+var helper = require('../test_helper');
+var config = require('../../lib/configuration.js');
 
 describe('Dom', function() {
   describe('parsing', function() {
     it('should properly parse the document', function(done){
+
+      config.translator_options.debug = true;
+
       var jsdom = require('node-jsdom');
 
       var original = "<html><head></head><body><p><a class='the-link' href='https://github.com/tmpvar/jsdom'>Welcome to TML testing!</a></p></body></html>";
