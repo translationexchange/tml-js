@@ -76,27 +76,24 @@ module.exports = function(grunt) {
     jshint: {
       files: ['Gruntfile.js', 'lib/**/*.js'],
       options: {
-        //curly: true,
-        //eqnull: true,
-        //eqeqeq: true,
-        //undef: true,
-        //immed: true,
-        //latedef: true,
-        //newcap: true,
-        //noarg: true,
-        //sub: true,
-        //undef: true,
-        //unused: true,
-        boss: true,
-        eqnull: true,
-        node: true,
+        curly:    false,
+        eqeqeq:   false,
+        undef:    false,
+        immed:    false,
+        latedef:  false,
+        newcap:   false,
+        noarg:    false,
+        sub:      false,
+        unused:   false,
+        boss:     true,
+        eqnull:   true,
+        node:     true,
         globals: {
-          jQuery: true,
-          console: true,
-          module: true,
+          jQuery:   true,
+          console:  true,
+          module:   true,
           document: true
         }
-        //jshintrc: '.jshintrc'
       }
     },
 
@@ -112,7 +109,7 @@ module.exports = function(grunt) {
     watch: {
       all: {
         files: ['lib/**/*.js', 'test/**/*.js'],
-        tasks: ['test', 'uglify'] //NOTE the :run flag
+        tasks: ['test', 'uglify'] 
       }
     },
 
