@@ -5,7 +5,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-browserify');
   grunt.loadNpmTasks('grunt-blanket');
   grunt.loadNpmTasks('grunt-coveralls');
   grunt.loadNpmTasks('grunt-mocha-test');
@@ -103,7 +102,7 @@ module.exports = function(grunt) {
 
     jsdoc : {
       dist : {
-        src: ['src/**/*.js'],
+        src: ['lib/**/*.js'],
         options: {
           destination: 'doc'
         }
@@ -127,11 +126,8 @@ module.exports = function(grunt) {
     }
   });
 
-  //grunt.registerTask('test', ['jshint', 'blanket', 'copy', 'mochaTest', 'coveralls']);
   grunt.registerTask('test', ['jshint', 'blanket', 'copy', 'mochaTest', 'coveralls']);
   grunt.registerTask('docs', ['jsdoc']);
   grunt.registerTask('build', ['test']);
-
-  // Default task(s).
   grunt.registerTask('default', ['test']);
 };
