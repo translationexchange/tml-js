@@ -89,9 +89,9 @@ module.exports = {
     debug: false,
     debug_format_html: "<span style='font-size:20px;color:red;'>{<\/span> {$0} <span style='font-size:20px;color:red;'>}<\/span>",
     debug_format: "{{{{$0}}}}",
-    split_sentences: false,
+    split_sentences: true,
     decoration_token_format: "[]",
-    ignored_classes: ['notranslate'],
+    ignore_elements: ['.notranslate'],
     nodes: {
       ignored:    [],
       scripts:    ["iframe", "script", "noscript", "style", "audio", "video", "map", "object", "track", "embed", "svg", "code", "ruby"],
