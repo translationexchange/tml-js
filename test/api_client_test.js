@@ -44,13 +44,13 @@ describe('ApiClient', function() {
     });
 
 
-    application.getApiClient().get("applications/current", {definition: true}, function(error, data) {
-      // console.log("xxxxx", error);
-    });
-
-    application.getApiClient().get("languages/ru", {definition: true}, function(error, data) {
-      // console.log(data);
-    });
+    //application.getApiClient().get("applications/current", {definition: true}, function(error, data) {
+    //  // console.log("xxxxx", error);
+    //});
+    //
+    //application.getApiClient().get("languages/ru", {definition: true}, function(error, data) {
+    //  // console.log(data);
+    //});
 
 
   });
