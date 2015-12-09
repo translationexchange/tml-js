@@ -1,0 +1,9 @@
+// read the package.json
+
+// increment version
+
+// check in the new version
+
+// tag the build
+
+// publish on npm
