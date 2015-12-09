@@ -1,9 +1,71 @@
-// read the package.json
+#!/usr/bin/env ruby
 
-// increment version
+require 'json'
+require 'pp'
+require 'slop'
 
-// check in the new version
+def package_path
+  './package.json'
+end
 
-// tag the build
+def package
+  @package ||= JSON.parse(File.read(package_path))
+end
 
-// publish on npm
+def version
+  package['version']
+end
+
+def build_number
+  version.split('.').last.to_i
+end
+
+def increment_build_number
+  parts = version.split('.')
+  parts[parts.count-1] = build_number + 1
+  package['version'] = parts.join('.')
+
+  File.open(package_path, 'w') do |file|
+    file.write(JSON.pretty_generate(package))
+  end
+end
+
+opts = Slop.parse do |o|
+  o.bool    '-s', '--stable', 'indicates that you are updating the stable version'
+  o.string  '-e', '--environment' , 'indicates the desired environment you wish to deploy to', default: 'staging'
+  o.on      '-v', '--version', 'prints current version of the SDK (for sanity check)' do
+    puts "Current version is #{version}"
+    exit
+  end
+end
+
+def execute(cmd)
+  puts "\n***************************************************************************"
+  puts "$ #{cmd}"
+
+  result = system(cmd)
+  if result == 1
+    pp 'Failed to deploy'
+    exit
+  end
+end
+
+# run tests
+execute("grunt test")
+
+# increment version
+pp("Incrementing build number to #{build_number + 1}...")
+increment_build_number
+
+# check in the new version
+execute("git add package.json")
+execute("git commit -m 'Incremented build version to #{version}'")
+
+# tag the build
+execute("git tag '#{version}'")
+
+# push to github
+execute("git push")
+
+# publish on npm
+execute("npm publish")
