@@ -61,11 +61,19 @@ increment_build_number
 execute("git add package.json")
 execute("git commit -m 'Incremented build version to #{version}'")
 
+# push to github
+execute("git push")
+
+execute("git checkout master")
+
+execute("git merge develop")
+
 # tag the build
 execute("git tag '#{version}'")
 
-# push to github
 execute("git push")
 
 # publish on npm
 execute("npm publish")
+
+execute("git checkout develop")
