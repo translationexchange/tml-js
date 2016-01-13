@@ -55,5 +55,3 @@ execute("git tag '#{version}'")
 execute("git push")
 execute("npm publish")
 execute("git checkout develop")
-
-execute("open https://cdn.translationexchange.com/tools/tml/#{version}/tml.min.js")
