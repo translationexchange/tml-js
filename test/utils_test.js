@@ -70,13 +70,29 @@ describe('Utils', function(){
   describe("decodeAndVerifyParams", function() {
     it("should correctly parse out data", function() {
       
-      var cookie = "eyJsb2NhbGUiOiJydSJ9%250A";
+      var cookie = decodeURIComponent("eyJsb2NhbGUiOiJydSJ9%250A");
       var data = utils.decode(cookie);
       assert.deepEqual(data, {"locale":"ru"});
 
-      var cookie = "eyJsb2NhbGUiOm51bGwsInRyYW5zbGF0b3IiOnsiaWQiOjEsImVtYWlsIjoi%250AbWljaGFlbEB0cjhuaHViLmNvbSIsIm5hbWUiOiJiZXJrIiwiaW1hZ2VfdXJs%250AIjoiaHR0cHM6Ly9ncmF2YXRhci5jb20vYXZhdGFyLzg3MzQ1YjIyNzEyNTll%250AMmVlZWEzYjAxMTQyZjlhZjU2LnBuZz9zPTY1IiwiaW5saW5lIjpmYWxzZSwi%250AbWFuYWdlciI6ZmFsc2UsImZlYXR1cmVzIjp7ImZhbGxiYWNrX2xhbmd1YWdl%250AIjpmYWxzZSwic2hvd19sb2NrZWRfa2V5cyI6ZmFsc2V9fX0%3D%250A";
-      var data = utils.decode(cookie);
+      cookie = "eyJsb2NhbGUiOiJydSJ9%250A";
+      data = utils.decode(cookie);
+      assert.deepEqual(data, {"locale":"ru"});
 
+      cookie = decodeURIComponent("eyJsb2NhbGUiOm51bGwsInRyYW5zbGF0b3IiOnsiaWQiOjEsImVtYWlsIjoi%250AbWljaGFlbEB0cjhuaHViLmNvbSIsIm5hbWUiOiJiZXJrIiwiaW1hZ2VfdXJs%250AIjoiaHR0cHM6Ly9ncmF2YXRhci5jb20vYXZhdGFyLzg3MzQ1YjIyNzEyNTll%250AMmVlZWEzYjAxMTQyZjlhZjU2LnBuZz9zPTY1IiwiaW5saW5lIjpmYWxzZSwi%250AbWFuYWdlciI6ZmFsc2UsImZlYXR1cmVzIjp7ImZhbGxiYWNrX2xhbmd1YWdl%250AIjpmYWxzZSwic2hvd19sb2NrZWRfa2V5cyI6ZmFsc2V9fX0%3D%250A");
+      data = utils.decode(cookie);
+      assert.deepEqual(data, { locale: null, translator: {
+        id: 1,
+        email: 'michael@tr8nhub.com',
+        name: 'berk',
+        image_url: 'https://gravatar.com/avatar/87345b2271259e2eeea3b01142f9af56.png?s=65',
+        inline: false,
+        manager: false,
+        features: { fallback_language: false, show_locked_keys: false
+        }
+      }});
+
+      cookie = "eyJsb2NhbGUiOm51bGwsInRyYW5zbGF0b3IiOnsiaWQiOjEsImVtYWlsIjoi%250AbWljaGFlbEB0cjhuaHViLmNvbSIsIm5hbWUiOiJiZXJrIiwiaW1hZ2VfdXJs%250AIjoiaHR0cHM6Ly9ncmF2YXRhci5jb20vYXZhdGFyLzg3MzQ1YjIyNzEyNTll%250AMmVlZWEzYjAxMTQyZjlhZjU2LnBuZz9zPTY1IiwiaW5saW5lIjpmYWxzZSwi%250AbWFuYWdlciI6ZmFsc2UsImZlYXR1cmVzIjp7ImZhbGxiYWNrX2xhbmd1YWdl%250AIjpmYWxzZSwic2hvd19sb2NrZWRfa2V5cyI6ZmFsc2V9fX0%3D%250A";
+      data = utils.decode(cookie);
       assert.deepEqual(data, { locale: null, translator: {
         id: 1,
         email: 'michael@tr8nhub.com',

@@ -26,7 +26,7 @@ module.exports = {
         br     :  "<br/>",    
         lbrace :  "{",
         rbrace :  "}",
-        trade  :  "&trade;"   
+        trade  :  "&trade;"
       },
       decoration : {
         strong :  "<strong>{$0}</strong>",
