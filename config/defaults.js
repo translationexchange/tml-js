@@ -42,8 +42,7 @@ module.exports = {
         span   :  "<span id='{$id}' class='{$class}' style='{$style}'>{$0}</span>",
         h1     :  "<h1>{$0}</h1>",
         h2     :  "<h2>{$0}</h2>",
-        h3     :  "<h3>{$0}</h3>",
-        code   :  "<code>{$0}</code>"
+        h3     :  "<h3>{$0}</h3>"
       }
     },
     text : {
@@ -81,8 +80,7 @@ module.exports = {
         span   :  "{$0}",
         h1     :  "{$0}",
         h2     :  "{$0}",
-        h3     :  "{$0}",
-        code   :  "{$0}"
+        h3     :  "{$0}"
       }
     }
   },
@@ -96,7 +94,7 @@ module.exports = {
     ignore_elements: ['.notranslate'],
     nodes: {
       ignored:    [],
-      scripts:    ["iframe", "script", "noscript", "style", "audio", "video", "map", "object", "track", "embed", "svg", "ruby"],
+      scripts:    ["iframe", "script", "noscript", "style", "audio", "video", "map", "object", "track", "embed", "svg", "ruby", "pre"],
       inline:     ["a", "span", "i", "b", "img", "strong", "s", "em", "u", "sub", "sup", "var", "code"],
       short:      ["i", "b"],
       splitters:  ["br", "hr"]
