@@ -155,7 +155,7 @@ describe('Decoration', function(){
         var parsed = tokenizer.parse();
         parsed.shift(); //get rid of [tml]
         //console.log(JSON.stringify(parsed, null, 4))
-        assert.deepEqual(['bold', 'Hello W', '[o]', 'rld', '[/bold'], parsed);
+        assert.deepEqual(['[bold]', 'Hello W', '[o]', 'rld', '[/bold'], parsed);
     });
     it('should handle unclosed html tags', function(){
         var tokenizer = new DecorationTokenizer("[bold]Hello W<o>rld[/bold]");
@@ -173,8 +173,19 @@ describe('Decoration', function(){
         //console.log(JSON.stringify(parsed, null, 4))
         assert.deepEqual([['bold', 'Hello W', '[o:', 'rld'], '[/bold]'], parsed);
     });
+    
+    it('should handle really messed up strings', function(){
+        var tokenizer = new DecorationTokenizer("[b]He[[llo]]]]] W[o:rld[/b]");
+        var tokenized = tokenizer.tokenize();
+        var parsed = tokenizer.parse();
+        parsed.shift(); //get rid of [tml]
+        //console.log(JSON.stringify(parsed, null, 4))
+        assert.deepEqual([['b', 'He', '[', '[llo]', ']', ']', ']', ']', ' W', '[o:', 'rld'], '[/b]'], parsed);
+    });
+    
+    
+    
     //altered tests that used to ignore broken tags
-
     var tokenizer = new DecorationTokenizer("[bold: Hello World");
     assert.deepEqual(["[tml]", "[bold:", " Hello World", "[/tml]"], tokenizer.fragments);
     assert.deepEqual(["tml", "[bold:", "Hello World"], tokenizer.parse());
