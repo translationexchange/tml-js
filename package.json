@@ -65,12 +65,13 @@
     "karma": "~0.13.15",
     "mocha": "~2.3.2",
     "mocha-lcov-reporter": "~1.0.0",
+    "node-jsdom": "~3.1.5",
     "object-keys": "~1.0.7",
     "phantomjs": "~1.9.15",
+    "promise": "^7.1.1",
     "proxyquire": "~1.7.2",
     "request": "~2.67.0",
     "should": "~8.0.0",
-    "travis-cov": "~0.2.5",
-    "node-jsdom": "~3.1.5"
+    "travis-cov": "~0.2.5"
   }
 }
