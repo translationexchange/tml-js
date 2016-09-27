@@ -100,7 +100,7 @@ module.exports = {
       splitters:  ["br", "hr"]
     },
     attributes: {
-      labels: ["title", "alt"]
+      labels: ["title", "alt", "placeholder"]
     },
     name_mapping: {
       b: "bold",
