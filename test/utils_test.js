@@ -54,6 +54,13 @@ describe('Utils', function(){
     });
   });
 
+  describe('replaceBetween', function(){
+    it('should correctly replace only strings in a specific segment', function(){
+      var result = utils.replaceBetween(6, 10, "I have 5 apples and 5 oranges.", "5", "9");
+      assert.deepEqual("I have 9 apples and 5 oranges.", result);
+    });
+  });
+
   describe('hashValue', function(){
     it('should return value from a hash', function(){
       var result = utils.hashValue({a: {b: {c: "hello"}}}, "a.b.c");
