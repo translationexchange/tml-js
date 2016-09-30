@@ -56,8 +56,22 @@ describe('Utils', function(){
 
   describe('replaceBetween', function(){
     it('should correctly replace only strings in a specific segment', function(){
-      var result = utils.replaceBetween(6, 10, "I have 5 apples and 5 oranges.", "5", "9");
+      var result = utils.replaceBetween("I have 5 apples and 5 oranges.", 6, 10, "9", "5");
       assert.deepEqual("I have 9 apples and 5 oranges.", result);
+
+      result = utils.replaceBetween("I have 5 apples and 5 oranges.", 7, 8, "no");
+      assert.deepEqual("I have no apples and 5 oranges.", result);
+    });
+  });
+
+  describe('extractMatches', function(){
+    it('should correctly replace only strings in a specific segment', function(){
+
+      var value='<div class="alert alert-Warning alertreg" role="alert"><p>Join now, click on 20 ads and get <span>Five</span> Bids2Prosper + <span>1 Direct Referral</span> FOR FREE!</p></div>';
+      var rx=/\b\d+(,\d*)*(\.\d*)?%?\b/g;
+
+      var matches = utils.extractMatches(value, rx);
+      assert.deepEqual([ { start: 77, end: 79, value: '20' }, { start: 131, end: 132, value: '1' } ], matches);
     });
   });
 
