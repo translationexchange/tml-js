@@ -64,6 +64,28 @@ describe('Utils', function(){
     });
   });
 
+  describe('toRegex', function(){
+    it('should correctly convert a string to a regular expression', function(){
+
+      var regex = /\b\d+(,\d*)*(\.\d*)?%?\b/g;
+      var expr = utils.toRegex(regex);
+      assert.deepEqual(/\b\d+(,\d*)*(\.\d*)?%?\b/g, expr);
+
+      regex = "/\\b\\d+(,\\d*)*(\\.\\d*)?%?\\b/g";
+      expr = utils.toRegex(regex);
+      assert.deepEqual(/\b\d+(,\d*)*(\.\d*)?%?\b/g, expr);
+
+      regex = "hello";
+      expr = utils.toRegex(regex);
+      assert.deepEqual(/hello/, expr);
+
+      regex = "/[a,b]/";
+      expr = utils.toRegex(regex);
+      assert.deepEqual(/[a,b]/, expr);
+    });
+  });
+
+
   describe('extractMatches', function(){
     it('should correctly replace only strings in a specific segment', function(){
 
