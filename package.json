@@ -19,6 +19,9 @@
     "type": "git",
     "url": "https://github.com/translationexchange/tml-js.git"
   },
+  "bin": {
+    "tml-js": "./bin/cli"
+  },
   "license": "MIT",
   "main": "./lib/tml",
   "keywords": [
@@ -47,7 +50,9 @@
     "test": "grunt test"
   },
   "dependencies": {
-    "async": "~1.5.0"
+    "async": "~1.5.0",
+    "commander": "~2.9.0",
+    "decompress": "^4.0.0"
   },
   "devDependencies": {
     "blanket": "~1.2.1",

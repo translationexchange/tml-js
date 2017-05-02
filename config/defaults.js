@@ -135,7 +135,7 @@ module.exports = {
     translatable_elements: null,
     nodes: {
       ignored: [],
-      scripts: ["iframe", "script", "noscript", "style", "audio", "video", "map", "object", "track", "embed", "svg", "ruby", "pre"],
+      scripts: ["iframe", "script", "noscript", "style", "audio", "video", "map", "object", "track", "embed", "ruby", "pre"],
       inline: ["a", "span", "i", "b", "img", "strong", "s", "em", "u", "sub", "sup", "var", "code"],
       short: ["i", "b"],
       splitters: ["br", "hr"]
