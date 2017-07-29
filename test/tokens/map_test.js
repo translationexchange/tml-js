@@ -29,64 +29,47 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-var utils           = require('./utils');
+var Language = require("../../lib/language.js");
+var MapToken = require("../../lib/tokens/map.js");
 
-var DataToken       = require('./tokens/data');
+var assert = require("assert");
+var helper = require("./../test_helper");
 
-/**
- * Translation
- *
- * @constructor
- * @param {object} attrs - options
- */
-var Translation = function(attrs) {
-  utils.extend(this, attrs);
-  if (attrs.language)
-    this.locale = attrs.language.locale;
-};
+describe('Tokens.Map', function(){
+  describe('creation', function(){
+    it('should correctly create a token', function(done) {
+      helper.fixtures.loadJSON("languages/en-US", function(err, data) {
+        if (err) return done(err);
 
-Translation.prototype = {
+        var token = new MapToken("{role @ friend, enemy}", "You are my {role @ friend, enemy}");
 
-  hasContextRules: function() {
-    return (this.context && utils.keys(this.context).length > 0);
-  },
+        assert.deepEqual("You are my {role @ friend, enemy}", token.label);
+        assert.deepEqual("{role @ friend, enemy}", token.full_name);
+        assert.deepEqual("role", token.short_name);
+        assert.deepEqual([ 'friend', 'enemy' ], token.params);
 
-  // {"count": 1}
-  isValidTranslation: function(tokens) {
-    if (!this.hasContextRules())
-      return true;
+        done();
+      });
+    });
+  });
 
-    // {"count": {"number": "one", "value": "vowel"}}
-    var token_names = utils.keys(this.context);
-    for(var i=0; i<token_names.length; i++) {
-      var token_name = token_names[i];
-      var rules = this.context[token_name];
-      var object = DataToken.prototype.getTokenObject(tokens, token_name);
+  describe('substitution', function(){
+    it('should correctly substitute a token', function(done) {
+      helper.fixtures.loadJSON("languages/en", function(err, data) {
+        var language = new Language(data);
 
-      if (!object) return false;
+        var label = "You are my {role @ friend, enemy}";
+        var token = new MapToken("{role @ friend, enemy}", label);
+        assert.deepEqual([ 'friend', 'enemy' ], token.params);
+        assert.deepEqual("You are my friend", token.substitute(label, {role: 0}, language));
 
-      var contex_keys = utils.keys(rules);
+        label = "You are my {role @ opt1: friend, opt2: enemy}";
+        token = new MapToken("{role @ opt1: friend, opt2: enemy}", label);
+        assert.deepEqual({ opt1: 'friend', opt2: 'enemy' }, token.params);
+        assert.deepEqual("You are my friend", token.substitute(label, {role: 'opt1'}, language));
 
-      for(var j=0; j<contex_keys.length; j++) {
-        var context_key = contex_keys[j];
-        var rule_key = rules[contex_keys[j]];
-
-        if (rule_key != "other") {
-          var context = this.language.getContextByKeyword(context_key);
-          if (!context) return false; // unsupported context type
-
-          var rule = context.findMatchingRule(object);
-          if (!rule || rule.keyword != rule_key)
-            return false;
-        }
-      }
-    }
-
-    return true;
-  }
-
-};
-
-module.exports = Translation;
-
-
+        done();
+      });
+    });
+  });
+});

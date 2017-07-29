@@ -37,6 +37,13 @@ describe('XMessageTokenizer', function() {
     it('should properly parse various xmessage syntax', function(done){
       var messages = [
         {
+          message: "Hello World",
+          tree: [{"type":"trans","value":"Hello World"}],
+          test_cases: [
+            {tokens: [], result: "Hello World"}
+          ]
+        },
+        {
           message: "{0} members",
           tree: [{"type":"param","index":0},{"type":"trans","value":" members"}],
           test_cases: [
