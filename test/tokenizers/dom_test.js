@@ -41,11 +41,13 @@ describe('Dom', function() {
 
       config.translator_options.debug = true;
 
-      var jsdom = require('node-jsdom');
+      var jsdom = require("jsdom");
 
       var original = "<html><head></head><body><p><a class='the-link' href='https://github.com/tmpvar/jsdom'>Welcome to TML testing!</a></p></body></html>";
-      var doc = jsdom.jsdom(original);
-      var tokenizer = new DomTokenizer(doc);
+      var doc = new jsdom.JSDOM(original);
+      var tokenizer = new DomTokenizer(doc.window.document);
+      // tokenizer.debug(doc.window.document);
+
       var result = tokenizer.translate();
       assert.deepEqual(result, "<html><head></head><body><p><a class='the-link' href='https://github.com/tmpvar/jsdom'>{{{Welcome to TML testing!}}}</a></p></body></html>");
 
@@ -58,7 +60,8 @@ describe('Dom', function() {
         ["<html><head></head><body><span>Hello</span><span>World</span></body></html>", "<html><head></head><body>{{{[span: Hello][span: World]}}}</body></html>"]
 
       ].forEach(function(data) {
-        var tokenizer = new DomTokenizer(jsdom.jsdom(data[0]));
+        var doc = new jsdom.JSDOM(data[0]);
+        var tokenizer = new DomTokenizer(doc.window.document);
         var result = tokenizer.translate();
         assert.deepEqual(result, data[1]);
       });
@@ -68,7 +71,8 @@ describe('Dom', function() {
       ].forEach(function(test) {
         helper.fixtures.load("translator/" + test + ".html", function (err, original) {
           helper.fixtures.load("translator/" + test + ".tml", function (err, expectation) {
-            var tokenizer = new DomTokenizer(jsdom.jsdom(original));
+            var doc = new jsdom.JSDOM(original);
+            var tokenizer = new DomTokenizer(doc.window.document);
             var result = tokenizer.translate();
             assert.equal(result, expectation);
 
@@ -76,6 +80,7 @@ describe('Dom', function() {
           });
         });
       });
+
     });
   });
 });
