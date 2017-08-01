@@ -46,9 +46,15 @@ describe('Dom', function() {
       var doc = new jsdom.JSDOM(original);
       var tokenizer = new DomTokenizer(doc.window.document);
       // tokenizer.debug(doc.window.document);
-
       var result = tokenizer.translate();
       assert.deepEqual(result, "<html><head></head><body><p><a class='the-link' href='https://github.com/tmpvar/jsdom'>{{{Welcome to TML testing!}}}</a></p></body></html>");
+
+      original = "In a shallow glass dish, stir together the honey, soy sauce, balsamic vinegar, ginger, garlic and olive oil. Season fish fillets with salt and pepper, and place them into the dish. If the fillets have skin on them, place them skin side down. Cover, and refrigerate for 20 minutes to marinate.";
+      doc = new jsdom.JSDOM(original);
+      tokenizer = new DomTokenizer(doc.window.document);
+      // tokenizer.debug(doc.window.document);
+      result = tokenizer.translate();
+      assert.deepEqual(result, "<html><head></head><body>{{{In a shallow glass dish, stir together the honey, soy sauce, balsamic vinegar, ginger, garlic and olive oil.}}} {{{Season fish fillets with salt and pepper, and place them into the dish.}}} {{{If the fillets have skin on them, place them skin side down.}}} {{{Cover, and refrigerate for {num} minutes to marinate.}}}</body></html>");
 
       [
         ["<html><head></head><body>Hello World</body></html>", "<html><head></head><body>{{{Hello World}}}</body></html>"],
