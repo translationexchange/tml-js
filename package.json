@@ -47,7 +47,7 @@
   },
   "scripts": {
     "start": "node ./srv/bin/www",
-    "test": "grunt test"
+    "test": "grunt coverage"
   },
   "dependencies": {
     "async": "~2.5.0",
