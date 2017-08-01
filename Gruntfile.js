@@ -24,20 +24,6 @@ module.exports = function(grunt) {
           timeout: 10000
         },
         src: ['test/**/**/*.js']
-      },
-      'mocha-lcov-reporter': {
-        options: {
-          reporter: 'mocha-lcov-reporter',
-          quiet: true,
-          captureFile: 'coverage/lcov.info'
-        },
-        src: ['test/**/**/*.js']
-      },
-      'travis-cov': {
-        options: {
-          reporter: 'travis-cov'
-        },
-        src: ['test/**/**/*.js']
       }
     },
 
@@ -113,8 +99,7 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('test', ['clean', 'jshint', 'mochaTest']);
-  grunt.registerTask('coverage', ['clean', 'jshint', 'mocha_istanbul:coverage']);
+  grunt.registerTask('coverage', ['clean', 'jshint', 'mocha_istanbul:coverage', 'coveralls']);
   grunt.registerTask('docs', ['jsdoc']);
-  grunt.registerTask('build', ['test']);
-  grunt.registerTask('default', ['test']);
+  grunt.registerTask('default', ['coverage']);
 };
