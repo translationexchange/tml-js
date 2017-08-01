@@ -29,9 +29,11 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+var Language = require("../../lib/language.js");
 var MethodToken = require("../../lib/tokens/method.js");
 
 var assert = require("assert");
+var helper = require("./../test_helper");
 
 
 describe('Tokens.Method', function(){
@@ -39,6 +41,40 @@ describe('Tokens.Method', function(){
     it('should correctly create a token', function() {
       var token = new MethodToken("{user.name}");
       assert.deepEqual("Michael", token.getTokenValue({user: {name: "Michael"}}));
+      assert.deepEqual("method", token.getDecorationName());
     });
   });
+
+
+  describe('substitution', function(){
+    it('should correctly substitute a token', function(done) {
+      helper.fixtures.loadJSON("languages/en", function(err, data) {
+        var language = new Language(data);
+
+        var label = "{user} is {user.age} years old";
+        var token = new MethodToken("{user.age}");
+
+        var user = new function() {
+          this.age = 5;
+          this.name = "Michael";
+          this.gender = "male";
+
+          this.getAge = function() {
+            return this.age;
+          }.bind(this);
+
+          return this;
+        };
+        assert.deepEqual("{user} is 5 years old", token.substitute(label, {user: user}, language));
+        assert.deepEqual("{user} is {user.age} years old", token.substitute(label, {user1: user}, language));
+
+        label = "{user} is {user.getAge} years old";
+        token = new MethodToken("{user.getAge}");
+        assert.deepEqual("{user} is 5 years old", token.substitute(label, {user: user}, language));
+
+        done();
+      });
+    });
+  });
+
 });

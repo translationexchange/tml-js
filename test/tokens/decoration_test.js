@@ -29,80 +29,47 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-var utils           = require('../utils');
-var decorator       = require('../decorators/html');
+var Language = require("../../lib/language.js");
+var MapToken = require("../../lib/tokens/map.js");
 
-var DataToken       = require('./data');
+var assert = require("assert");
+var helper = require("./../test_helper");
 
-function MethodToken(name, label) {
-  if (!name) return;
-  this.full_name = name;
-  this.label = label;
-  this.parseElements();
-  this.initObject();
-}
+describe('Tokens.Decoration', function(){
+  describe('creation', function(){
+    it('should correctly create a token', function(done) {
+      helper.fixtures.loadJSON("languages/en-US", function(err, data) {
+        if (err) return done(err);
 
-MethodToken.prototype = new DataToken();
-MethodToken.prototype.constructor = MethodToken;
+        var token = new MapToken("{role @ friend, enemy}", "You are my {role @ friend, enemy}");
 
-/**
- *
- */
-MethodToken.prototype.initObject = function() {
-  var parts = this.short_name.split('.');
-  this.short_name = parts[0];
-  this.object_method = parts[1];
-};
+        assert.deepEqual("You are my {role @ friend, enemy}", token.label);
+        assert.deepEqual("{role @ friend, enemy}", token.full_name);
+        assert.deepEqual("role", token.short_name);
+        assert.deepEqual([ 'friend', 'enemy' ], token.params);
 
-/**
- *
- * @param tokens
- * @param language
- * @param options
- * @returns {*}
- */
-MethodToken.prototype.getTokenValue = function(tokens, language, options) {
-  tokens = tokens || {};
+        done();
+      });
+    });
+  });
 
-  var object = tokens[this.short_name];
-  if (!object) return this.error("Missing token value");
+  describe('substitution', function(){
+    it('should correctly substitute a token', function(done) {
+      helper.fixtures.loadJSON("languages/en", function(err, data) {
+        var language = new Language(data);
 
-  var value;
-  if (utils.isFunction(object[this.object_method])) {
-    value = object[this.object_method]();
-  }
-  else {
-    value = object[this.object_method];
-  }
+        var label = "You are my {role @ friend, enemy}";
+        var token = new MapToken("{role @ friend, enemy}", label);
+        assert.deepEqual([ 'friend', 'enemy' ], token.params);
+        assert.deepEqual("You are my friend", token.substitute(label, {role: 0}, language));
 
-  return value;
-};
+        label = "You are my {role @ opt1: friend, opt2: enemy}";
+        token = new MapToken("{role @ opt1: friend, opt2: enemy}", label);
+        assert.deepEqual({ opt1: 'friend', opt2: 'enemy' }, token.params);
+        assert.deepEqual("You are my friend", token.substitute(label, {role: 'opt1'}, language));
 
-/**
- *
- * @param label
- * @param tokens
- * @param language
- * @param options
- * @returns {string|*|XML|void}
- */
-MethodToken.prototype.substitute = function(label, tokens, language, options) {
-  options = options || {};
-  return label.replace(this.full_name,
-    decorator.decorateToken(this, this.sanitize(
-        this.getTokenValue(tokens),
-        this.getTokenObject(tokens),
-        language,
-        utils.extend(options, {safe: false})
-      ),
-      options
-    )
-  );
-};
-
-MethodToken.prototype.getDecorationName = function() {
-  return 'method';
-};
-
-module.exports = MethodToken;
-
+        done();
+      });
+    });
+  });
+});

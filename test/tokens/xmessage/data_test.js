@@ -29,80 +29,25 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-var utils           = require('../utils');
-var decorator       = require('../decorators/html');
+var DataToken = require("../../../lib/tokens/xmessage/data.js");
+var assert = require("assert");
 
-var DataToken       = require('./data');
+describe('Tokens.XMessage.Data', function () {
 
-function MethodToken(name, label) {
-  if (!name) return;
-  this.full_name = name;
-  this.label = label;
-  this.parseElements();
-  this.initObject();
-}
+  describe('creation', function () {
+    it('should correctly create a token', function () {
+      var label = "I have {0}";
 
-MethodToken.prototype = new DataToken();
-MethodToken.prototype.constructor = MethodToken;
+      var element = {"type":"param","index":0};
 
-/**
- *
- */
-MethodToken.prototype.initObject = function() {
-  var parts = this.short_name.split('.');
-  this.short_name = parts[0];
-  this.object_method = parts[1];
-};
+      var token = new DataToken(label, element);
+      assert.deepEqual(label, token.label);
+      assert.deepEqual(0, token.short_name);
+      assert.deepEqual('{0}', token.full_name);
+      assert.deepEqual([ ], token.case_keys);
+      assert.deepEqual([ ], token.context_keys);
+    });
+  });
 
-/**
- *
- * @param tokens
- * @param language
- * @param options
- * @returns {*}
- */
-MethodToken.prototype.getTokenValue = function(tokens, language, options) {
-  tokens = tokens || {};
-
-  var object = tokens[this.short_name];
-  if (!object) return this.error("Missing token value");
-
-  var value;
-  if (utils.isFunction(object[this.object_method])) {
-    value = object[this.object_method]();
-  }
-  else {
-    value = object[this.object_method];
-  }
-
-  return value;
-};
-
-/**
- *
- * @param label
- * @param tokens
- * @param language
- * @param options
- * @returns {string|*|XML|void}
- */
-MethodToken.prototype.substitute = function(label, tokens, language, options) {
-  options = options || {};
-  return label.replace(this.full_name,
-    decorator.decorateToken(this, this.sanitize(
-        this.getTokenValue(tokens),
-        this.getTokenObject(tokens),
-        language,
-        utils.extend(options, {safe: false})
-      ),
-      options
-    )
-  );
-};
-
-MethodToken.prototype.getDecorationName = function() {
-  return 'method';
-};
-
-module.exports = MethodToken;
+});
 

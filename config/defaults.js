@@ -60,6 +60,7 @@ module.exports = {
         trade: "&trade;"
       },
       decoration: {
+        anchor: "<a href=''>{$0}</a>",
         strong: "<strong>{$0}</strong>",
         bold: "<strong>{$0}</strong>",
         b: "<strong>{$0}</strong>",
@@ -213,32 +214,67 @@ module.exports = {
     }
   },
 
-  context_rules: {
-    number: {
-      variables: {}
-    },
-    gender: {
-      variables: {
-        "@gender": "gender"
+  xmessage: {
+    decoration_tokens: ['anchor'],
+    data_tokens: ['param', 'number'],
+    choice_tokens: ['choice'],
+    map_tokens: ['map'],
+    context_rules: {
+      number: {
+        one: 'singular',
+        few: 'few',
+        many: 'many',
+        other: 'plural'
+      },
+      gender: {
+        male: 'male',
+        female: 'female',
+        neutral: 'neutral',
+        other: 'other'
+      },
+      date: {
+        future: 'future',
+        present: 'present',
+        past: 'past'
       }
-    },
-    genders: {
-      variables: {
-        "@genders": function (list) {
-          var genders = [];
-          list.forEach(function (obj) {
-            genders.push(obj.gender);
-          });
-          return genders;
+    }
+  },
+
+  context_rules:
+    {
+      number: {
+        variables: {}
+      }
+      ,
+      gender: {
+        variables: {
+          "@gender":
+            "gender"
         }
       }
-    },
-    date: {
-      variables: {}
-    },
-    time: {
-      variables: {}
-    }
-  }
+      ,
+      genders: {
+        variables: {
+          "@genders":
 
-};
+            function (list) {
+              var genders = [];
+              list.forEach(function (obj) {
+                genders.push(obj.gender);
+              });
+              return genders;
+            }
+        }
+      }
+      ,
+      date: {
+        variables: {}
+      }
+      ,
+      time: {
+        variables: {}
+      }
+    }
+
+}
+;

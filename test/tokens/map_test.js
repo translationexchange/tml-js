@@ -48,6 +48,8 @@ describe('Tokens.Map', function(){
         assert.deepEqual("role", token.short_name);
         assert.deepEqual([ 'friend', 'enemy' ], token.params);
 
+        assert.deepEqual("map", token.getDecorationName());
+
         done();
       });
     });
@@ -58,10 +60,18 @@ describe('Tokens.Map', function(){
       helper.fixtures.loadJSON("languages/en", function(err, data) {
         var language = new Language(data);
 
-        var label = "You are my {role @ friend, enemy}";
-        var token = new MapToken("{role @ friend, enemy}", label);
+        var label = "You are my {role @ }";
+        var token = new MapToken("{role @ }", label);
+        assert.deepEqual([ ], token.params);
+        assert.deepEqual("You are my {role @ }", token.substitute(label, {role: 0}, language));
+
+
+        label = "You are my {role @ friend, enemy}";
+        token = new MapToken("{role @ friend, enemy}", label);
+
         assert.deepEqual([ 'friend', 'enemy' ], token.params);
         assert.deepEqual("You are my friend", token.substitute(label, {role: 0}, language));
+        assert.deepEqual("You are my {role @ friend, enemy}", token.substitute(label, {}, language));
 
         label = "You are my {role @ opt1: friend, opt2: enemy}";
         token = new MapToken("{role @ opt1: friend, opt2: enemy}", label);
