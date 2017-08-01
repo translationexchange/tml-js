@@ -46,7 +46,6 @@
     "node": ">=0.8.6"
   },
   "scripts": {
-    "start": "node ./srv/bin/www",
     "test": "grunt coverage"
   },
   "dependencies": {
