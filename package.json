@@ -50,9 +50,9 @@
     "test": "grunt test"
   },
   "dependencies": {
-    "async": "~2.4.1",
-    "commander": "~2.9.0",
-    "decompress": "^4.0.0"
+    "async": "~2.5.0",
+    "commander": "~2.11.0",
+    "decompress": "^4.2.0"
   },
   "devDependencies": {
     "blanket": "~1.2.1",
