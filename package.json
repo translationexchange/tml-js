@@ -1,7 +1,7 @@
 {
   "name": "tml-js",
   "description": "Translation Markup Language for JavaScript",
-  "version": "1.0.5",
+  "version": "1.0.8",
   "author": {
     "name": "Michael Berkovich",
     "email": "michael@translationexchange.com"
