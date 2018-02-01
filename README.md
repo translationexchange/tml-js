@@ -9,6 +9,7 @@ Tml for JavaScript
 [![Coverage Status](https://coveralls.io/repos/translationexchange/tml-js/badge.png?branch=master)](https://coveralls.io/r/translationexchange/tml-js?branch=master)
 [![Dependency status](https://david-dm.org/translationexchange/tml-js/status.png)](https://david-dm.org/translationexchange/tml-js#info=dependencies&view=table) 
 [![Dev Dependency Status](https://david-dm.org/translationexchange/tml-js/dev-status.png)](https://david-dm.org/translationexchange/tml-js#info=devDependencies&view=table)
+[![Open Source Helpers](https://www.codetriage.com/translationexchange/tml-js/badges/users.svg)](https://www.codetriage.com/translationexchange/tml-js)
 
 [![NPM](https://nodei.co/npm/tml-js.png?downloads=true)](https://nodei.co/npm/tml-js)
 
