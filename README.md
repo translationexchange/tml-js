@@ -4,6 +4,9 @@
 
 Tml for JavaScript
 ===
+http://docs.translationexchange.com/javascript-quickstart/
+
+
 
 [![Build Status](https://travis-ci.org/translationexchange/tml-js.svg?branch=master)](https://travis-ci.org/translationexchange/tml-js)
 [![Coverage Status](https://coveralls.io/repos/translationexchange/tml-js/badge.png?branch=master)](https://coveralls.io/r/translationexchange/tml-js?branch=master)
